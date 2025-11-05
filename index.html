@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QuXAT Self Assessment Portal (QSAS)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand-bar container">
+        <div class="brand-left">
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <div>
+            <div class="brand-title">QuXAT Self Assessment Portal</div>
+            <div class="subtitle">Calculate your QuXAT Self Assessment Score (QSAS)</div>
+          </div>
+        </div>
+        <nav class="brand-nav">
+          <a href="index.html">Home</a>
+          <a href="admin.html">Admin</a>
+          <a href="user.html">Self Assessment</a>
+          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Choose a Portal</h2>
+        <div class="actions">
+          <a class="btn btn-primary" href="admin.html">Admin Portal</a>
+          <a class="btn" href="user.html">User Self Assessment</a>
+        </div>
+      </section>
+
+      <section class="card info">
+        <h3>About QSAS</h3>
+        <p>
+          Admins define quality compliance metrics and assign points to each metric.
+          Users then select the metrics they comply with, and the sum of points
+          becomes the QuXAT Self Assessment Score (QSAS).
+        </p>
+        <p>
+          This demo stores data in your browser via localStorage. For production,
+          connect it to a backend database and authentication system.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>© QuXAT — QSAS Demo • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
+    </footer>
+
+    <div id="cookieBanner" class="cookie-banner" hidden>
+      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
+      <div class="actions">
+        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
+      </div>
+    </div>
+
+    <script src="assets/js/branding.js"></script>
+  </body>
+  </html>

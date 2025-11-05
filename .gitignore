@@ -1,0 +1,22 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node/npm (if used)
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Misc
+*.tmp
+*.swp

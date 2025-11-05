@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Portal — QuXAT QSAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand-bar container">
+        <div class="brand-left">
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <div>
+            <div class="brand-title">Admin Portal</div>
+            <div class="subtitle">Manage metrics and verify assessments</div>
+          </div>
+        </div>
+        <nav class="brand-nav">
+          <a href="index.html">Home</a>
+          <a href="admin.html">Admin</a>
+          <a href="user.html">Self Assessment</a>
+          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="loginSection" class="card">
+        <h2>Admin Login</h2>
+        <form id="loginForm" class="form-grid">
+          <label>
+            Username
+            <input type="text" id="adminUsername" placeholder="admin" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="adminPassword" placeholder="••••••" required />
+          </label>
+          <button type="submit" class="btn btn-primary">Login</button>
+          <p class="hint">
+            Default credentials: <code>admin</code> / <code>quxat123</code>
+          </p>
+        </form>
+      </section>
+
+      <section id="adminPanel" class="card" hidden>
+        <div class="panel-header">
+          <h2>Manage Compliance Metrics</h2>
+          <div class="panel-actions">
+            <button id="logoutBtn" class="btn">Logout</button>
+          </div>
+        </div>
+
+        <div class="card info">
+          <h3>Checklists</h3>
+          <div class="grid two">
+            <div>
+              <label>
+                Select checklist
+                <select id="checklistSelect"></select>
+              </label>
+            </div>
+            <form id="checklistForm" class="form-grid">
+              <label>
+                New checklist name
+                <input type="text" id="checklistName" placeholder="e.g., Security Review" />
+              </label>
+              <label>
+                Description
+                <input type="text" id="checklistDesc" placeholder="Optional" />
+              </label>
+              <div class="actions">
+                <button type="button" id="createChecklistBtn" class="btn btn-primary">Create Checklist</button>
+                <button type="button" id="saveChecklistBtn" class="btn">Save Checklist</button>
+                <button type="button" id="goToMetricsBtn" class="btn">Add Metrics to Checklist</button>
+                <button type="button" id="deleteChecklistBtn" class="btn btn-danger">Delete Selected</button>
+              </div>
+            </form>
+          </div>
+          <p class="hint">Metrics below operate on the selected checklist.</p>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3>Add / Edit Metric</h3>
+            <form id="metricForm" class="form-grid">
+              <input type="hidden" id="metricId" />
+              <label>
+                Metric name
+                <input type="text" id="metricName" placeholder="e.g., Code Review Completed" required />
+              </label>
+              <label>
+                Points
+                <input type="number" id="metricPoints" placeholder="e.g., 5" min="0" step="1" required />
+              </label>
+              <div class="actions">
+                <button type="submit" class="btn btn-primary">Save Metric</button>
+                <button type="button" id="resetFormBtn" class="btn">Reset</button>
+              </div>
+            </form>
+
+            <h3 class="mt">Admin Credentials</h3>
+            <form id="credForm" class="form-grid">
+              <label>
+                Username
+                <input type="text" id="credUsername" required />
+              </label>
+              <label>
+                Password
+                <input type="password" id="credPassword" required />
+              </label>
+              <button type="submit" class="btn">Update Credentials</button>
+            </form>
+          </div>
+
+          <div>
+            <h3>Metrics List</h3>
+            <div id="metricsEmpty" class="empty" hidden>No metrics yet.</div>
+            <ul id="metricsList" class="list"></ul>
+            <div class="actions mt">
+              <button id="exportBtn" class="btn">Export JSON</button>
+              <label class="btn file-btn">
+                Import JSON
+                <input type="file" id="importInput" accept="application/json" />
+              </label>
+              <button id="clearBtn" class="btn btn-danger">Clear All Metrics</button>
+            </div>
+          </div>
+        </div>
+
+        <hr class="mt" />
+
+        <div>
+          <h3>User Submissions Verification</h3>
+          <div id="subsEmpty" class="empty" hidden>No submissions yet.</div>
+          <ul id="subsList" class="list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>© QuXAT — Admin • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
+    </footer>
+
+    <div id="cookieBanner" class="cookie-banner" hidden>
+      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
+      <div class="actions">
+        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
+      </div>
+    </div>
+
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="assets/js/admin.js"></script>
+  </body>
+  </html>

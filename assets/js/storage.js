@@ -1,0 +1,398 @@
+// Storage utilities for QSAS
+const QSAS_KEYS = {
+  adminUser: "qsas_admin_username",
+  adminPass: "qsas_admin_password",
+  // legacy single-metrics key
+  metrics: "qsas_metrics",
+  // new multi-checklist keys
+  checklists: "qsas_checklists",
+  metricsByChecklist: "qsas_metrics_by_checklist",
+  assessments: "qsas_assessments",
+};
+
+function ensureDefaults() {
+  if (!localStorage.getItem(QSAS_KEYS.adminUser)) {
+    localStorage.setItem(QSAS_KEYS.adminUser, "admin");
+  }
+  if (!localStorage.getItem(QSAS_KEYS.adminPass)) {
+    localStorage.setItem(QSAS_KEYS.adminPass, "quxat123");
+  }
+  // initialize checklists and metrics mapping
+  if (!localStorage.getItem(QSAS_KEYS.checklists)) {
+    // Start with no predefined checklist; Admin will create/publish.
+    localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify([]));
+  }
+  if (!localStorage.getItem(QSAS_KEYS.metricsByChecklist)) {
+    // Initialize empty mapping; metrics belong to a created checklist.
+    localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify({}));
+  }
+  if (!localStorage.getItem(QSAS_KEYS.assessments)) {
+    localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify([]));
+  }
+}
+
+function getAdminCreds() {
+  ensureDefaults();
+  return {
+    username: localStorage.getItem(QSAS_KEYS.adminUser) || "admin",
+    password: localStorage.getItem(QSAS_KEYS.adminPass) || "quxat123",
+  };
+}
+
+function saveAdminCreds(username, password) {
+  localStorage.setItem(QSAS_KEYS.adminUser, String(username || ""));
+  localStorage.setItem(QSAS_KEYS.adminPass, String(password || ""));
+}
+
+// Checklists API
+function getChecklists() {
+  ensureDefaults();
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.checklists) || "[]";
+    const arr = JSON.parse(raw);
+    const lists = Array.isArray(arr) ? arr : [];
+    ensureChecklistCodes(lists);
+    // Backward compatibility: default missing published -> true
+    return lists.map(c => ({
+      id: c.id,
+      code: c.code,
+      name: c.name,
+      description: c.description || "",
+      published: typeof c.published === "boolean" ? c.published : true,
+    }));
+  } catch { return []; }
+}
+
+function saveChecklists(list) {
+  localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(Array.isArray(list) ? list : []));
+}
+
+function addChecklist(name, description = "") {
+  const lists = getChecklists();
+  const id = generateId();
+  // New checklists start as drafts (published: false) with a unique code
+  const existingCodes = new Set(lists.map(c => c.code).filter(Boolean));
+  let code;
+  do { code = generateChecklistCode(); } while (existingCodes.has(code));
+  lists.push({ id, code, name: String(name), description: String(description || ""), published: false });
+  saveChecklists(lists);
+  return id;
+}
+
+function updateChecklist(id, name, description = "") {
+  const lists = getChecklists();
+  const idx = lists.findIndex(c => c.id === id);
+  if (idx !== -1) {
+    const prev = lists[idx];
+    lists[idx] = { id, code: prev.code, name: String(name), description: String(description || ""), published: typeof prev.published === "boolean" ? prev.published : true };
+    saveChecklists(lists);
+    return true;
+  }
+  return false;
+}
+
+function deleteChecklist(id) {
+  const lists = getChecklists();
+  const next = lists.filter(c => c.id !== id);
+  saveChecklists(next);
+  // remove associated metrics
+  ensureDefaults();
+  try {
+    const map = JSON.parse(localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}") || {};
+    delete map[id];
+    localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+  } catch {}
+  return true;
+}
+
+function setChecklistPublished(id, flag) {
+  const lists = getChecklists();
+  const idx = lists.findIndex(c => c.id === id);
+  if (idx === -1) return false;
+  lists[idx].published = !!flag;
+  saveChecklists(lists);
+  return true;
+}
+
+function publishChecklist(id) {
+  return setChecklistPublished(id, true);
+}
+
+// Metrics per-checklist API
+function getMetrics(checklistId = "") {
+  ensureDefaults();
+  if (!checklistId) return [];
+  ensureMetricCodes();
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}";
+    const map = JSON.parse(raw) || {};
+    const arr = map[checklistId] || [];
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+
+function saveMetrics(checklistId, list) {
+  ensureDefaults();
+  if (!checklistId) return;
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}";
+    const map = JSON.parse(raw) || {};
+    map[String(checklistId || "default")] = Array.isArray(list) ? list : [];
+    localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+  } catch {
+    const map = { [String(checklistId || "")]: Array.isArray(list) ? list : [] };
+    localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+  }
+}
+
+function addMetric(checklistId, name, points) {
+  if (!checklistId) return null;
+  const metrics = getMetrics(checklistId);
+  const id = generateId();
+  const code = generateMetricCode();
+  metrics.push({ id, code, name: String(name), points: Number(points) || 0 });
+  saveMetrics(checklistId, metrics);
+  return id;
+}
+
+function updateMetric(checklistId, id, name, points) {
+  if (!checklistId) return false;
+  const metrics = getMetrics(checklistId);
+  const idx = metrics.findIndex(m => m.id === id);
+  if (idx !== -1) {
+    const code = metrics[idx].code || generateMetricCode();
+    metrics[idx] = { id, code, name: String(name), points: Number(points) || 0 };
+    saveMetrics(checklistId, metrics);
+    return true;
+  }
+  return false;
+}
+
+function deleteMetric(checklistId, id) {
+  if (!checklistId) return false;
+  const metrics = getMetrics(checklistId);
+  const next = metrics.filter(m => m.id !== id);
+  saveMetrics(checklistId, next);
+  return true;
+}
+
+function generateId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+// Assessments storage and report helpers
+function getAssessments() {
+  ensureDefaults();
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.assessments) || "[]";
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+
+function saveAssessments(list) {
+  localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify(Array.isArray(list) ? list : []));
+}
+
+function submitAssessment(email, selectedIds, checklistId = "", details = {}) {
+  if (!checklistId) return null;
+  const metrics = getMetrics(checklistId);
+  const selected = metrics
+    .filter(m => selectedIds.includes(m.id))
+    .map(m => ({ id: m.id, code: m.code || "", name: m.name, points: Number(m.points) || 0 }));
+  const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+  const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+  const cls = classifyScore(score, total);
+  const assessments = getAssessments();
+  const now = new Date().toISOString();
+  const lists = getChecklists();
+  const checklist = lists.find(c => c.id === checklistId) || { id: checklistId, code: "", name: "Checklist" };
+  const payload = {
+    id: generateId(),
+    email: String(email),
+    checklistId: checklist.id,
+    checklistCode: checklist.code || "",
+    checklistName: checklist.name,
+    selectedMetrics: selected,
+    score,
+    scorePercent: cls.percent,
+    classification: cls.label,
+    suggestions: cls.suggestions,
+    status: "pending",
+    submittedAt: now,
+    verifiedAt: null,
+    adminNote: "",
+    orgName: String(details?.orgName || ""),
+    repName: String(details?.repName || ""),
+    repDesignation: String(details?.repDesignation || ""),
+    userNote: String(details?.userNote || ""),
+  };
+  // replace existing submission for this email+checklist if present
+  const existingIdx = assessments.findIndex(a => (a.email || "").toLowerCase() === String(email).toLowerCase() && a.checklistId === checklistId);
+  if (existingIdx !== -1) assessments[existingIdx] = payload; else assessments.push(payload);
+  saveAssessments(assessments);
+  return payload;
+}
+
+// Checklist code utilities
+function ensureChecklistCodes(lists) {
+  if (!Array.isArray(lists)) return;
+  const seen = new Set(lists.map(c => c.code).filter(Boolean));
+  let changed = false;
+  lists.forEach(c => {
+    if (!c.code) {
+      let code;
+      do { code = generateChecklistCode(); } while (seen.has(code));
+      c.code = code;
+      seen.add(code);
+      changed = true;
+    }
+  });
+  if (changed) saveChecklists(lists);
+}
+
+function generateChecklistCode() {
+  const prefix = "QHCC"; // 4 chars
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let suffix = "";
+  for (let i = 0; i < 6; i++) {
+    suffix += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return prefix + suffix; // total 10 characters
+}
+
+// Ensure all metrics have a unique code of the form QSAS****** (10 chars total)
+function ensureMetricCodes() {
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}";
+    const map = JSON.parse(raw) || {};
+    const seen = new Set();
+    let changed = false;
+    // collect existing codes
+    Object.values(map).forEach(list => {
+      (Array.isArray(list) ? list : []).forEach(m => { if (m.code) seen.add(m.code); });
+    });
+    // fill missing codes
+    Object.keys(map).forEach(k => {
+      const list = Array.isArray(map[k]) ? map[k] : [];
+      list.forEach(m => {
+        if (!m.code) {
+          let code;
+          do { code = generateMetricCode(); } while (seen.has(code));
+          m.code = code;
+          seen.add(code);
+          changed = true;
+        }
+      });
+      map[k] = list;
+    });
+    if (changed) localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+  } catch { /* ignore */ }
+}
+
+function generateMetricCode() {
+  const prefix = "QSAS"; // 4
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let suffix = "";
+  for (let i = 0; i < 6; i++) {
+    suffix += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return prefix + suffix; // 10 characters total
+}
+
+// Compute QuXAT scoring classification and suggestions based on percentage
+function classifyScore(score, total) {
+  const percent = total ? Math.round((score / total) * 100) : 0;
+  let label = "";
+  let suggestions = [];
+  // Healthcare Quality Improvement oriented bands
+  if (percent >= 90) {
+    label = "Exemplary Quality Improvement";
+    suggestions = [
+      "Sustain gains with quarterly Plan–Do–Study–Act cycles and executive reviews",
+      "Embed run charts and control charts in clinical dashboards",
+      "Advance to outcome measures such as readmissions, length of stay, and patient safety events",
+    ];
+  } else if (percent >= 75) {
+    label = "Strong Quality Improvement";
+    suggestions = [
+      "Standardize high-impact processes such as medication reconciliation and hand hygiene",
+      "Close gaps via targeted Plan–Do–Study–Act cycles and clinical audits",
+      "Strengthen incident reporting and root-cause analysis follow-through",
+    ];
+  } else if (percent >= 50) {
+    label = "Developing Quality Improvement";
+    suggestions = [
+      "Prioritize process measures in key pathways such as sepsis and surgical safety",
+      "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
+      "Launch staff training and competency checks for critical procedures",
+    ];
+  } else if (percent >= 25) {
+    label = "Early Quality Improvement";
+    suggestions = [
+      "Establish a Quality Improvement committee and routine huddles",
+      "Adopt baseline documentation including policies, pathways, and checklists",
+      "Start monthly audits on patient safety and infection control",
+    ];
+  } else {
+    label = "Needs Immediate Improvement";
+    suggestions = [
+      "Address patient safety risks urgently, including falls and medication errors",
+      "Implement basic controls: hand hygiene, personal protective equipment, time-outs, and checklists",
+      "Create a 90-day QI roadmap with leadership accountability",
+    ];
+  }
+  return { label, percent, suggestions };
+}
+
+function getAssessmentByEmail(email, checklistId = null) {
+  const assessments = getAssessments();
+  const emailMatch = (a) => (a.email || "").toLowerCase() === String(email).toLowerCase();
+  const list = assessments.filter(a => emailMatch(a) && (checklistId ? a.checklistId === checklistId : true));
+  // return most recent if multiple
+  return list.sort((a,b) => new Date(b.submittedAt||0) - new Date(a.submittedAt||0))[0] || null;
+}
+
+function getAssessmentsByEmail(email) {
+  const assessments = getAssessments();
+  return assessments.filter(a => (a.email || "").toLowerCase() === String(email).toLowerCase());
+}
+
+function updateAssessmentStatusById(id, status, adminNote = "") {
+  const assessments = getAssessments();
+  const idx = assessments.findIndex(a => a.id === id);
+  if (idx === -1) return false;
+  assessments[idx].status = status;
+  assessments[idx].adminNote = String(adminNote || "");
+  if (status === "approved") assessments[idx].verifiedAt = new Date().toISOString();
+  saveAssessments(assessments);
+  return true;
+}
+
+function generateReportText(assessment, verified) {
+  const lines = [];
+  const statusLabel = verified ? "VERIFIED AND APPROVED REPORT" : "UNVERIFIED SELF-ASSESSMENT REPORT";
+  lines.push("QuXAT Compliance Report");
+  lines.push("====================================");
+  lines.push(`Status: ${statusLabel}`);
+  lines.push(`Email: ${assessment.email}`);
+  lines.push(`QSAS Score: ${assessment.score}`);
+  lines.push(`Classification: ${assessment.classification || "-"} (${assessment.scorePercent ?? 0}%)`);
+  lines.push(`Submitted At: ${assessment.submittedAt || "-"}`);
+  lines.push(`Verified At: ${assessment.verifiedAt || "-"}`);
+  if (assessment.adminNote) lines.push(`Admin Note: ${assessment.adminNote}`);
+  if (Array.isArray(assessment.suggestions) && assessment.suggestions.length) {
+    lines.push("\nSuggested Improvements:");
+    assessment.suggestions.forEach(s => lines.push(`- ${s}`));
+  }
+  lines.push("\nSelected Metrics:");
+  assessment.selectedMetrics.forEach(m => lines.push(`- ${m.name} (+${m.points})`));
+  lines.push("\nNotes:");
+  if (!verified) {
+    lines.push("This report is generated by the user and is unverified.");
+    lines.push("It is provided for self-assessment only and not an approval.");
+  } else {
+    lines.push("This report has been verified and approved by Admin.");
+  }
+  return lines.join("\n");
+}

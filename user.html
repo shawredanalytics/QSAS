@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Self Assessment — QuXAT Self Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand-bar container">
+        <div class="brand-left">
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <div>
+            <div class="brand-title">User Self Assessment</div>
+            <div class="subtitle">Select metrics to compute your QuXAT Self Assessment Score</div>
+          </div>
+        </div>
+        <nav class="brand-nav">
+          <a href="index.html">Home</a>
+          <a href="admin.html">Admin</a>
+          <a href="user.html">Self Assessment</a>
+          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Identify Yourself</h2>
+        <form id="startForm" class="form-grid">
+          <label>
+            Email ID
+            <input type="email" id="userEmail" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Organization Name
+            <input type="text" id="orgName" placeholder="Your organization" />
+          </label>
+          <label>
+            Representative Name
+            <input type="text" id="repName" placeholder="Full name of representative" />
+          </label>
+          <label>
+            Representative Designation
+            <input type="text" id="repDesignation" placeholder="Designation/Title" />
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Start Assessment</button>
+          </div>
+          <p class="hint">Provide organization and representative details to appear on the certificate. Email routes the assessment to Admin and retrieves approved reports. Data stays in your browser for this demo.</p>
+        </form>
+      </section>
+      <section id="qiLegend" class="card info">
+        <h3>Quality Improvement Classification Legend</h3>
+        <ul class="list legend-list">
+          <li>
+            <div class="item-title">Exemplary Quality Improvement <span class="badge badge-exemplary">Exemplary</span></div>
+            <div class="item-sub">Consistently high performance with mature systems; focus on sustaining gains and outcome measures.</div>
+          </li>
+          <li>
+            <div class="item-title">Strong Quality Improvement <span class="badge badge-strong">Strong</span></div>
+            <div class="item-sub">Well-established practices; continue standardization and targeted improvements through audits and Plan–Do–Study–Act cycles.</div>
+          </li>
+          <li>
+            <div class="item-title">Developing Quality Improvement <span class="badge badge-developing">Developing</span></div>
+            <div class="item-sub">Growing capabilities; formalize procedures, owners, and indicators; expand training and competency checks.</div>
+          </li>
+          <li>
+            <div class="item-title">Early Quality Improvement <span class="badge badge-early">Early</span></div>
+            <div class="item-sub">Foundational stage; establish governance, documentation, and regular audits to build consistency.</div>
+          </li>
+          <li>
+            <div class="item-title">Needs Immediate Improvement <span class="badge badge-needs-improvement">Immediate</span></div>
+            <div class="item-sub">Critical gaps; address safety risks, implement basic controls, and define a 90-day roadmap with leadership accountability.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section id="prevAssessmentPanel" class="card info" hidden>
+        <h3>Previous Assessment Found</h3>
+        <p id="prevAssessmentSummary" class="hint"></p>
+        <div class="actions">
+          <button id="continuePrevBtn" class="btn btn-primary">Continue previous</button>
+          <button id="startNewBtn" class="btn">Start new assessment</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Select Quality Improvement Metrics</h2>
+        <p class="hint">Answer each metric with Yes or No. Each “Yes” awards the metric’s assigned points.</p>
+        <div id="checklistChooser" class="card info" hidden>
+          <h3>Choose a Checklist</h3>
+          <div id="checklistsForUser" class="actions"></div>
+          <p class="hint">Select a checklist to begin your self assessment.</p>
+        </div>
+        <div id="gateMsg" class="empty">Please enter your email and start the assessment.</div>
+        <div id="userEmpty" class="empty" hidden>No metrics defined by Admin yet.</div>
+        <ul id="userMetrics" class="list checklist" hidden></ul>
+        <div class="score-row">
+          <div>
+            <strong>QuXAT Self Assessment Score:</strong>
+            <span id="scoreValue">0</span>
+          </div>
+          <div>
+            <span id="selectedCount">0</span> selected
+          </div>
+          <div class="actions">
+            <button id="resetSelectionBtn" class="btn">Reset Selection</button>
+            <button id="copySummaryBtn" class="btn">Copy Summary</button>
+            <button id="submitVerificationBtn" class="btn btn-primary">Submit for Verification</button>
+            <button id="downloadUnverifiedBtn" class="btn">Download Unverified Report</button>
+            <button id="downloadVerifiedBtn" class="btn">Download Verified Report</button>
+            <button id="downloadCertificateBtn" class="btn">Download Certificate</button>
+            <button id="printCertificateBtn" class="btn">Print Certificate</button>
+          </div>
+        </div>
+        <div class="card info mt">
+          <h3>Notes (optional)</h3>
+          <p class="hint">Add any context or remarks to include on your report/certificate.</p>
+          <label>
+            Your Notes
+            <textarea id="userNote" rows="3" placeholder="Any additional context you'd like recorded"></textarea>
+          </label>
+        </div>
+        <section id="qualityCard" class="card certificate" hidden>
+          <div class="certificate-header">
+            <img id="certificateLogo" class="certificate-logo" alt="QuXAT Logo" />
+            <div>
+              <div class="certificate-title">QuXAT Self Assessment Certificate</div>
+              <div class="certificate-subtitle">Quality Score Card</div>
+            </div>
+          </div>
+          <div class="certificate-body">
+            <div class="certificate-rows">
+              <div class="certificate-row"><span class="label">Participant Email</span><span id="certEmail">—</span></div>
+              <div class="certificate-row"><span class="label">Checklist</span><span id="certChecklist">—</span></div>
+              <div class="certificate-row"><span class="label">Checklist Description</span><span id="certChecklistDesc">—</span></div>
+              <div class="certificate-row"><span class="label">Date</span><span id="certDate">—</span></div>
+              <div class="certificate-row"><span class="label">Selected Metrics</span><span id="certSelectedCount">0</span></div>
+              <div class="certificate-row"><span class="label">Status</span><span id="certStatus">Not submitted</span></div>
+            </div>
+            <div class="certificate-score">
+              <div class="score-value"><span id="certScore">0</span></div>
+              <div class="score-extra">
+                <div>Score Percent: <strong><span id="certPercent">0</span>%</strong></div>
+                <div>Classification: <span id="certClass" class="badge">—</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>© QuXAT — User • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
+    </footer>
+
+    <div id="cookieBanner" class="cookie-banner" hidden>
+      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
+      <div class="actions">
+        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
+      </div>
+    </div>
+
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="assets/js/user.js"></script>
+  </body>
+  </html>
