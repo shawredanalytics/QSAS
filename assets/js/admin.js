@@ -94,15 +94,17 @@
     }
     const doc = new jspdfNS.jsPDF({ unit: "mm", format: "a4" });
     // Logo
-    const logoSrc = document.getElementById("brandLogo")?.getAttribute("src") || "assets/QuXAT%20Logo%20Facebook.png";
+    const logoSrc = document.getElementById("brandLogo")?.getAttribute("src") ||
+      (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/QuXAT Logo Facebook.png"] || window.QSAS_ASSETS["assets/QuXAT%20Logo%20Facebook.png"])) ||
+      "assets/QuXAT%20Logo%20Facebook.png";
     let logoDataURL = null;
     try { logoDataURL = await loadImageDataURL(logoSrc); } catch {}
     // Verified round seal image
-    const sealSrc = "assets/QuXAT_Round_Seal.png";
+    const sealSrc = (window.QSAS_ASSETS && window.QSAS_ASSETS["assets/QuXAT_Round_Seal.png"]) || "assets/QuXAT_Round_Seal.png";
     let sealDataURL = null;
     try { sealDataURL = await loadImageDataURL(sealSrc); } catch {}
     // Authorized signatory signature image
-    const signSrc = "assets/Authorized%20Signatory.png";
+    const signSrc = (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/Authorized Signatory.png"] || window.QSAS_ASSETS["assets/Authorized%20Signatory.png"])) || "assets/Authorized%20Signatory.png";
     let signDataURL = null;
     try { signDataURL = await loadImageDataURL(signSrc); } catch {}
     // Decorative border

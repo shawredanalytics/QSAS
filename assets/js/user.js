@@ -301,7 +301,9 @@
     const cls = classifyScore(score, total);
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId);
-    const logoSrc = (document.getElementById("certificateLogo")?.getAttribute("src")) || "assets/QuXAT%20Logo%20Facebook.png";
+    const logoSrc = (document.getElementById("certificateLogo")?.getAttribute("src")) ||
+      (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/QuXAT Logo Facebook.png"] || window.QSAS_ASSETS["assets/QuXAT%20Logo%20Facebook.png"])) ||
+      "assets/QuXAT%20Logo%20Facebook.png";
     let logoDataURL = null;
     try { logoDataURL = await loadImageDataURL(logoSrc); } catch {}
     const doc = new jspdfNS.jsPDF({ unit: "mm", format: "a4" });
