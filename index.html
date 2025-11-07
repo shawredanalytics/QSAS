@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QuXAT Self Assessment Portal (QSAS)</title>
+    <title>QuXAT QSAS — Ver 1 (7 Nov 2025)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -11,43 +11,159 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="brand-bar container">
+      <div class="brand-bar container wide">
         <div class="brand-left">
-          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
           <div>
-            <div class="brand-title">QuXAT Self Assessment Portal</div>
-            <div class="subtitle">Calculate your QuXAT Self Assessment Score (QSAS)</div>
+            <div class="brand-title">QuXAT QSAS — Ver 1</div>
+            <div class="subtitle">Quality & Safety Self Assessment • 7 Nov 2025</div>
           </div>
         </div>
         <nav class="brand-nav">
-          <a href="index.html">Home</a>
-          <a href="admin.html">Admin</a>
-          <a href="user.html">Self Assessment</a>
-          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+          <a href="#" data-section="Home">Home</a>
+          <a href="admin.html" data-section="Admin">Admin</a>
+          <a href="user.html" data-section="User Assessment">Self Assessment</a>
         </nav>
       </div>
     </header>
+    <!-- Header added to place the QuXAT logo on Home -->
+    <script>
+      (function(){
+        // Delegated handler so dynamically inserted buttons also open in new tab
+        document.addEventListener('click', function(e){
+          const a = e.target.closest('a[data-section]');
+          if (!a) return;
+          e.preventDefault();
+          const s = a.dataset.section;
+          const topWin = window.top || window.parent || window;
+          const base = topWin.location.origin;
+          const params = new URLSearchParams();
+          params.set('section', s);
+          if (a.dataset.category) params.set('category', a.dataset.category);
+          if (a.dataset.checklist) params.set('checklist', a.dataset.checklist);
+          const streamlitUrl = base + '/?' + params.toString();
+          const port = String(topWin.location.port || '');
+          const isStreamlit = port === '8501' || port === '8502';
+          if (isStreamlit) {
+            try {
+              const w = topWin.open(streamlitUrl, '_blank');
+              if (w && typeof w.focus === 'function') w.focus();
+            } catch(err) {
+              try {
+                const w2 = window.open(streamlitUrl, '_blank');
+                if (w2 && typeof w2.focus === 'function') w2.focus();
+              } catch(e) {}
+            }
+          } else {
+            // Fallback to static pages when not embedded in Streamlit
+            let fallback = a.getAttribute('href');
+            if (!fallback || fallback === '#') {
+              fallback = (s && s.toLowerCase().includes('admin')) ? 'admin.html' : 'user.html';
+            }
+            try { topWin.location.href = fallback; } catch(e) { try { window.location.href = fallback; } catch(_) {} }
+          }
+        });
+        // Enforce new-tab behavior for any regular links without data-section
+        const allLinks = document.querySelectorAll('a[href]');
+        allLinks.forEach(a => {
+          // Skip javascript:void(0) and anchors used as buttons without navigation
+          if (!a.getAttribute('href')) return;
+          if (a.getAttribute('href').startsWith('#')) return;
+          a.setAttribute('target', '_blank');
+          a.setAttribute('rel', 'noopener');
+        });
+      })();
+    </script>
 
-    <main class="container">
-      <section class="card">
-        <h2>Choose a Portal</h2>
-        <div class="actions">
-          <a class="btn btn-primary" href="admin.html">Admin Portal</a>
-          <a class="btn" href="user.html">User Self Assessment</a>
+    <main class="container wide">
+      <section class="hero">
+        <div class="hero-inner">
+          <h1 class="hero-title">QuXAT Quality & Safety Self Assessment — Ver 1 (7 Nov 2025)</h1>
+          <p class="hero-subtitle">Answer Yes/No metrics to get your QSAS score. Optional Admin verification for certified certificate.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="user.html" data-section="User Assessment">🚀 Start Self Assessment</a>
+            <a class="btn" href="admin.html" data-section="Admin">🛠️ Admin Portal</a>
+          </div>
         </div>
       </section>
-
       <section class="card info">
         <h3>About QSAS</h3>
         <p>
-          Admins define quality compliance metrics and assign points to each metric.
-          Users then select the metrics they comply with, and the sum of points
-          becomes the QuXAT Self Assessment Score (QSAS).
+          QSAS (QuXAT Self‑Assessment System) helps organizations baseline their quality and safety practices against a standard checklist, compute a score, and receive targeted guidance to close gaps. It’s designed for schools, colleges, hospitals, industry, offices, and public organizations.
         </p>
         <p>
-          This demo stores data in your browser via localStorage. For production,
-          connect it to a backend database and authentication system.
+          Admins define metrics and publish checklists. Users complete a simple Yes/No assessment to get an instant score and a maturity classification. When ready, the assessment can be submitted for Admin verification to obtain a certified certificate.
         </p>
+      </section>
+      <section class="card">
+        <h3>Available Self Assessment Checklists</h3>
+        <p class="hint">Browse by category and start your self assessment directly from the table.</p>
+        <div class="table-wrap">
+          <table id="checklistsTable" class="qsas-table" style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Category</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Checklist</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Description</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Metrics</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="checklistsTbody"></tbody>
+          </table>
+        </div>
+        <p id="publishedEmpty" class="empty" hidden>No published checklists yet. Create and publish them in the Admin portal.</p>
+      </section>
+
+      <section class="card info">
+        <h3>How It Works</h3>
+        <div class="steps-grid">
+          <div class="step-card step-1">
+            <div class="step-title"><span class="step-chip">1</span> Select and Assess</div>
+            <div class="step-sub">Choose a relevant checklist and answer Yes/No to compute your QSAS score.</div>
+          </div>
+          <div class="step-card step-2">
+            <div class="step-title"><span class="step-chip">2</span> Improve and Document</div>
+            <div class="step-sub">Review suggested improvements, address gaps, and keep evidence ready for verification.</div>
+          </div>
+          <div class="step-card step-3">
+            <div class="step-title"><span class="step-chip">3</span> Verify and Certify</div>
+            <div class="step-sub">Submit for Admin verification to receive a certified report and certificate.</div>
+          </div>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="user.html" data-section="User Assessment">🚀 Start Self Assessment</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Benefits of Using QSAS</h3>
+        <div class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+          <div class="card info">
+            <div class="item-title">📏 Standards Alignment</div>
+            <div class="item-sub">Map practices to recognized quality and safety standards and internal SOPs.</div>
+          </div>
+          <div class="card info">
+            <div class="item-title">🛡️ Risk Visibility</div>
+            <div class="item-sub">Surface safety risks early and prioritize gap closure with clear metrics.</div>
+          </div>
+          <div class="card info">
+            <div class="item-title">📁 Audit‑Ready Evidence</div>
+            <div class="item-sub">Generate documented scoring and improvement actions for audits and inspections.</div>
+          </div>
+          <div class="card info">
+            <div class="item-title">🔄 Continuous Improvement</div>
+            <div class="item-sub">Track progress with repeatable QSAS scores and targeted suggestions.</div>
+          </div>
+          <div class="card info">
+            <div class="item-title">✅ Self‑Certification Path</div>
+            <div class="item-sub">Obtain a certified certificate upon Admin verification when you are ready.</div>
+          </div>
+          <div class="card info">
+            <div class="item-title">⏱️ Time‑Efficient</div>
+            <div class="item-sub">Complete checklists quickly with Yes/No responses and instant scoring.</div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -55,13 +171,103 @@
       <small>© QuXAT — QSAS Demo • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
     </footer>
 
-    <div id="cookieBanner" class="cookie-banner" hidden>
-      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
-      <div class="actions">
-        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
-      </div>
-    </div>
-
+    <script src="assets/js/storage.js"></script>
     <script src="assets/js/branding.js"></script>
+    <script>
+      (function(){
+        const emptyEl = document.getElementById('publishedEmpty');
+        const tableBody = document.getElementById('checklistsTbody');
+        let lists = [];
+        try { lists = (getChecklists() || []).filter(c => c.published !== false); } catch(e) { lists = []; }
+
+        // Default supported categories (can generate checklists for these)
+        const DEFAULT_CATEGORIES = [
+          'Schools',
+          'Colleges & Universities',
+          'Hospitals & Healthcare',
+          'Industrial & Manufacturing',
+          'Offices & Corporate',
+          'Public & Community Organizations',
+        ];
+        // Helper: derive category when missing (map Healthcare/Hospital to Hospitals & Healthcare)
+        function normalizeCategoryLabel(raw) {
+          const s = String(raw || '').toLowerCase();
+          if (!s) return '';
+          if (s.includes('hospital') || s.includes('healthcare')) return 'Hospitals & Healthcare';
+          if (s.includes('school')) return 'Schools';
+          if (s.includes('college') || s.includes('univer')) return 'Colleges & Universities';
+          if (s.includes('industrial') || s.includes('manufactur')) return 'Industrial & Manufacturing';
+          if (s.includes('office') || s.includes('corporate')) return 'Offices & Corporate';
+          if (s.includes('public') || s.includes('community') || s.includes('organiza')) return 'Public & Community Organizations';
+          return String(raw).trim();
+        }
+
+        function deriveCategory(c) {
+          const existing = String(c?.category || '').trim();
+          const derived = existing || String(c?.name || '');
+          return normalizeCategoryLabel(derived);
+        }
+
+        // Build unique categories from defaults plus any published checklists (derived if missing)
+        const categories = Array.from(new Set([
+          ...DEFAULT_CATEGORIES,
+          ...lists.map(deriveCategory).filter(Boolean),
+        ]));
+
+        function renderTable() {
+          tableBody.innerHTML = '';
+          if (!lists.length) {
+            emptyEl.hidden = false;
+            return;
+          }
+          emptyEl.hidden = true;
+          // Group checklists by category
+          const byCat = new Map();
+          categories.forEach(cat => byCat.set(cat, []));
+          lists.forEach(c => {
+            const cat = deriveCategory(c) || 'Uncategorized';
+            if (!byCat.has(cat)) byCat.set(cat, []);
+            byCat.get(cat).push(c);
+          });
+          // Sort categories and items
+          const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+          sortedCats.forEach(cat => {
+            const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
+            if (items.length === 0) {
+              const tr = document.createElement('tr');
+              const tdCat = document.createElement('td'); tdCat.textContent = cat; tdCat.style.padding = '8px';
+              const tdEmpty = document.createElement('td'); tdEmpty.colSpan = 4; tdEmpty.textContent = 'No checklists published for this category yet.'; tdEmpty.className = 'hint'; tdEmpty.style.padding = '8px';
+              tr.append(tdCat, tdEmpty);
+              tableBody.appendChild(tr);
+              return;
+            }
+            items.forEach((c, idx) => {
+              const tr = document.createElement('tr');
+              tr.style.borderTop = '1px solid #eef1f6';
+              const tdCat = document.createElement('td');
+              tdCat.textContent = idx === 0 ? cat : '';
+              tdCat.style.padding = '8px';
+              tdCat.style.fontWeight = idx === 0 ? '600' : 'normal';
+              const tdName = document.createElement('td'); tdName.style.padding = '8px'; tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`;
+              const tdDesc = document.createElement('td'); tdDesc.style.padding = '8px'; tdDesc.textContent = c.description || '';
+              const tdCount = document.createElement('td'); tdCount.style.padding = '8px';
+              try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e) { tdCount.textContent = '—'; }
+              const tdAct = document.createElement('td'); tdAct.style.padding = '8px';
+              const start = document.createElement('a');
+              start.href = '#'; start.className = 'btn btn-primary'; start.textContent = 'Start Self Assessment';
+              start.dataset.section = 'User Assessment';
+              start.dataset.checklist = c.id;
+              const catVal = deriveCategory(c);
+              if (catVal) start.dataset.category = catVal;
+              tdAct.appendChild(start);
+              tr.append(tdCat, tdName, tdDesc, tdCount, tdAct);
+              tableBody.appendChild(tr);
+            });
+          });
+        }
+
+        renderTable();
+      })();
+    </script>
   </body>
   </html>

@@ -10,6 +10,9 @@
   const startForm = document.getElementById("startForm");
   const userEmailInput = document.getElementById("userEmail");
   const orgNameInput = document.getElementById("orgName");
+  const orgTypeInput = document.getElementById("orgType");
+  const orgCategoryInput = document.getElementById("orgCategory");
+  const industryTableMount = document.getElementById("industryTable");
   const repNameInput = document.getElementById("repName");
   const repDesignationInput = document.getElementById("repDesignation");
   const userNoteInput = document.getElementById("userNote");
@@ -23,11 +26,6 @@
   const downloadUnverifiedBtn = document.getElementById("downloadUnverifiedBtn");
   const downloadVerifiedBtn = document.getElementById("downloadVerifiedBtn");
   const scoreRowEl = document.querySelector(".score-row");
-  const classificationEl = document.createElement("div");
-  classificationEl.id = "scoreClassification";
-  classificationEl.className = "hint";
-  classificationEl.hidden = true;
-  scoreRowEl?.appendChild(classificationEl);
   const suggestionsEl = document.createElement("div");
   suggestionsEl.id = "suggestionsBox";
   suggestionsEl.className = "card info";
@@ -45,6 +43,8 @@
   const certChecklistDescEl = document.getElementById("certChecklistDesc");
   const certSelectedCountEl = document.getElementById("certSelectedCount");
   const certStatusEl = document.getElementById("certStatus");
+  const certOrgEl = document.getElementById("certOrg");
+  const certOrgTypeEl = document.getElementById("certOrgType");
   const downloadCertBtn = document.getElementById("downloadCertificateBtn");
   const printCertBtn = document.getElementById("printCertificateBtn");
 
@@ -56,9 +56,21 @@
   let awaitingChoice = false;
   let currentChecklistId = "";
   let currentOrgName = "";
+  let currentOrgType = "";
+  let currentCategory = localStorage.getItem("qsas_last_user_category") || "";
   let currentRepName = "";
   let currentRepDesignation = "";
   let currentUserNote = "";
+
+  function updateActionButtonsVisibility() {
+    try {
+      const prev = currentEmail ? getAssessmentByEmail(currentEmail, currentChecklistId || null) : null;
+      const approved = !!(prev && prev.status === "approved");
+      if (downloadVerifiedBtn) downloadVerifiedBtn.hidden = !approved;
+      if (downloadCertBtn) downloadCertBtn.hidden = !approved;
+      if (printCertBtn) printCertBtn.hidden = !approved;
+    } catch (e) {}
+  }
 
   function clsToBadge(label) {
     const l = String(label || "").toLowerCase();
@@ -69,6 +81,128 @@
     if (l.includes("needs") || l.includes("immediate")) return "badge-needs-improvement";
     return "";
   }
+
+  // Category and cascading Organization Type helpers
+  const DEFAULT_CATEGORIES = [
+    "Hospitals & Healthcare",
+    "Schools",
+    "Colleges & Universities",
+    "Industrial & Manufacturing",
+    "Offices & Corporate",
+    "Public & Community Organizations",
+  ];
+
+  const ORG_TYPES_BY_CATEGORY = {
+    "Hospitals & Healthcare": [
+      "Hospitals & Healthcare",
+      "Clinics & Primary Care",
+      "Nursing Homes & Long-Term Care",
+      "Diagnostic Labs & Imaging Centers",
+      "Pharmacies",
+    ],
+    "Schools": [
+      "Schools",
+      "Training Institutes",
+    ],
+    "Colleges & Universities": [
+      "Colleges & Universities",
+      "Training Institutes",
+    ],
+    "Industrial & Manufacturing": [
+      "Industrial & Manufacturing",
+      "Food & Hospitality",
+      "Retail & E-commerce",
+      "Logistics & Warehousing",
+    ],
+    "Offices & Corporate": [
+      "Offices & Corporate",
+      "IT & Software",
+    ],
+    "Public & Community Organizations": [
+      "Public & Community Organizations",
+      "Government Departments",
+      "NGOs & Nonprofits",
+    ],
+  };
+
+  function normalizeCategoryLabel(label) {
+    const s = String(label || "").trim();
+    const map = {
+      "hospital/healthcare": "Hospitals & Healthcare",
+      "hospitals & healthcare": "Hospitals & Healthcare",
+      "schools": "Schools",
+      "colleges & universities": "Colleges & Universities",
+      "industrial & manufacturing": "Industrial & Manufacturing",
+      "offices & corporate": "Offices & Corporate",
+      "public & community organizations": "Public & Community Organizations",
+    };
+    const key = s.toLowerCase();
+    return map[key] || s || "";
+  }
+
+  function deriveCategory(raw) {
+    return normalizeCategoryLabel(raw);
+  }
+
+  function populateOrgTypesForCategory(cat) {
+    if (!orgTypeInput) return;
+    const opts = (ORG_TYPES_BY_CATEGORY[cat] || []);
+    const all = [...opts, "Other"];
+    orgTypeInput.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = ""; placeholder.textContent = "Select organization type";
+    orgTypeInput.appendChild(placeholder);
+    all.forEach(t => { const o = document.createElement("option"); o.textContent = t; o.value = t; orgTypeInput.appendChild(o); });
+    // Clear prior selection if it no longer belongs to the chosen category
+    if (!opts.includes(orgTypeInput.value)) orgTypeInput.value = "";
+  }
+
+  // Initialize category selection on load; if input not present, don't filter by category
+  if (!orgCategoryInput) {
+    currentCategory = "";
+  } else {
+    try { orgCategoryInput.value = currentCategory; } catch {}
+    populateOrgTypesForCategory(currentCategory);
+    orgCategoryInput.addEventListener("change", () => {
+      currentCategory = orgCategoryInput.value || "";
+      try { localStorage.setItem("qsas_last_user_category", currentCategory); } catch {}
+      populateOrgTypesForCategory(currentCategory);
+      // Refresh checklist chooser if visible
+      if (currentEmail && !awaitingChoice && !currentChecklistId) renderChecklistButtons();
+    });
+  }
+
+  // Render Industry Categories → Eligible Organizations table
+  function renderIndustryInfoTable() {
+    if (!industryTableMount) return;
+    const lists = getChecklists().filter(c => c.published !== false);
+    const catSet = new Set(lists.map(c => deriveCategory(c.category)).filter(Boolean));
+    const categories = catSet.size ? Array.from(catSet).sort() : DEFAULT_CATEGORIES;
+
+    const table = document.createElement("table");
+    table.className = "table";
+    const thead = document.createElement("thead");
+    const trh = document.createElement("tr");
+    const thCat = document.createElement("th"); thCat.textContent = "Category";
+    const thOrg = document.createElement("th"); thOrg.textContent = "Eligible Organizations";
+    trh.append(thCat, thOrg); thead.appendChild(trh);
+    const tbody = document.createElement("tbody");
+    categories.forEach(cat => {
+      const tr = document.createElement("tr");
+      const tdCat = document.createElement("td"); tdCat.textContent = cat;
+      const tdOrg = document.createElement("td");
+      const orgs = ORG_TYPES_BY_CATEGORY[cat] || [];
+      tdOrg.textContent = orgs.length ? orgs.join(", ") : "—";
+      tr.append(tdCat, tdOrg);
+      tbody.appendChild(tr);
+    });
+    table.append(thead, tbody);
+    industryTableMount.innerHTML = "";
+    industryTableMount.appendChild(table);
+  }
+
+  // Build table on load
+  try { renderIndustryInfoTable(); } catch {}
 
   function render() {
     const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
@@ -89,18 +223,22 @@
       const yes = document.createElement("input");
       yes.type = "radio";
       yes.name = `answer-${m.id}`;
+      yes.id = `yes-${m.id}`;
       yes.checked = selections.has(m.id);
       yes.onchange = () => { if (yes.checked) { selections.add(m.id); updateScore(); } };
       const yesLbl = document.createElement("label");
       yesLbl.textContent = "Yes";
+      yesLbl.htmlFor = yes.id;
       yesLbl.style.marginRight = "12px";
       const no = document.createElement("input");
       no.type = "radio";
       no.name = `answer-${m.id}`;
+      no.id = `no-${m.id}`;
       no.checked = !selections.has(m.id);
       no.onchange = () => { if (no.checked) { selections.delete(m.id); updateScore(); } };
       const noLbl = document.createElement("label");
       noLbl.textContent = "No";
+      noLbl.htmlFor = no.id;
       controls.append(yes, yesLbl, no, noLbl);
 
       const pts = document.createElement("div");
@@ -111,24 +249,22 @@
       listEl.appendChild(li);
     });
     updateScore();
+    updateActionButtonsVisibility();
   }
 
   function updateScore() {
     const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
     const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    scoreEl.textContent = String(score);
-    countEl.textContent = String(selected.length);
+    if (scoreEl) scoreEl.textContent = String(score);
+    if (countEl) countEl.textContent = String(selected.length);
     // Classification & suggestions
     const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const cls = classifyScore(score, total);
+    const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
     const show = !!currentEmail && !!currentChecklistId && metrics.length > 0;
-    classificationEl.hidden = !show;
     suggestionsEl.hidden = !show;
     if (certEl) certEl.hidden = !show;
     if (show) {
-      const badge = clsToBadge(cls.label);
-      classificationEl.innerHTML = `Classification: <span class="badge ${badge}">${cls.label}</span> (${cls.percent}%)`;
       const list = (cls.suggestions || []).map(s => `<li>${s}</li>`).join("");
       suggestionsEl.innerHTML = `<h3>Suggested Improvements</h3><ul class="list">${list}</ul>`;
       // Certificate population
@@ -148,6 +284,9 @@
         certPercentEl && (certPercentEl.textContent = String(cls.percent));
       }
       certEmailEl && (certEmailEl.textContent = currentEmail);
+      const missing = "Details Not Provided by Self - Assessment User";
+      certOrgEl && (certOrgEl.textContent = currentOrgName || missing);
+      certOrgTypeEl && (certOrgTypeEl.textContent = currentOrgType || missing);
       const lists = getChecklists();
       const cl = lists.find(c => c.id === currentChecklistId);
       certChecklistEl && (certChecklistEl.textContent = cl ? (cl.code ? `[${cl.code}] ` : "") + cl.name : "—");
@@ -156,6 +295,7 @@
       certSelectedCountEl && (certSelectedCountEl.textContent = String(selected.length));
       const prev = getAssessmentByEmail(currentEmail, currentChecklistId);
       certStatusEl && (certStatusEl.textContent = prev ? String(prev.status || "pending") : "Not submitted");
+      updateActionButtonsVisibility();
       if (certClassEl) {
         certClassEl.textContent = cls.label || "—";
         const b = clsToBadge(cls.label);
@@ -171,12 +311,12 @@
     render();
   });
 
-  copyBtn.addEventListener("click", async () => {
+  copyBtn?.addEventListener("click", async () => {
     const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
     const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
     const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const cls = classifyScore(score, total);
+    const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
     const lines = [
       `QuXAT Self Assessment Score: ${score}`,
       `Classification: ${cls.label} (${cls.percent}%)`,
@@ -197,6 +337,7 @@
     if (!email || !email.includes("@")) return alert("Please enter a valid email ID.");
     currentEmail = email;
     currentOrgName = (orgNameInput?.value || "").trim();
+    currentOrgType = (orgTypeInput?.value || "").trim();
     currentRepName = (repNameInput?.value || "").trim();
     currentRepDesignation = (repDesignationInput?.value || "").trim();
     currentUserNote = (userNoteInput?.value || "").trim();
@@ -216,16 +357,32 @@
       prevPanel.hidden = true;
       render();
     }
+    updateActionButtonsVisibility();
+    // Smooth scroll to next step
+    const jumpTo = (!awaitingChoice && !currentChecklistId) ? document.getElementById("checklistChooser") : document.getElementById("prevAssessmentPanel");
+    try { jumpTo && jumpTo.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
   });
 
   function renderChecklistButtons() {
-    const lists = getChecklists().filter(c => c.published !== false);
+    let lists = getChecklists().filter(c => c.published !== false);
+    if (currentCategory) {
+      lists = lists.filter(c => {
+        const cat = deriveCategory(c.category);
+        return String(cat || "").trim() === currentCategory;
+      });
+    }
     checklistsForUser.innerHTML = "";
     lists.forEach(c => {
       const btn = document.createElement("button");
       btn.className = "btn";
       btn.textContent = `${c.code ? `[${c.code}] ` : ""}${c.name}`;
-      btn.onclick = () => { currentChecklistId = c.id; render(); };
+      btn.onclick = () => {
+        currentChecklistId = c.id;
+        render();
+        // Smooth scroll to metrics after choosing a checklist
+        const target = document.getElementById("userMetrics");
+        try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
+      };
       checklistsForUser.appendChild(btn);
     });
   }
@@ -242,6 +399,7 @@
     awaitingChoice = false;
     prevPanel.hidden = true;
     render();
+    updateActionButtonsVisibility();
   });
 
   startNewBtn?.addEventListener("click", () => {
@@ -250,6 +408,7 @@
     prevPanel.hidden = true;
     currentChecklistId = "";
     render();
+    updateActionButtonsVisibility();
   });
 
   // Print certificate
@@ -298,7 +457,7 @@
     const selected = metrics.filter(m => selections.has(m.id));
     const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
     const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const cls = classifyScore(score, total);
+    const cls = classifyScore(score, total, { metrics, selectedIds: selected.map(m => m.id) });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId);
     const logoSrc = (document.getElementById("certificateLogo")?.getAttribute("src")) ||
@@ -320,10 +479,12 @@
     let y = 42; const left = 15;
     const row = (label, value) => { doc.setTextColor(107,119,140); doc.text(label, left, y); doc.setTextColor(0,0,0); doc.text(String(value||"—"), left+60, y); y += 8; };
     row("Participant Email", currentEmail);
-    row("Organization", currentOrgName || "—");
-    row("Representative Name", currentRepName || "—");
-    row("Designation", currentRepDesignation || "—");
-    row("User Note", currentUserNote || "—");
+    const missing = "Details Not Provided by Self - Assessment User";
+    row("Organization", currentOrgName || missing);
+    row("Organization Type", currentOrgType || missing);
+    row("Representative Name", currentRepName || missing);
+    row("Designation", currentRepDesignation || missing);
+    row("User Note", currentUserNote || missing);
     row("Checklist", cl ? ((cl.code ? `[${cl.code}] ` : "") + cl.name) : "—");
     row("Checklist Description", cl ? (cl.description || "—") : "—");
     row("Date", new Date().toLocaleString());
@@ -359,11 +520,16 @@
     if (!currentChecklistId) return alert("Please choose a checklist to continue.");
     const selectedIds = Array.from(selections);
     if (selectedIds.length === 0) return alert("Please select at least one metric before submitting.");
-    if (!currentOrgName || !currentRepName || !currentRepDesignation) {
-      return alert("Please fill Organization, Representative Name, and Designation before submitting.");
-    }
-    const payload = submitAssessment(currentEmail, selectedIds, currentChecklistId, { orgName: currentOrgName, repName: currentRepName, repDesignation: currentRepDesignation, userNote: currentUserNote });
+    const missing = "Details Not Provided by Self - Assessment User";
+    const payload = submitAssessment(currentEmail, selectedIds, currentChecklistId, {
+      orgName: currentOrgName || missing,
+      orgType: currentOrgType || missing,
+      repName: currentRepName || missing,
+      repDesignation: currentRepDesignation || missing,
+      userNote: currentUserNote || missing,
+    });
     alert("Assessment submitted to Admin for verification.");
+    updateActionButtonsVisibility();
   });
 
   function download(filename, text, mime = "text/plain") {
@@ -389,6 +555,7 @@
     lines.push({ t: statusLabel, style: verified ? "ok" : "warn" });
     lines.push({ t: `Email: ${assessment.email}` });
     if (assessment.orgName) lines.push({ t: `Organization: ${assessment.orgName}` });
+    if (assessment.orgType) lines.push({ t: `Organization Type: ${assessment.orgType}` });
     if (assessment.repName) lines.push({ t: `Representative Name: ${assessment.repName}` });
     if (assessment.repDesignation) lines.push({ t: `Designation: ${assessment.repDesignation}` });
     if (assessment.userNote) lines.push({ t: `User Note: ${assessment.userNote}` });
@@ -473,9 +640,25 @@
     doc.save(filename);
   }
 
-  function promptForEmail(message = "Enter the email ID used during self assessment:") {
-    const v = prompt(message);
-    return (v || "").trim();
+  function isValidEmail(email) {
+    const v = (email || "").trim();
+    if (!v) return false;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    return re.test(v);
+  }
+
+  function promptForEmail(message = "Enter a VALID email ID used during self assessment to receive your verified certification copy. For assistance, contact quxat.team@gmail.com:") {
+    let attempts = 0;
+    while (attempts < 3) {
+      const v = prompt(message);
+      if (v === null) return ""; // user cancelled
+      const trimmed = (v || "").trim();
+      if (!trimmed) return "";
+      if (isValidEmail(trimmed)) return trimmed;
+      alert("Please enter a valid email address, e.g., name@domain.tld");
+      attempts++;
+    }
+    return "";
   }
 
   downloadUnverifiedBtn.addEventListener("click", () => {
@@ -493,15 +676,16 @@
     const selected = metrics.filter(m => selectedIds.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: Number(m.points) || 0 }));
     const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
     const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const cls = classifyScore(score, total);
+    const cls = classifyScore(score, total, { metrics, selectedIds });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId) || { id: currentChecklistId, name: "General" };
-    const tempAssessment = { email: currentEmail, checklistId: cl.id, checklistName: cl.name, selectedMetrics: selected, score, scorePercent: cls.percent, classification: cls.label, suggestions: cls.suggestions, submittedAt: new Date().toISOString(), verifiedAt: null, adminNote: "", orgName: currentOrgName || "", repName: currentRepName || "", repDesignation: currentRepDesignation || "", userNote: currentUserNote || "" };
+    const missing = "Details Not Provided by Self - Assessment User";
+    const tempAssessment = { email: currentEmail, checklistId: cl.id, checklistName: cl.name, selectedMetrics: selected, score, scorePercent: cls.percent, classification: cls.label, suggestions: cls.suggestions, submittedAt: new Date().toISOString(), verifiedAt: null, adminNote: "", orgName: currentOrgName || missing, orgType: currentOrgType || missing, repName: currentRepName || missing, repDesignation: currentRepDesignation || missing, userNote: currentUserNote || missing };
     generatePdfReport(tempAssessment, false, `QuXAT-Self-Assessment-${currentEmail}-UNVERIFIED.pdf`);
   });
 
   downloadVerifiedBtn.addEventListener("click", () => {
-    const email = promptForEmail("Enter the email ID used during self assessment to download the verified report:");
+    const email = promptForEmail("Enter a VALID email ID used during self assessment to download the verified report. For assistance getting your verified certificate, contact quxat.team@gmail.com:");
     if (!email) return;
     const a = getAssessmentByEmail(email, currentChecklistId || null);
     if (!a) return alert("No submitted assessment found for this email.");

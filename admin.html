@@ -11,24 +11,47 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="brand-bar container">
+      <div class="brand-bar container wide">
         <div class="brand-left">
-          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
           <div>
             <div class="brand-title">Admin Portal</div>
             <div class="subtitle">Manage metrics and verify assessments</div>
           </div>
         </div>
         <nav class="brand-nav">
-          <a href="index.html">Home</a>
-          <a href="admin.html">Admin</a>
-          <a href="user.html">Self Assessment</a>
-          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+          <a href="#" data-section="Home">Home</a>
+        <a href="#" data-section="Admin">Admin</a>
+        <a href="#" data-section="User Assessment">Self Assessment</a>
+        
         </nav>
       </div>
     </header>
+    <script>
+      (function(){
+        const links = document.querySelectorAll('a[data-section]');
+        links.forEach(a => {
+          a.addEventListener('click', function(e){
+            e.preventDefault();
+            const s = a.dataset.section;
+            const topWin = window.top || window.parent || window;
+            const base = topWin.location.origin;
+            const url = base + '/?section=' + encodeURIComponent(s);
+            try {
+              const w = topWin.open(url, '_blank');
+              if (w && typeof w.focus === 'function') w.focus();
+            } catch(err) {
+              try {
+                const w2 = window.open(url, '_blank');
+                if (w2 && typeof w2.focus === 'function') w2.focus();
+              } catch(e) {}
+            }
+          });
+        });
+      })();
+    </script>
 
-    <main class="container">
+    <main class="container wide">
       <section id="loginSection" class="card">
         <h2>Admin Login</h2>
         <form id="loginForm" class="form-grid">
@@ -72,6 +95,18 @@
               <label>
                 Description
                 <input type="text" id="checklistDesc" placeholder="Optional" />
+              </label>
+              <label>
+                Category
+                <select id="checklistCategory">
+                  <option value="">Select category</option>
+                  <option value="Schools">Schools</option>
+                  <option value="Colleges & Universities">Colleges & Universities</option>
+                  <option value="Hospitals & Healthcare">Hospitals & Healthcare</option>
+                  <option value="Industrial & Manufacturing">Industrial & Manufacturing</option>
+                  <option value="Offices & Corporate">Offices & Corporate</option>
+                  <option value="Public & Community Organizations">Public & Community Organizations</option>
+                </select>
               </label>
               <div class="actions">
                 <button type="button" id="createChecklistBtn" class="btn btn-primary">Create Checklist</button>
@@ -119,6 +154,9 @@
 
           <div>
             <h3>Metrics List</h3>
+            <div class="actions mt">
+              <input type="text" id="metricsSearch" placeholder="Search metrics by name or code" />
+            </div>
             <div id="metricsEmpty" class="empty" hidden>No metrics yet.</div>
             <ul id="metricsList" class="list"></ul>
             <div class="actions mt">
@@ -136,6 +174,7 @@
 
         <div>
           <h3>User Submissions Verification</h3>
+          <p class="hint">Note: Optional fields may display “Details Not Provided by Self - Assessment User” if the participant chose to skip them.</p>
           <div id="subsEmpty" class="empty" hidden>No submissions yet.</div>
           <ul id="subsList" class="list"></ul>
         </div>
@@ -145,13 +184,6 @@
     <footer class="site-footer">
       <small>© QuXAT — Admin • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
     </footer>
-
-    <div id="cookieBanner" class="cookie-banner" hidden>
-      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
-      <div class="actions">
-        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
-      </div>
-    </div>
 
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/branding.js"></script>

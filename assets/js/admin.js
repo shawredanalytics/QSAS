@@ -15,6 +15,7 @@
   const checklistForm = document.getElementById("checklistForm");
   const checklistNameInput = document.getElementById("checklistName");
   const checklistDescInput = document.getElementById("checklistDesc");
+  const checklistCategoryInput = document.getElementById("checklistCategory");
   const deleteChecklistBtn = document.getElementById("deleteChecklistBtn");
   const createChecklistBtn = document.getElementById("createChecklistBtn");
   const saveChecklistBtn = document.getElementById("saveChecklistBtn");
@@ -120,6 +121,7 @@
     const row = (label, value) => { doc.setTextColor(107,119,140); doc.text(label, left, y); doc.setTextColor(0,0,0); doc.text(String(value||"-"), left+60, y); y += 8; };
     row("Participant Email", s.email);
     row("Organization", s.orgName || "-");
+    row("Organization Type", s.orgType || "-");
     row("Representative Name", s.repName || "-");
     row("Designation", s.repDesignation || "-");
     if (s.userNote) { row("User Note", s.userNote); }
@@ -193,10 +195,34 @@
       }
       if (currentChecklistId) checklistSelect.value = currentChecklistId;
     }
+    fillChecklistFormFromSelected();
+  }
+
+  function fillChecklistFormFromSelected() {
+    const lists = getChecklists();
+    const sel = lists.find(c => c.id === (checklistSelect?.value || currentChecklistId));
+    if (!sel) {
+      if (checklistNameInput) checklistNameInput.value = "";
+      if (checklistDescInput) checklistDescInput.value = "";
+      if (checklistCategoryInput) checklistCategoryInput.value = "";
+      return;
+    }
+    if (checklistNameInput) checklistNameInput.value = sel.name || "";
+    if (checklistDescInput) checklistDescInput.value = sel.description || "";
+    if (checklistCategoryInput) {
+      const cat = typeof sel.category === "string" ? sel.category : "";
+      const optionValues = Array.from(checklistCategoryInput.options).map(o => o.value);
+      checklistCategoryInput.value = optionValues.includes(cat) ? cat : "";
+    }
   }
 
   function renderMetrics() {
-    const metrics = getMetrics(currentChecklistId);
+    const q = (metricsSearchInput?.value || "").trim().toLowerCase();
+    const metrics = getMetrics(currentChecklistId).filter(m => {
+      const name = String(m.name || "").toLowerCase();
+      const code = String(m.code || "").toLowerCase();
+      return !q || name.includes(q) || code.includes(q);
+    });
     metricsList.innerHTML = "";
     metricsEmpty.hidden = metrics.length !== 0;
     metrics.forEach((m, idx) => {
@@ -356,6 +382,7 @@
         const sug = Array.isArray(s.suggestions) && s.suggestions.length ? `\nSuggested Improvements:\n${s.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
         const extra = [
           s.orgName ? `Organization: ${s.orgName}` : null,
+          s.orgType ? `Organization Type: ${s.orgType}` : null,
           s.repName ? `Representative Name: ${s.repName}` : null,
           s.repDesignation ? `Designation: ${s.repDesignation}` : null,
           s.userNote ? `User Note: ${s.userNote}` : null,
@@ -397,6 +424,7 @@
   checklistSelect?.addEventListener("change", () => {
     currentChecklistId = checklistSelect.value;
     renderMetrics();
+    fillChecklistFormFromSelected();
   });
 
   // Create new checklist as draft
@@ -404,7 +432,8 @@
     const name = checklistNameInput.value.trim();
     const desc = checklistDescInput.value.trim();
     if (!name) return alert("Enter a checklist name.");
-    const id = addChecklist(name, desc);
+    const category = checklistCategoryInput ? checklistCategoryInput.value : "";
+    const id = addChecklist(name, desc, category);
     currentChecklistId = id;
     renderChecklists();
     renderMetrics();
@@ -417,7 +446,8 @@
     if (!currentChecklistId) return;
     const name = checklistNameInput.value.trim();
     const desc = checklistDescInput.value.trim();
-    if (name) updateChecklist(currentChecklistId, name, desc);
+    const category = checklistCategoryInput ? checklistCategoryInput.value : "";
+    if (name) updateChecklist(currentChecklistId, name, desc, category);
     const count = getMetrics(currentChecklistId).length;
     if (count === 0) return alert("Add at least one metric before saving.");
     publishChecklist(currentChecklistId);
@@ -442,3 +472,6 @@
     metricNameInput?.focus();
   });
 })();
+  // Metrics search
+  const metricsSearchInput = document.getElementById("metricsSearch");
+  metricsSearchInput?.addEventListener("input", () => { renderMetrics(); });

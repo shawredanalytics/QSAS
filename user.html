@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Self Assessment — QuXAT Self Assessment</title>
+    <title>QuXAT Healthcare Organization Self Assessment — Ver 1 (7 Nov 2025)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -11,51 +11,82 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="brand-bar container">
+      <div class="brand-bar container wide">
         <div class="brand-left">
-          <img id="brandLogo" class="brand-logo" alt="QuXAT" />
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
           <div>
-            <div class="brand-title">User Self Assessment</div>
-            <div class="subtitle">Select metrics to compute your QuXAT Self Assessment Score</div>
+            <div class="brand-title">QuXAT Self Assessment — Ver 1</div>
+            <div class="subtitle">Select metrics to compute your QSAS score • 7 Nov 2025</div>
           </div>
         </div>
         <nav class="brand-nav">
-          <a href="index.html">Home</a>
-          <a href="admin.html">Admin</a>
-          <a href="user.html">Self Assessment</a>
-          <a href="https://quxat.com/" target="_blank" rel="noopener">quxat.com</a>
+          <a href="#" data-section="Home">Home</a>
         </nav>
       </div>
     </header>
+    <script>
+      (function(){
+        const links = document.querySelectorAll('a[data-section]');
+        links.forEach(a => {
+          a.addEventListener('click', function(e){
+            e.preventDefault();
+            const s = a.dataset.section;
+            const topWin = window.top || window.parent || window;
+            const base = topWin.location.origin;
+            const url = base + '/?section=' + encodeURIComponent(s);
+            try {
+              const w = topWin.open(url, '_blank');
+              if (w && typeof w.focus === 'function') w.focus();
+            } catch(err) {
+              try {
+                const w2 = window.open(url, '_blank');
+                if (w2 && typeof w2.focus === 'function') w2.focus();
+              } catch(e) {}
+            }
+          });
+        });
+      })();
+    </script>
 
-    <main class="container">
+    <main class="container wide">
       <section class="card">
-        <h2>Identify Yourself</h2>
+        <h2>Start Your Assessment</h2>
         <form id="startForm" class="form-grid">
           <label>
             Email ID
             <input type="email" id="userEmail" placeholder="you@example.com" required />
           </label>
-          <label>
-            Organization Name
-            <input type="text" id="orgName" placeholder="Your organization" />
-          </label>
-          <label>
-            Representative Name
-            <input type="text" id="repName" placeholder="Full name of representative" />
-          </label>
-          <label>
-            Representative Designation
-            <input type="text" id="repDesignation" placeholder="Designation/Title" />
-          </label>
+          <details class="card info" style="margin-top:8px;">
+            <summary>Optional organization details</summary>
+            <div class="form-grid two" style="margin-top:8px;">
+              <!-- Category and Organization type inputs removed per request -->
+              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+                Organization Name
+                <input type="text" id="orgName" placeholder="Your organization" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
+              </label>
+              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+                Representative Name
+                <input type="text" id="repName" placeholder="Full name of representative" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
+              </label>
+              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+                Representative Designation
+                <input type="text" id="repDesignation" placeholder="Designation/Title" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
+              </label>
+            </div>
+          </details>
+          <section id="industryInfo" class="card info">
+            <h3>Industry Categories and Eligible Organizations</h3>
+            <p class="hint">QSAS checklists are available in the categories below. Organizations listed can undertake QSAS self assessments under the respective category.</p>
+            <div id="industryTable" class="table-container"></div>
+          </section>
           <div class="actions">
-            <button type="submit" class="btn btn-primary">Start Assessment</button>
+            <button type="submit" class="btn btn-primary">Proceed</button>
           </div>
-          <p class="hint">Provide organization and representative details to appear on the certificate. Email routes the assessment to Admin and retrieves approved reports. Data stays in your browser for this demo.</p>
+          <p class="hint">Enter a valid email to begin. Optional details can be skipped — wherever not provided, we’ll mark “Details Not Provided by Self - Assessment User” in reports and certificates. For assistance or to obtain a verified certificate, contact quxat.team@gmail.com.</p>
         </form>
       </section>
-      <section id="qiLegend" class="card info">
-        <h3>Quality Improvement Classification Legend</h3>
+      <details id="qiLegend" class="card info">
+        <summary>Quality Improvement classifications</summary>
         <ul class="list legend-list">
           <li>
             <div class="item-title">Exemplary Quality Improvement <span class="badge badge-exemplary">Exemplary</span></div>
@@ -78,7 +109,7 @@
             <div class="item-sub">Critical gaps; address safety risks, implement basic controls, and define a 90-day roadmap with leadership accountability.</div>
           </li>
         </ul>
-      </section>
+      </details>
 
       <section id="prevAssessmentPanel" class="card info" hidden>
         <h3>Previous Assessment Found</h3>
@@ -101,34 +132,19 @@
         <div id="userEmpty" class="empty" hidden>No metrics defined by Admin yet.</div>
         <ul id="userMetrics" class="list checklist" hidden></ul>
         <div class="score-row">
-          <div>
-            <strong>QuXAT Self Assessment Score:</strong>
-            <span id="scoreValue">0</span>
-          </div>
-          <div>
-            <span id="selectedCount">0</span> selected
-          </div>
           <div class="actions">
-            <button id="resetSelectionBtn" class="btn">Reset Selection</button>
-            <button id="copySummaryBtn" class="btn">Copy Summary</button>
             <button id="submitVerificationBtn" class="btn btn-primary">Submit for Verification</button>
+            <button id="resetSelectionBtn" class="btn">Reset Selection</button>
             <button id="downloadUnverifiedBtn" class="btn">Download Unverified Report</button>
-            <button id="downloadVerifiedBtn" class="btn">Download Verified Report</button>
-            <button id="downloadCertificateBtn" class="btn">Download Certificate</button>
-            <button id="printCertificateBtn" class="btn">Print Certificate</button>
+            <button id="downloadVerifiedBtn" class="btn" hidden>Download Verified Report</button>
+            <button id="downloadCertificateBtn" class="btn" hidden>Download Certificate</button>
+            <button id="printCertificateBtn" class="btn" hidden>Print Certificate</button>
           </div>
         </div>
-        <div class="card info mt">
-          <h3>Notes (optional)</h3>
-          <p class="hint">Add any context or remarks to include on your report/certificate.</p>
-          <label>
-            Your Notes
-            <textarea id="userNote" rows="3" placeholder="Any additional context you'd like recorded"></textarea>
-          </label>
-        </div>
+        
         <section id="qualityCard" class="card certificate" hidden>
           <div class="certificate-header">
-            <img id="certificateLogo" class="certificate-logo" alt="QuXAT Logo" />
+            <img id="certificateLogo" class="certificate-logo" alt="QuXAT Logo" src="assets/QuXAT%20Logo%20Facebook.png" />
             <div>
               <div class="certificate-title">QuXAT Self Assessment Certificate</div>
               <div class="certificate-subtitle">Quality Score Card</div>
@@ -137,6 +153,8 @@
           <div class="certificate-body">
             <div class="certificate-rows">
               <div class="certificate-row"><span class="label">Participant Email</span><span id="certEmail">—</span></div>
+              <div class="certificate-row"><span class="label">Organization</span><span id="certOrg">—</span></div>
+              <div class="certificate-row"><span class="label">Organization Type</span><span id="certOrgType">—</span></div>
               <div class="certificate-row"><span class="label">Checklist</span><span id="certChecklist">—</span></div>
               <div class="certificate-row"><span class="label">Checklist Description</span><span id="certChecklistDesc">—</span></div>
               <div class="certificate-row"><span class="label">Date</span><span id="certDate">—</span></div>
@@ -158,13 +176,6 @@
     <footer class="site-footer">
       <small>© QuXAT — User • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
     </footer>
-
-    <div id="cookieBanner" class="cookie-banner" hidden>
-      <div class="text">This website uses cookies. We use cookies to analyze website traffic and optimize your website experience.</div>
-      <div class="actions">
-        <button id="acceptCookiesBtn" class="btn btn-primary">Accept</button>
-      </div>
-    </div>
 
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/branding.js"></script>

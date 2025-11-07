@@ -8,6 +8,7 @@ const QSAS_KEYS = {
   checklists: "qsas_checklists",
   metricsByChecklist: "qsas_metrics_by_checklist",
   assessments: "qsas_assessments",
+  seeded: "qsas_seeded_v1",
 };
 
 function ensureDefaults() {
@@ -29,6 +30,36 @@ function ensureDefaults() {
   if (!localStorage.getItem(QSAS_KEYS.assessments)) {
     localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify([]));
   }
+  // Seed a default Healthcare checklist if storage is empty (one-time)
+  try {
+    const seeded = localStorage.getItem(QSAS_KEYS.seeded) === "true";
+    const lists = JSON.parse(localStorage.getItem(QSAS_KEYS.checklists) || "[]") || [];
+    if (!seeded && Array.isArray(lists) && lists.length === 0) {
+      const id = generateId();
+      const code = generateChecklistCode();
+      const healthcare = {
+        id,
+        code,
+        name: "Healthcare Checklist",
+        description: "Baseline QSAS metrics for hospitals and healthcare organizations.",
+        category: "Hospitals & Healthcare",
+        published: true,
+      };
+      lists.push(healthcare);
+      localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
+      // Seed a few representative metrics
+      const metrics = [
+        { id: generateId(), code: generateMetricCode(), name: "Hand Hygiene Compliance", points: 5 },
+        { id: generateId(), code: generateMetricCode(), name: "Safe Medication Storage", points: 5 },
+        { id: generateId(), code: generateMetricCode(), name: "Emergency Drill Records", points: 5 },
+      ];
+      const mapRaw = localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}";
+      const map = JSON.parse(mapRaw) || {};
+      map[id] = metrics;
+      localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+      localStorage.setItem(QSAS_KEYS.seeded, "true");
+    }
+  } catch {}
 }
 
 function getAdminCreds() {
@@ -58,6 +89,7 @@ function getChecklists() {
       code: c.code,
       name: c.name,
       description: c.description || "",
+      category: typeof c.category === "string" ? c.category : "",
       published: typeof c.published === "boolean" ? c.published : true,
     }));
   } catch { return []; }
@@ -67,24 +99,24 @@ function saveChecklists(list) {
   localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(Array.isArray(list) ? list : []));
 }
 
-function addChecklist(name, description = "") {
+function addChecklist(name, description = "", category = "") {
   const lists = getChecklists();
   const id = generateId();
   // New checklists start as drafts (published: false) with a unique code
   const existingCodes = new Set(lists.map(c => c.code).filter(Boolean));
   let code;
   do { code = generateChecklistCode(); } while (existingCodes.has(code));
-  lists.push({ id, code, name: String(name), description: String(description || ""), published: false });
+  lists.push({ id, code, name: String(name), description: String(description || ""), category: String(category || ""), published: false });
   saveChecklists(lists);
   return id;
 }
 
-function updateChecklist(id, name, description = "") {
+function updateChecklist(id, name, description = "", category = "") {
   const lists = getChecklists();
   const idx = lists.findIndex(c => c.id === id);
   if (idx !== -1) {
     const prev = lists[idx];
-    lists[idx] = { id, code: prev.code, name: String(name), description: String(description || ""), published: typeof prev.published === "boolean" ? prev.published : true };
+    lists[idx] = { id, code: prev.code, name: String(name), description: String(description || ""), category: String(category || prev.category || ""), published: typeof prev.published === "boolean" ? prev.published : true };
     saveChecklists(lists);
     return true;
   }
@@ -202,7 +234,7 @@ function submitAssessment(email, selectedIds, checklistId = "", details = {}) {
     .map(m => ({ id: m.id, code: m.code || "", name: m.name, points: Number(m.points) || 0 }));
   const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
   const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-  const cls = classifyScore(score, total);
+  const cls = classifyScore(score, total, { metrics, selectedIds });
   const assessments = getAssessments();
   const now = new Date().toISOString();
   const lists = getChecklists();
@@ -223,6 +255,7 @@ function submitAssessment(email, selectedIds, checklistId = "", details = {}) {
     verifiedAt: null,
     adminNote: "",
     orgName: String(details?.orgName || ""),
+    orgType: String(details?.orgType || ""),
     repName: String(details?.repName || ""),
     repDesignation: String(details?.repDesignation || ""),
     userNote: String(details?.userNote || ""),
@@ -301,7 +334,8 @@ function generateMetricCode() {
 }
 
 // Compute QuXAT scoring classification and suggestions based on percentage
-function classifyScore(score, total) {
+// Optionally augment suggestions with gap-based items derived from metric responses.
+function classifyScore(score, total, opts = {}) {
   const percent = total ? Math.round((score / total) * 100) : 0;
   let label = "";
   let suggestions = [];
@@ -323,7 +357,6 @@ function classifyScore(score, total) {
   } else if (percent >= 50) {
     label = "Developing Quality Improvement";
     suggestions = [
-      "Prioritize process measures in key pathways such as sepsis and surgical safety",
       "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
       "Launch staff training and competency checks for critical procedures",
     ];
@@ -342,6 +375,28 @@ function classifyScore(score, total) {
       "Create a 90-day QI roadmap with leadership accountability",
     ];
   }
+  // Gap-driven suggestions based on metric responses (ids not selected are gaps)
+  try {
+    const metrics = Array.isArray(opts?.metrics) ? opts.metrics : [];
+    const selectedIds = Array.isArray(opts?.selectedIds) ? opts.selectedIds : [];
+    if (metrics.length) {
+      const gaps = metrics.filter(m => !selectedIds.includes(m.id));
+      // Prioritize highest-impact gaps by points
+      gaps.sort((a,b) => (Number(b.points)||0) - (Number(a.points)||0));
+      const top = gaps.slice(0, Math.min(8, gaps.length));
+      const gapSuggestions = top.map(m => {
+        const name = String(m.name || "Metric");
+        // General, organization-agnostic phrasing
+        return `Establish and document: ${name} — define SOPs, train staff, and audit routinely`;
+      });
+      // Merge and de-duplicate while keeping band guidance first
+      const seen = new Set();
+      suggestions = suggestions.concat(gapSuggestions).filter(s => {
+        const k = s.toLowerCase();
+        if (seen.has(k)) return false; seen.add(k); return true;
+      });
+    }
+  } catch {}
   return { label, percent, suggestions };
 }
 
