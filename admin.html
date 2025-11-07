@@ -37,14 +37,32 @@
             const topWin = window.top || window.parent || window;
             const base = topWin.location.origin;
             const url = base + '/?section=' + encodeURIComponent(s);
-            try {
-              const w = topWin.open(url, '_blank');
-              if (w && typeof w.focus === 'function') w.focus();
-            } catch(err) {
+            const port = String(topWin.location.port || '');
+            const host = String(topWin.location.hostname || '');
+            const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
+            if (isStreamlit) {
+              // Open Streamlit section in a fresh tab
               try {
-                const w2 = window.open(url, '_blank');
-                if (w2 && typeof w2.focus === 'function') w2.focus();
-              } catch(e) {}
+                const w = topWin.open(url, '_blank');
+                if (w && typeof w.focus === 'function') w.focus();
+              } catch(err) {
+                try {
+                  const w2 = window.open(url, '_blank');
+                  if (w2 && typeof w2.focus === 'function') w2.focus();
+                } catch(e) {}
+              }
+            } else {
+              // Static fallback
+              let fallback = (s && s.toLowerCase().includes('admin')) ? 'admin.html' : 'user.html';
+              try {
+                const w = topWin.open(fallback, '_blank');
+                if (w && typeof w.focus === 'function') w.focus();
+              } catch(e) {
+                try {
+                  const w2 = window.open(fallback, '_blank');
+                  if (w2 && typeof w2.focus === 'function') w2.focus();
+                } catch(_) {}
+              }
             }
           });
         });

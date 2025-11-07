@@ -27,7 +27,7 @@
       </div>
     </header>
     <!-- Header added to place the QuXAT logo on Home -->
-    <script>
+      <script>
       (function(){
         // Delegated handler so dynamically inserted buttons also open in new tab
         document.addEventListener('click', function(e){
@@ -43,8 +43,10 @@
           if (a.dataset.checklist) params.set('checklist', a.dataset.checklist);
           const streamlitUrl = base + '/?' + params.toString();
           const port = String(topWin.location.port || '');
-          const isStreamlit = port === '8501' || port === '8502';
+          const host = String(topWin.location.hostname || '');
+          const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
           if (isStreamlit) {
+            // Open Streamlit section in a fresh tab
             try {
               const w = topWin.open(streamlitUrl, '_blank');
               if (w && typeof w.focus === 'function') w.focus();
@@ -60,7 +62,15 @@
             if (!fallback || fallback === '#') {
               fallback = (s && s.toLowerCase().includes('admin')) ? 'admin.html' : 'user.html';
             }
-            try { topWin.location.href = fallback; } catch(e) { try { window.location.href = fallback; } catch(_) {} }
+            try {
+              const w = topWin.open(fallback, '_blank');
+              if (w && typeof w.focus === 'function') w.focus();
+            } catch(e) {
+              try {
+                const w2 = window.open(fallback, '_blank');
+                if (w2 && typeof w2.focus === 'function') w2.focus();
+              } catch(_) {}
+            }
           }
         });
         // Enforce new-tab behavior for any regular links without data-section
@@ -73,7 +83,7 @@
           a.setAttribute('rel', 'noopener');
         });
       })();
-    </script>
+      </script>
 
     <main class="container wide">
       <section class="hero">
