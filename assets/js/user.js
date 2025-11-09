@@ -387,9 +387,9 @@
     trh.append(thCat, thName, thDesc, thCount, thAct); thead.appendChild(trh);
     const tbody = document.createElement("tbody");
     // Group
-    const categories = Array.from(new Set(lists.map(c => deriveCategory(c) || "Uncategorized"))).sort((a,b)=>a.localeCompare(b));
+    const categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || "Uncategorized"))).sort((a,b)=>a.localeCompare(b));
     const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
-    lists.forEach(c => { const cat = deriveCategory(c) || "Uncategorized"; byCat.get(cat).push(c); });
+    lists.forEach(c => { const cat = deriveCategory(c.category) || "Uncategorized"; byCat.get(cat)?.push(c); });
     categories.forEach(cat => {
       const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
       if (items.length === 0) {

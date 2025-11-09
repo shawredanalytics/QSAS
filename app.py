@@ -181,7 +181,7 @@ def build_home_hero_html():
         <h3>Get started in 3 simple steps</h3>
         <div class=\"steps-grid\">
           <div class=\"step-card step-1\">
-            <div class=\"step-title\"><span class=\"step-chip\">📋</span>1) Choose a Checklist</div>
+            <div class=\"step-title\"><span class=\"step-chip\">📋</span>1) Conduct Self Assessment</div>
             <div class=\"step-sub\">Pick the most relevant quality checklist for your facility.</div>
           </div>
           <div class=\"step-card step-2\">
