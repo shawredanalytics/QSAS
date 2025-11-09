@@ -58,6 +58,16 @@
   let currentOrgName = "";
   let currentOrgType = "";
   let currentCategory = localStorage.getItem("qsas_last_user_category") || "";
+  // Limit to 10 metrics per checklist and normalize total score to 100
+  const METRIC_LIMIT = 10;
+  function limitedMetrics(id) {
+    const all = id ? (getMetrics(id) || []) : [];
+    return all.slice(0, Math.min(METRIC_LIMIT, all.length));
+  }
+  function perMetricPoints(metrics) {
+    const count = Math.min(METRIC_LIMIT, metrics.length || METRIC_LIMIT);
+    return count ? (100 / count) : 0;
+  }
   let currentRepName = "";
   let currentRepDesignation = "";
   let currentUserNote = "";
@@ -205,7 +215,7 @@
   try { renderIndustryInfoTable(); } catch {}
 
   function render() {
-    const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
+    const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     listEl.innerHTML = "";
     emptyEl.hidden = metrics.length !== 0;
     gateMsgEl.hidden = !!currentEmail;
@@ -243,7 +253,8 @@
 
       const pts = document.createElement("div");
       pts.className = "item-sub";
-      pts.textContent = `Code: ${m.code || "N/A"} • Yes = ${m.points} pts`;
+      const pm = perMetricPoints(metrics);
+      pts.textContent = `Code: ${m.code || "N/A"} • Yes = ${Math.round(pm)} pts`;
 
       li.append(title, controls, pts);
       listEl.appendChild(li);
@@ -253,13 +264,14 @@
   }
 
   function updateScore() {
-    const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
+    const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
-    const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    const pm = perMetricPoints(metrics);
+    const score = Math.round(selected.length * pm);
     if (scoreEl) scoreEl.textContent = String(score);
     if (countEl) countEl.textContent = String(selected.length);
     // Classification & suggestions
-    const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    const total = 100;
     const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
     const show = !!currentEmail && !!currentChecklistId && metrics.length > 0;
     suggestionsEl.hidden = !show;
@@ -312,16 +324,17 @@
   });
 
   copyBtn?.addEventListener("click", async () => {
-    const metrics = currentChecklistId ? getMetrics(currentChecklistId) : [];
+    const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
-    const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    const pm = perMetricPoints(metrics);
+    const score = Math.round(selected.length * pm);
+    const total = 100;
     const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
     const lines = [
       `QuXAT Self Assessment Score: ${score}`,
       `Classification: ${cls.label} (${cls.percent}%)`,
       `Selected metrics (${selected.length}):`,
-      ...selected.map(m => `- ${m.code ? `[${m.code}] ` : ""}${m.name} (+${m.points})`) 
+      ...selected.map(m => `- ${m.code ? `[${m.code}] ` : ""}${m.name} (+${Math.round(pm)})`) 
     ].join("\n");
     try {
       await navigator.clipboard.writeText(lines);
@@ -404,7 +417,7 @@
         const tdCat = document.createElement("td"); tdCat.textContent = idx === 0 ? cat : ""; tdCat.style.padding = "8px"; tdCat.style.fontWeight = idx === 0 ? "600" : "normal";
         const tdName = document.createElement("td"); tdName.style.padding = "8px"; tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`;
         const tdDesc = document.createElement("td"); tdDesc.style.padding = "8px"; tdDesc.textContent = c.description || "";
-        const tdCount = document.createElement("td"); tdCount.style.padding = "8px"; try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e) { tdCount.textContent = '—'; }
+        const tdCount = document.createElement("td"); tdCount.style.padding = "8px"; try { tdCount.textContent = String(Math.min((getMetrics(c.id) || []).length, METRIC_LIMIT)); } catch(e) { tdCount.textContent = '—'; }
         const tdAct = document.createElement("td"); tdAct.style.padding = "8px";
         const start = document.createElement("button"); start.className = "btn btn-primary"; start.textContent = "Start";
         start.onclick = () => {
@@ -487,10 +500,11 @@
     if (!jspdfNS || !jspdfNS.jsPDF) {
       return alert("PDF library not loaded. Please ensure internet connectivity.");
     }
-    const metrics = getMetrics(currentChecklistId);
+    const metrics = limitedMetrics(currentChecklistId);
     const selected = metrics.filter(m => selections.has(m.id));
-    const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    const pm = perMetricPoints(metrics);
+    const score = Math.round(selected.length * pm);
+    const total = 100;
     const cls = classifyScore(score, total, { metrics, selectedIds: selected.map(m => m.id) });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId);
@@ -706,10 +720,11 @@
       return alert("The entered email does not match the email used during this self assessment.");
     }
     // Create transient assessment snapshot for PDF
-    const metrics = getMetrics(currentChecklistId);
-    const selected = metrics.filter(m => selectedIds.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: Number(m.points) || 0 }));
-    const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-    const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    const metrics = limitedMetrics(currentChecklistId);
+    const pm = perMetricPoints(metrics);
+    const selected = metrics.filter(m => selectedIds.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: Math.round(pm) }));
+    const score = Math.round(selected.length * pm);
+    const total = 100;
     const cls = classifyScore(score, total, { metrics, selectedIds });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId) || { id: currentChecklistId, name: "General" };

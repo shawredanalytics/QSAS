@@ -11,6 +11,10 @@ const QSAS_KEYS = {
   seeded: "qsas_seeded_v3",
 };
 
+// QSAS normalization constants
+const QSAS_METRIC_LIMIT = 10;
+const QSAS_MAX_SCORE = 100;
+
 function ensureDefaults() {
   if (!localStorage.getItem(QSAS_KEYS.adminUser)) {
     localStorage.setItem(QSAS_KEYS.adminUser, "admin");
@@ -298,6 +302,12 @@ function getMetrics(checklistId = "") {
   } catch { return []; }
 }
 
+// Return up to the first 10 metrics for a checklist
+function getMetricsLimited(checklistId = "", limit = QSAS_METRIC_LIMIT) {
+  const all = getMetrics(checklistId) || [];
+  return all.slice(0, Math.max(0, Math.min(limit, all.length)));
+}
+
 function saveMetrics(checklistId, list) {
   ensureDefaults();
   if (!checklistId) return;
@@ -363,12 +373,14 @@ function saveAssessments(list) {
 
 function submitAssessment(email, selectedIds, checklistId = "", details = {}) {
   if (!checklistId) return null;
-  const metrics = getMetrics(checklistId);
+  // Enforce limit and normalize scoring to 100
+  const metrics = getMetricsLimited(checklistId);
+  const perMetric = metrics.length ? (QSAS_MAX_SCORE / Math.min(QSAS_METRIC_LIMIT, metrics.length)) : 0;
   const selected = metrics
     .filter(m => selectedIds.includes(m.id))
-    .map(m => ({ id: m.id, code: m.code || "", name: m.name, points: Number(m.points) || 0 }));
-  const score = selected.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
-  const total = metrics.reduce((sum, m) => sum + (Number(m.points) || 0), 0);
+    .map(m => ({ id: m.id, code: m.code || "", name: m.name, points: perMetric }));
+  const score = Math.round(selected.length * perMetric);
+  const total = QSAS_MAX_SCORE;
   const cls = classifyScore(score, total, { metrics, selectedIds });
   const assessments = getAssessments();
   const now = new Date().toISOString();

@@ -271,7 +271,7 @@
               const tdName = document.createElement('td'); tdName.style.padding = '8px'; tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`;
               const tdDesc = document.createElement('td'); tdDesc.style.padding = '8px'; tdDesc.textContent = c.description || '';
               const tdCount = document.createElement('td'); tdCount.style.padding = '8px';
-              try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e) { tdCount.textContent = '—'; }
+              try { tdCount.textContent = String(Math.min((getMetrics(c.id) || []).length, 10)); } catch(e) { tdCount.textContent = '—'; }
               const tdAct = document.createElement('td'); tdAct.style.padding = '8px';
               const start = document.createElement('a');
               start.href = '#'; start.className = 'btn btn-primary'; start.textContent = 'Start Self Assessment';

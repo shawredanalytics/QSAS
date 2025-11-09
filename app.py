@@ -193,7 +193,7 @@ def build_home_hero_html():
             <div class=\"step-sub\">Download your report; optionally submit for Admin verification and certificate.</div>
           </div>
         </div>
-        <p class=\"hint mt\"><strong>How the score is computed:</strong> QSAS = (sum of points for selected metrics ÷ total available points) × 100%.</p>
+        <p class=\"hint mt\"><strong>How the score is computed:</strong> QSAS uses up to 10 metrics per checklist. Each “Yes” contributes an equal share so the total score is out of 100 points.</p>
       </div>
 
       <div class=\"card\"> 
