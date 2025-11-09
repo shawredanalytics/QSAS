@@ -125,6 +125,14 @@
         <p id="publishedEmpty" class="empty" hidden>No published checklists yet. Create and publish them in the Admin portal.</p>
       </section>
 
+      <!-- New: Aesthetic industry cards with checklist tiles -->
+      <section class="card">
+        <h3>Browse by Industry</h3>
+        <p class="hint">Pick your industry and start with a relevant checklist.</p>
+        <div id="industryCards" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
+        <p id="industryEmpty" class="empty" hidden>No published checklists yet. Create and publish them in the Admin portal.</p>
+      </section>
+
       <section class="card info">
         <h3>How It Works</h3>
         <div class="steps-grid">
@@ -187,6 +195,8 @@
       (function(){
         const emptyEl = document.getElementById('publishedEmpty');
         const tableBody = document.getElementById('checklistsTbody');
+        const cardsMount = document.getElementById('industryCards');
+        const cardsEmpty = document.getElementById('industryEmpty');
         let lists = [];
         try { lists = (getChecklists() || []).filter(c => c.published !== false); } catch(e) { lists = []; }
 
@@ -276,7 +286,48 @@
           });
         }
 
+        function renderCards() {
+          if (!cardsMount) return;
+          cardsMount.innerHTML = '';
+          if (!lists.length) { cardsEmpty.hidden = false; return; }
+          cardsEmpty.hidden = true;
+          // Group and sort like the table
+          const byCat = new Map();
+          categories.forEach(cat => byCat.set(cat, []));
+          lists.forEach(c => {
+            const cat = deriveCategory(c) || 'Uncategorized';
+            if (!byCat.has(cat)) byCat.set(cat, []);
+            byCat.get(cat).push(c);
+          });
+          const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+          sortedCats.forEach(cat => {
+            const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
+            const card = document.createElement('div');
+            card.className = 'card info';
+            const title = document.createElement('div');
+            title.className = 'item-title';
+            title.textContent = cat;
+            const sub = document.createElement('div');
+            sub.className = 'item-sub';
+            sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+            items.forEach(c => {
+              const a = document.createElement('a');
+              a.href = '#'; a.className = 'btn';
+              a.textContent = c.name;
+              a.dataset.section = 'User Assessment';
+              a.dataset.checklist = c.id;
+              a.dataset.category = cat;
+              actions.appendChild(a);
+            });
+            card.append(title, sub, actions);
+            cardsMount.appendChild(card);
+          });
+        }
+
         renderTable();
+        renderCards();
       })();
     </script>
   </body>
