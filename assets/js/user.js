@@ -372,19 +372,53 @@
       });
     }
     checklistsForUser.innerHTML = "";
-    lists.forEach(c => {
-      const btn = document.createElement("button");
-      btn.className = "btn";
-      btn.textContent = `${c.code ? `[${c.code}] ` : ""}${c.name}`;
-      btn.onclick = () => {
-        currentChecklistId = c.id;
-        render();
-        // Smooth scroll to metrics after choosing a checklist
-        const target = document.getElementById("userMetrics");
-        try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
-      };
-      checklistsForUser.appendChild(btn);
+    // Build table grouped by industry/category
+    const table = document.createElement("table");
+    table.className = "qsas-table";
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
+    const thead = document.createElement("thead");
+    const trh = document.createElement("tr");
+    const thCat = document.createElement("th"); thCat.textContent = "Category"; thCat.style.textAlign = "left"; thCat.style.padding = "8px"; thCat.style.borderBottom = "1px solid #e5e7eb";
+    const thName = document.createElement("th"); thName.textContent = "Checklist"; thName.style.textAlign = "left"; thName.style.padding = "8px"; thName.style.borderBottom = "1px solid #e5e7eb";
+    const thDesc = document.createElement("th"); thDesc.textContent = "Description"; thDesc.style.textAlign = "left"; thDesc.style.padding = "8px"; thDesc.style.borderBottom = "1px solid #e5e7eb";
+    const thCount = document.createElement("th"); thCount.textContent = "Metrics"; thCount.style.textAlign = "left"; thCount.style.padding = "8px"; thCount.style.borderBottom = "1px solid #e5e7eb";
+    const thAct = document.createElement("th"); thAct.textContent = "Action"; thAct.style.textAlign = "left"; thAct.style.padding = "8px"; thAct.style.borderBottom = "1px solid #e5e7eb";
+    trh.append(thCat, thName, thDesc, thCount, thAct); thead.appendChild(trh);
+    const tbody = document.createElement("tbody");
+    // Group
+    const categories = Array.from(new Set(lists.map(c => deriveCategory(c) || "Uncategorized"))).sort((a,b)=>a.localeCompare(b));
+    const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
+    lists.forEach(c => { const cat = deriveCategory(c) || "Uncategorized"; byCat.get(cat).push(c); });
+    categories.forEach(cat => {
+      const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
+      if (items.length === 0) {
+        const tr = document.createElement("tr");
+        const tdCat = document.createElement("td"); tdCat.textContent = cat; tdCat.style.padding = "8px";
+        const tdEmpty = document.createElement("td"); tdEmpty.colSpan = 4; tdEmpty.textContent = "No checklists published for this category yet."; tdEmpty.className = "hint"; tdEmpty.style.padding = "8px";
+        tr.append(tdCat, tdEmpty); tbody.appendChild(tr);
+        return;
+      }
+      items.forEach((c, idx) => {
+        const tr = document.createElement("tr"); tr.style.borderTop = "1px solid #eef1f6";
+        const tdCat = document.createElement("td"); tdCat.textContent = idx === 0 ? cat : ""; tdCat.style.padding = "8px"; tdCat.style.fontWeight = idx === 0 ? "600" : "normal";
+        const tdName = document.createElement("td"); tdName.style.padding = "8px"; tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`;
+        const tdDesc = document.createElement("td"); tdDesc.style.padding = "8px"; tdDesc.textContent = c.description || "";
+        const tdCount = document.createElement("td"); tdCount.style.padding = "8px"; try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e) { tdCount.textContent = '—'; }
+        const tdAct = document.createElement("td"); tdAct.style.padding = "8px";
+        const start = document.createElement("button"); start.className = "btn btn-primary"; start.textContent = "Start";
+        start.onclick = () => {
+          currentChecklistId = c.id;
+          render();
+          const target = document.getElementById("userMetrics");
+          try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
+        };
+        tdAct.appendChild(start);
+        tr.append(tdCat, tdName, tdDesc, tdCount, tdAct); tbody.appendChild(tr);
+      });
     });
+    table.append(thead, tbody);
+    checklistsForUser.appendChild(table);
   }
 
   continuePrevBtn?.addEventListener("click", () => {
