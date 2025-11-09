@@ -82,6 +82,33 @@
           a.setAttribute('target', '_blank');
           a.setAttribute('rel', 'noopener');
         });
+
+        // Helper to build a shareable deep link for this environment
+        function buildShareUrl(category, checklistId) {
+          const topWin = window.top || window.parent || window;
+          const base = topWin.location.origin;
+          const params = new URLSearchParams();
+          params.set('section', 'User Assessment');
+          if (category) params.set('category', String(category));
+          if (checklistId) params.set('checklist', String(checklistId));
+          const streamlitUrl = base + '/?' + params.toString();
+          const port = String(topWin.location.port || '');
+          const host = String(topWin.location.hostname || '');
+          const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
+          return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html');
+        }
+
+        function copyToClipboard(text, buttonEl) {
+          try {
+            navigator.clipboard.writeText(text).then(() => {
+              if (buttonEl) {
+                const prev = buttonEl.textContent;
+                buttonEl.textContent = 'Copied!';
+                setTimeout(() => { buttonEl.textContent = prev; }, 1200);
+              }
+            });
+          } catch(e) {}
+        }
       })();
       </script>
 
@@ -279,7 +306,16 @@
               start.dataset.checklist = c.id;
               const catVal = deriveCategory(c);
               if (catVal) start.dataset.category = catVal;
+              const copy = document.createElement('button');
+              copy.className = 'btn';
+              copy.textContent = 'Copy Link';
+              copy.style.marginLeft = '8px';
+              copy.onclick = () => {
+                const url = buildShareUrl(catVal, c.id);
+                copyToClipboard(url, copy);
+              };
               tdAct.appendChild(start);
+              tdAct.appendChild(copy);
               tr.append(tdCat, tdName, tdDesc, tdCount, tdAct);
               tableBody.appendChild(tr);
             });
@@ -320,6 +356,15 @@
               a.dataset.checklist = c.id;
               a.dataset.category = cat;
               actions.appendChild(a);
+              const copy = document.createElement('button');
+              copy.className = 'btn';
+              copy.textContent = 'Copy Link';
+              copy.style.marginLeft = '8px';
+              copy.onclick = () => {
+                const url = buildShareUrl(cat, c.id);
+                copyToClipboard(url, copy);
+              };
+              actions.appendChild(copy);
             });
             card.append(title, sub, actions);
             cardsMount.appendChild(card);

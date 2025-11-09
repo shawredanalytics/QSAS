@@ -235,7 +235,31 @@ if section == "Home":
     st.components.v1.html(html_index, height=2200, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
-    html_user = build_embedded_page("user.html")
+    # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
+    qp = _get_query_params()
+    raw_cat = qp.get("category")
+    raw_chk = qp.get("checklist")
+    cat = None
+    chk = None
+    if isinstance(raw_cat, list):
+        cat = raw_cat[0] if raw_cat else None
+    elif isinstance(raw_cat, str):
+        cat = raw_cat
+    if isinstance(raw_chk, list):
+        chk = raw_chk[0] if raw_chk else None
+    elif isinstance(raw_chk, str):
+        chk = raw_chk
+    js_bootstrap = f"""
+    (function(){{
+      try {{
+        var cat = {cat!r};
+        var chk = {chk!r};
+        if (cat) localStorage.setItem('qsas_boot_category', String(cat));
+        if (chk) localStorage.setItem('qsas_boot_checklist', String(chk));
+      }} catch(e) {{}}
+    }})();
+    """
+    html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 else:  # Admin
     # Page header for other sections appears at the top

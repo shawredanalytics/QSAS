@@ -60,6 +60,52 @@
   let currentCategory = localStorage.getItem("qsas_last_user_category") || "";
   // Limit to 10 metrics per checklist and normalize total score to 100
   const METRIC_LIMIT = 10;
+
+  // Bootstrap deep-linking: preselect checklist/category if provided via localStorage
+  (function(){
+    try {
+      const bootCat = localStorage.getItem('qsas_boot_category') || '';
+      const bootChk = localStorage.getItem('qsas_boot_checklist') || '';
+      if (bootCat) {
+        currentCategory = String(bootCat);
+        try { localStorage.setItem('qsas_last_user_category', currentCategory); } catch {}
+      }
+      if (bootChk) {
+        currentChecklistId = String(bootChk);
+      }
+      // Clear one-shot boot keys so repeated visits don't force selection
+      try { localStorage.removeItem('qsas_boot_category'); } catch {}
+      try { localStorage.removeItem('qsas_boot_checklist'); } catch {}
+    } catch(e) {}
+  })();
+
+  // Helper to build a shareable deep link URL for this environment
+  function buildShareUrl(category, checklistId) {
+    const topWin = window.top || window.parent || window;
+    const base = topWin.location.origin;
+    const params = new URLSearchParams();
+    params.set('section', 'User Assessment');
+    if (category) params.set('category', String(category));
+    if (checklistId) params.set('checklist', String(checklistId));
+    const streamlitUrl = base + '/?' + params.toString();
+    const port = String(topWin.location.port || '');
+    const host = String(topWin.location.hostname || '');
+    const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
+    // Fallback to static page when not on Streamlit
+    return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html');
+  }
+
+  function copyToClipboard(text, buttonEl) {
+    try {
+      navigator.clipboard.writeText(text).then(() => {
+        if (buttonEl) {
+          const prev = buttonEl.textContent;
+          buttonEl.textContent = 'Copied!';
+          setTimeout(() => { buttonEl.textContent = prev; }, 1200);
+        }
+      });
+    } catch(e) {}
+  }
   function limitedMetrics(id) {
     const all = id ? (getMetrics(id) || []) : [];
     return all.slice(0, Math.min(METRIC_LIMIT, all.length));
@@ -426,7 +472,13 @@
           const target = document.getElementById("userMetrics");
           try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
         };
+        const copy = document.createElement("button"); copy.className = "btn"; copy.textContent = "Copy Link"; copy.style.marginLeft = "8px";
+        copy.onclick = () => {
+          const url = buildShareUrl(cat, c.id);
+          copyToClipboard(url, copy);
+        };
         tdAct.appendChild(start);
+        tdAct.appendChild(copy);
         tr.append(tdCat, tdName, tdDesc, tdCount, tdAct); tbody.appendChild(tr);
       });
     });
