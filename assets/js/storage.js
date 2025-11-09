@@ -8,7 +8,7 @@ const QSAS_KEYS = {
   checklists: "qsas_checklists",
   metricsByChecklist: "qsas_metrics_by_checklist",
   assessments: "qsas_assessments",
-  seeded: "qsas_seeded_v1",
+  seeded: "qsas_seeded_v2",
 };
 
 function ensureDefaults() {
@@ -30,35 +30,90 @@ function ensureDefaults() {
   if (!localStorage.getItem(QSAS_KEYS.assessments)) {
     localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify([]));
   }
-  // Seed a default Healthcare checklist if storage is empty (one-time)
+  // Seed public-domain baseline checklists (non-proprietary best-practice phrasing)
   try {
     const seeded = localStorage.getItem(QSAS_KEYS.seeded) === "true";
     const lists = JSON.parse(localStorage.getItem(QSAS_KEYS.checklists) || "[]") || [];
-    if (!seeded && Array.isArray(lists) && lists.length === 0) {
+    const byName = new Map((Array.isArray(lists) ? lists : []).map(c => [String(c.name || ""), c]));
+
+    function addBaselineIfMissing(name, description, category, metricsBase) {
+      if (byName.has(name)) return byName.get(name).id;
       const id = generateId();
       const code = generateChecklistCode();
-      const healthcare = {
-        id,
-        code,
-        name: "Healthcare Checklist",
-        description: "Baseline QSAS metrics for hospitals and healthcare organizations.",
-        category: "Hospitals & Healthcare",
-        published: true,
-      };
-      lists.push(healthcare);
-      localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
-      // Seed a few representative metrics
-      const metrics = [
-        { id: generateId(), code: generateMetricCode(), name: "Hand Hygiene Compliance", points: 5 },
-        { id: generateId(), code: generateMetricCode(), name: "Safe Medication Storage", points: 5 },
-        { id: generateId(), code: generateMetricCode(), name: "Emergency Drill Records", points: 5 },
-      ];
+      const entry = { id, code, name, description, category, published: true };
+      lists.push(entry);
+      byName.set(name, entry);
+      // attach metrics
+      const metrics = (metricsBase || []).map(m => ({ id: generateId(), code: generateMetricCode(), name: m.name, points: Number(m.points) || 5 }));
       const mapRaw = localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}";
       const map = JSON.parse(mapRaw) || {};
       map[id] = metrics;
       localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
-      localStorage.setItem(QSAS_KEYS.seeded, "true");
+      return id;
     }
+
+    // Always ensure these baselines exist; do not overwrite existing custom lists
+    const healthcareId = addBaselineIfMissing(
+      "Healthcare Public Baseline",
+      "Public-domain inspired baseline for hospitals and healthcare organizations.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Hand Hygiene Program with Routine Audits", points: 5 },
+        { name: "Personal Protective Equipment Availability and Use", points: 5 },
+        { name: "Medication Management (storage, labeling, reconciliation)", points: 5 },
+        { name: "Safe Surgery Checklist / Time-out Process", points: 5 },
+        { name: "Patient Identification Protocols", points: 5 },
+        { name: "Incident Reporting and Root-cause Analysis", points: 5 },
+        { name: "Emergency Preparedness Drills (fire, code blue)", points: 5 },
+        { name: "Clinical Documentation Standards", points: 5 },
+        { name: "Infection Prevention & Control Practices", points: 5 },
+        { name: "Biomedical Equipment Maintenance Records", points: 5 },
+        { name: "Waste Segregation and Safe Disposal", points: 5 },
+        { name: "Staff Training and Competency Checks", points: 5 },
+      ]
+    );
+
+    const workplaceId = addBaselineIfMissing(
+      "Workplace Safety Baseline",
+      "Generic safety baseline for industry, offices, and public facilities.",
+      "Industry & Offices",
+      [
+        { name: "Hazard Identification and Risk Register", points: 5 },
+        { name: "Emergency Exits and Evacuation Plan", points: 5 },
+        { name: "Fire Safety Equipment Inspection Logs", points: 5 },
+        { name: "Electrical Safety and Lockout/Tagout", points: 5 },
+        { name: "First Aid Readiness and Trained Responders", points: 5 },
+        { name: "Personal Protective Equipment Policy", points: 5 },
+        { name: "Incident/ Near-miss Reporting", points: 5 },
+        { name: "Contractor/Visitor Safety Induction", points: 5 },
+        { name: "Safety Signage and Housekeeping", points: 5 },
+        { name: "Routine Safety Audits", points: 5 },
+        { name: "Chemical Handling and MSDS Access", points: 5 },
+        { name: "Ergonomics and Workstation Assessments", points: 5 },
+      ]
+    );
+
+    const educationId = addBaselineIfMissing(
+      "Education Quality Baseline",
+      "Quality and safety baseline for schools and colleges.",
+      "Schools & Colleges",
+      [
+        { name: "Student Safety Policy and Incident Response", points: 5 },
+        { name: "Laboratory Safety Controls and Training", points: 5 },
+        { name: "Health & Sanitation (water, hygiene, waste)", points: 5 },
+        { name: "Emergency Drills and Communication", points: 5 },
+        { name: "Documentation of Academic Policies", points: 5 },
+        { name: "Staff Training and Competence Records", points: 5 },
+        { name: "Facility Maintenance Logs", points: 5 },
+        { name: "Data Protection and Access Controls", points: 5 },
+        { name: "Feedback and Grievance Handling", points: 5 },
+        { name: "Internal Audit/Review Cycle", points: 5 },
+      ]
+    );
+
+    // Persist updated checklists and mark seeding complete for v2
+    localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
+    if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
   } catch {}
 }
 
