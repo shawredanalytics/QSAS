@@ -130,6 +130,67 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Diagnostic Laboratory, Pharmacy, and Dental Clinic organization-specific baselines
+    const labId = addBaselineIfMissing(
+      "Diagnostic Laboratory - Self Assessment",
+      "Baseline for medical laboratories covering quality control, biosafety, and traceability.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Specimen Collection SOPs and Patient ID Verification", points: 5 },
+        { name: "Specimen Labeling and Traceability", points: 5 },
+        { name: "Cold Chain Management and Transport Logs", points: 5 },
+        { name: "Equipment Calibration and Preventive Maintenance", points: 5 },
+        { name: "Internal Quality Control (IQC) Documentation", points: 5 },
+        { name: "External Quality Assessment / Proficiency Testing (EQA/PT)", points: 5 },
+        { name: "Laboratory Biosafety and PPE Compliance", points: 5 },
+        { name: "Biohazard Waste Segregation and Disposal", points: 5 },
+        { name: "Result Validation and Critical Value Reporting", points: 5 },
+        { name: "Turnaround Time Monitoring and Improvement", points: 5 },
+        { name: "LIS/Data Integrity and Access Controls", points: 5 },
+        { name: "Staff Competency and Training Records", points: 5 },
+      ]
+    );
+
+    const pharmacyId = addBaselineIfMissing(
+      "Pharmacy - Self Assessment",
+      "Baseline for pharmacy practice including storage, dispensing, reconciliation, and safety.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Prescription Verification and Dispensing SOPs", points: 5 },
+        { name: "Controlled Substances Storage and Records", points: 5 },
+        { name: "Temperature Monitoring for Medications (cold chain)", points: 5 },
+        { name: "Expiry Management (FEFO) and Stock Rotation", points: 5 },
+        { name: "Patient Counseling and Documentation", points: 5 },
+        { name: "Medication Reconciliation Process", points: 5 },
+        { name: "Adverse Drug Reaction Reporting", points: 5 },
+        { name: "Look‑alike/Sound‑alike (LASA) Safety Labeling", points: 5 },
+        { name: "Narcotic/Controlled Drug Register Security", points: 5 },
+        { name: "Procurement and Supplier Qualification", points: 5 },
+        { name: "Pharmacy Hygiene and Housekeeping", points: 5 },
+        { name: "Staff Training and License Compliance", points: 5 },
+      ]
+    );
+
+    const dentalId = addBaselineIfMissing(
+      "Dental Clinic - Self Assessment",
+      "Baseline for dental clinics covering sterilization, infection control, radiology safety, and documentation.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Instrument Sterilization and Tracking (autoclave logs)", points: 5 },
+        { name: "Infection Control Protocols and PPE Use", points: 5 },
+        { name: "Sharps Safety and Waste Segregation", points: 5 },
+        { name: "Dental Radiology Safety and Dosimetry", points: 5 },
+        { name: "Patient Consent and Clinical Documentation", points: 5 },
+        { name: "Emergency Kit Readiness and Basic Life Support", points: 5 },
+        { name: "X‑ray Equipment Maintenance and QA", points: 5 },
+        { name: "Dental Unit Waterline Disinfection", points: 5 },
+        { name: "Material Storage and Expiry Controls", points: 5 },
+        { name: "Equipment Maintenance Records", points: 5 },
+        { name: "Patient Identification and Procedure Time‑out", points: 5 },
+        { name: "Incident/Near‑miss Reporting", points: 5 },
+      ]
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
