@@ -8,7 +8,7 @@ const QSAS_KEYS = {
   checklists: "qsas_checklists",
   metricsByChecklist: "qsas_metrics_by_checklist",
   assessments: "qsas_assessments",
-  seeded: "qsas_seeded_v2",
+  seeded: "qsas_seeded_v3",
 };
 
 function ensureDefaults() {
@@ -30,7 +30,26 @@ function ensureDefaults() {
   if (!localStorage.getItem(QSAS_KEYS.assessments)) {
     localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify([]));
   }
-  // Seed public-domain baseline checklists (non-proprietary best-practice phrasing)
+  // Migrate legacy baseline names to organization-oriented titles
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.checklists) || "[]";
+    const lists = JSON.parse(raw);
+    if (Array.isArray(lists) && lists.length) {
+      const renameMap = {
+        "Healthcare Public Baseline": "Hospital - Self Assessment",
+        "Workplace Safety Baseline": "Workplace - Self Assessment",
+        "Education Quality Baseline": "School/College - Self Assessment",
+      };
+      let changed = false;
+      lists.forEach(c => {
+        const next = renameMap[String(c.name || "")] || null;
+        if (next && next !== c.name) { c.name = next; changed = true; }
+      });
+      if (changed) localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
+    }
+  } catch {}
+
+  // Seed public-domain baseline checklists (organization-oriented titles)
   try {
     const seeded = localStorage.getItem(QSAS_KEYS.seeded) === "true";
     const lists = JSON.parse(localStorage.getItem(QSAS_KEYS.checklists) || "[]") || [];
@@ -54,7 +73,7 @@ function ensureDefaults() {
 
     // Always ensure these baselines exist; do not overwrite existing custom lists
     const healthcareId = addBaselineIfMissing(
-      "Healthcare Public Baseline",
+      "Hospital - Self Assessment",
       "Public-domain inspired baseline for hospitals and healthcare organizations.",
       "Hospitals & Healthcare",
       [
@@ -74,7 +93,7 @@ function ensureDefaults() {
     );
 
     const workplaceId = addBaselineIfMissing(
-      "Workplace Safety Baseline",
+      "Workplace - Self Assessment",
       "Generic safety baseline for industry, offices, and public facilities.",
       "Industry & Offices",
       [
@@ -94,7 +113,7 @@ function ensureDefaults() {
     );
 
     const educationId = addBaselineIfMissing(
-      "Education Quality Baseline",
+      "School/College - Self Assessment",
       "Quality and safety baseline for schools and colleges.",
       "Schools & Colleges",
       [
