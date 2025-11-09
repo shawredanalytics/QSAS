@@ -95,19 +95,34 @@
           const port = String(topWin.location.port || '');
           const host = String(topWin.location.hostname || '');
           const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
-          return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html');
+          // For static fallback, include query params on user.html as well
+          return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html?' + params.toString());
         }
 
         function copyToClipboard(text, buttonEl) {
-          try {
-            navigator.clipboard.writeText(text).then(() => {
-              if (buttonEl) {
-                const prev = buttonEl.textContent;
-                buttonEl.textContent = 'Copied!';
-                setTimeout(() => { buttonEl.textContent = prev; }, 1200);
-              }
+          const onSuccess = () => {
+            if (buttonEl) {
+              const prev = buttonEl.innerHTML;
+              buttonEl.innerHTML = '✅ Copied!';
+              setTimeout(() => { buttonEl.innerHTML = prev; }, 1200);
+            }
+          };
+          // Try modern clipboard API first
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+              // Fallback for older contexts
+              const ta = document.createElement('textarea');
+              ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+              document.body.appendChild(ta); ta.focus(); ta.select();
+              try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
             });
-          } catch(e) {}
+            return;
+          }
+          // Legacy fallback
+          const ta = document.createElement('textarea');
+          ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
         }
       })();
       </script>
@@ -308,8 +323,9 @@
               if (catVal) start.dataset.category = catVal;
               const copy = document.createElement('button');
               copy.className = 'btn';
-              copy.textContent = 'Copy Link';
+              copy.innerHTML = '🔗 Share';
               copy.style.marginLeft = '8px';
+              copy.title = 'Copy a shareable link to this checklist';
               copy.onclick = () => {
                 const url = buildShareUrl(catVal, c.id);
                 copyToClipboard(url, copy);
@@ -358,8 +374,9 @@
               actions.appendChild(a);
               const copy = document.createElement('button');
               copy.className = 'btn';
-              copy.textContent = 'Copy Link';
+              copy.innerHTML = '🔗 Share';
               copy.style.marginLeft = '8px';
+              copy.title = 'Copy a shareable link to this checklist';
               copy.onclick = () => {
                 const url = buildShareUrl(cat, c.id);
                 copyToClipboard(url, copy);

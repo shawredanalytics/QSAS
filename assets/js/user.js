@@ -79,6 +79,22 @@
     } catch(e) {}
   })();
 
+  // Also parse query params when loaded directly as a static page (no Streamlit)
+  (function(){
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const qCat = sp.get('category');
+      const qChk = sp.get('checklist');
+      if (qCat) {
+        currentCategory = String(qCat);
+        try { localStorage.setItem('qsas_last_user_category', currentCategory); } catch {}
+      }
+      if (qChk) {
+        currentChecklistId = String(qChk);
+      }
+    } catch(e) {}
+  })();
+
   // Helper to build a shareable deep link URL for this environment
   function buildShareUrl(category, checklistId) {
     const topWin = window.top || window.parent || window;
@@ -91,20 +107,31 @@
     const port = String(topWin.location.port || '');
     const host = String(topWin.location.hostname || '');
     const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
-    // Fallback to static page when not on Streamlit
-    return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html');
+    // Fallback to static page when not on Streamlit — include query params
+    return isStreamlit ? streamlitUrl : (window.location.origin + '/user.html?' + params.toString());
   }
 
   function copyToClipboard(text, buttonEl) {
-    try {
-      navigator.clipboard.writeText(text).then(() => {
-        if (buttonEl) {
-          const prev = buttonEl.textContent;
-          buttonEl.textContent = 'Copied!';
-          setTimeout(() => { buttonEl.textContent = prev; }, 1200);
-        }
+    const onSuccess = () => {
+      if (buttonEl) {
+        const prev = buttonEl.innerHTML;
+        buttonEl.innerHTML = '✅ Copied!';
+        setTimeout(() => { buttonEl.innerHTML = prev; }, 1200);
+      }
+    };
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
       });
-    } catch(e) {}
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
   }
   function limitedMetrics(id) {
     const all = id ? (getMetrics(id) || []) : [];
@@ -472,7 +499,7 @@
           const target = document.getElementById("userMetrics");
           try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
         };
-        const copy = document.createElement("button"); copy.className = "btn"; copy.textContent = "Copy Link"; copy.style.marginLeft = "8px";
+        const copy = document.createElement("button"); copy.className = "btn"; copy.innerHTML = "🔗 Share"; copy.style.marginLeft = "8px"; copy.title = "Copy a shareable link to this checklist";
         copy.onclick = () => {
           const url = buildShareUrl(cat, c.id);
           copyToClipboard(url, copy);
