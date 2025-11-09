@@ -66,12 +66,12 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
     <title>QuXAT Embedded</title>
     <style>{css}</style>
-  </head>
-  <body>
-    {body}
     {assets_js}
     <script>{storage_js}</script>
     <script>{branding_js}</script>
+  </head>
+  <body>
+    {body}
     <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
     <script>{page_js}</script>
     {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
