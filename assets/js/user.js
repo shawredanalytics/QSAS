@@ -427,9 +427,10 @@
     currentRepName = (repNameInput?.value || "").trim();
     currentRepDesignation = (repDesignationInput?.value || "").trim();
     currentUserNote = (userNoteInput?.value || "").trim();
-    currentChecklistId = "";
-    const prev = getAssessmentByEmail(email);
-    if (prev) {
+    // Do NOT clear currentChecklistId — if the user arrived via deep link or chose a checklist,
+    // immediately allow assessment without re-selecting.
+    const prev = currentChecklistId ? getAssessmentByEmail(email, currentChecklistId) : getAssessmentByEmail(email);
+    if (prev && !currentChecklistId) {
       awaitingChoice = true;
       const submittedAt = prev.submittedAt ? new Date(prev.submittedAt).toLocaleString() : "-";
       const verifiedAt = prev.verifiedAt ? new Date(prev.verifiedAt).toLocaleString() : "-";
@@ -445,7 +446,9 @@
     }
     updateActionButtonsVisibility();
     // Smooth scroll to next step
-    const jumpTo = (!awaitingChoice && !currentChecklistId) ? document.getElementById("checklistChooser") : document.getElementById("prevAssessmentPanel");
+    const jumpTo = (currentChecklistId)
+      ? document.getElementById("userMetrics")
+      : (!awaitingChoice ? document.getElementById("checklistChooser") : document.getElementById("prevAssessmentPanel"));
     try { jumpTo && jumpTo.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
   });
 
