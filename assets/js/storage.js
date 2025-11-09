@@ -8,7 +8,7 @@ const QSAS_KEYS = {
   checklists: "qsas_checklists",
   metricsByChecklist: "qsas_metrics_by_checklist",
   assessments: "qsas_assessments",
-  seeded: "qsas_seeded_v3",
+  seeded: "qsas_seeded_v4",
 };
 
 // QSAS normalization constants
@@ -192,6 +192,43 @@ function ensureDefaults() {
         { name: "Equipment Maintenance Records", points: 5 },
         { name: "Patient Identification and Procedure Time‑out", points: 5 },
         { name: "Incident/Near‑miss Reporting", points: 5 },
+      ]
+    );
+
+    // New: Student Safety checklists for Colleges & Universities and Schools
+    const cuSafetyId = addBaselineIfMissing(
+      "Colleges & Universities - Student Safety Checklist",
+      "Focused checklist for student safety, security, health, and incident handling in colleges and universities.",
+      "Colleges & Universities",
+      [
+        { name: "Campus Security and CCTV Coverage (critical areas)", points: 5 },
+        { name: "Student ID Badging and Access Control", points: 5 },
+        { name: "Anti‑Harassment Policy and Reporting Mechanism", points: 5 },
+        { name: "Emergency Evacuation Drills and Communication", points: 5 },
+        { name: "Health Centre / First Aid Readiness", points: 5 },
+        { name: "Transport Safety: Vehicle Checks and Driver Vetting", points: 5 },
+        { name: "Laboratory Safety Induction for Practical Courses", points: 5 },
+        { name: "Hostel Safety: Wardens, Visitor Logs, Curfew", points: 5 },
+        { name: "Fire Safety Equipment Inspection Logs", points: 5 },
+        { name: "Grievance Redressal Committee Records", points: 5 },
+      ]
+    );
+
+    const schoolSafetyId = addBaselineIfMissing(
+      "Schools - Student Safety Checklist",
+      "Focused checklist for student safety covering child protection, transport, drills, and incident reporting.",
+      "Schools",
+      [
+        { name: "Child Protection Policy and POCSO Awareness", points: 5 },
+        { name: "Visitor Management and Student Pick‑up Protocols", points: 5 },
+        { name: "Classroom and Playground Safety Checks", points: 5 },
+        { name: "Emergency Drills and Parent Communication", points: 5 },
+        { name: "Health & Sanitation: Water Quality and Hygiene", points: 5 },
+        { name: "Bus Transport Safety: GPS and Driver Records", points: 5 },
+        { name: "Laboratory Safety and Chemical Storage", points: 5 },
+        { name: "CCTV and Surveillance for Critical Areas", points: 5 },
+        { name: "Staff Background Verification Records", points: 5 },
+        { name: "Incident Reporting and Parent Notification Logs", points: 5 },
       ]
     );
 
