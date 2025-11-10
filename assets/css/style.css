@@ -17,6 +17,14 @@ body {
   color: var(--text);
 }
 
+/* Admin page theme overrides to align with Home page */
+body.admin { background: var(--bg); }
+body.admin .site-header {
+  background: linear-gradient(90deg, #fce7f3 0%, #e0f2fe 35%, #ecfccb 70%, #f5f3ff 100%);
+  backdrop-filter: none;
+}
+body.admin .brand-logo { background: transparent; border: none; padding: 0; }
+
 .site-header, .site-footer { padding: 8px; }
 .site-header .container { margin: 0; padding: 4px 16px; }
 .site-header {
