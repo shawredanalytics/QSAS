@@ -174,6 +174,44 @@
     el.style.opacity = '1';
     setTimeout(() => { el.style.opacity = '0'; }, 1800);
   }
+
+  // Simple context menu to support right-click actions
+  function showContextMenu(x, y, items) {
+    const old = document.getElementById('qsasContextMenu');
+    if (old) old.remove();
+    const menu = document.createElement('div');
+    menu.id = 'qsasContextMenu';
+    menu.style.position = 'fixed';
+    menu.style.top = Math.min(y, window.innerHeight - 160) + 'px';
+    menu.style.left = Math.min(x, window.innerWidth - 200) + 'px';
+    menu.style.background = '#fff';
+    menu.style.color = '#111827';
+    menu.style.border = '1px solid #e5e7eb';
+    menu.style.borderRadius = '6px';
+    menu.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+    menu.style.zIndex = '10000';
+    menu.style.minWidth = '180px';
+    menu.style.padding = '4px';
+    menu.style.fontSize = '14px';
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.textContent = it.label;
+      row.style.padding = '8px 12px';
+      row.style.cursor = 'pointer';
+      row.onmouseenter = () => { row.style.background = '#f3f4f6'; };
+      row.onmouseleave = () => { row.style.background = 'transparent'; };
+      row.onclick = () => { try { it.onClick?.(); } finally { menu.remove(); } };
+      menu.appendChild(row);
+    });
+    document.body.appendChild(menu);
+    const close = () => { try { menu.remove(); } catch(e) {} };
+    setTimeout(() => {
+      document.addEventListener('click', close, { once: true });
+      document.addEventListener('contextmenu', close, { once: true });
+      window.addEventListener('blur', close, { once: true });
+      window.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(); }, { once: true });
+    }, 0);
+  }
   function limitedMetrics(id) {
     const all = id ? (getMetrics(id) || []) : [];
     return all.slice(0, Math.min(METRIC_LIMIT, all.length));
@@ -547,6 +585,13 @@
         copy.onclick = () => {
           const url = buildShareUrl(cat, c.id);
           copyToClipboard(url, copy);
+        };
+        copy.oncontextmenu = (ev) => {
+          ev.preventDefault();
+          const url = buildShareUrl(cat, c.id);
+          showContextMenu(ev.clientX, ev.clientY, [
+            { label: 'Copy link', onClick: () => copyToClipboard(url, copy) }
+          ]);
         };
         tdAct.appendChild(start);
         tdAct.appendChild(copy);
