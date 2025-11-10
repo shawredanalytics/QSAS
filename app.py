@@ -80,7 +80,7 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
 """
     return composed
 
-st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide")
+st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
 # Query param helpers to support end-to-end navigation from embedded pages
 def _get_query_params():
@@ -109,14 +109,25 @@ def _set_query_section(value: str):
     except Exception:
         pass
 
-# Sidebar: render once per run to avoid duplication
+# Sidebar: render navigation buttons for Home and Admin
 def render_sidebar_once():
-    # Sidebar disabled — all navigation is handled from the Home page.
-    if st.session_state.get("_sidebar_rendered"):
-        return
+    # Initialize section
     if "section" not in st.session_state:
         st.session_state["section"] = "Home"
-    st.session_state["_sidebar_rendered"] = True
+
+    with st.sidebar:
+        st.subheader("Navigation")
+        go_home = st.button("Home", use_container_width=True)
+        go_admin = st.button("Admin Portal", use_container_width=True)
+
+    if go_home:
+        st.session_state["section"] = "Home"
+        _set_query_section("Home")
+        st.rerun()
+    if go_admin:
+        st.session_state["section"] = "Admin"
+        _set_query_section("Admin")
+        st.rerun()
 
 _sync_section_from_query()
 render_sidebar_once()
