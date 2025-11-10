@@ -100,30 +100,43 @@
         }
 
         function copyToClipboard(text, buttonEl) {
-          const onSuccess = () => {
+          // Force-copy via hidden textarea to avoid browser permission quirks
+          const prevLabel = buttonEl ? buttonEl.innerHTML : '';
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try {
+            document.execCommand('copy');
             if (buttonEl) {
-              const prev = buttonEl.innerHTML;
               buttonEl.innerHTML = '✅ Copied!';
-              setTimeout(() => { buttonEl.innerHTML = prev; }, 1200);
+              setTimeout(() => { buttonEl.innerHTML = prevLabel; }, 1200);
             }
             try { showToast('Copied link: ' + text); } catch(e) {}
-          };
-          // Try modern clipboard API first
-          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-            navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
-              // Fallback for older contexts
-              const ta = document.createElement('textarea');
-              ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
-              document.body.appendChild(ta); ta.focus(); ta.select();
-              try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
-            });
+            document.body.removeChild(ta);
             return;
+          } catch (e) {
+            // If execCommand fails, try modern Clipboard API
+            document.body.removeChild(ta);
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+              navigator.clipboard.writeText(text).then(() => {
+                if (buttonEl) {
+                  buttonEl.innerHTML = '✅ Copied!';
+                  setTimeout(() => { buttonEl.innerHTML = prevLabel; }, 1200);
+                }
+                try { showToast('Copied link: ' + text); } catch(e) {}
+              }).catch(() => {
+                alert('Failed to copy link. Please copy manually:\n\n' + text);
+              });
+            } else {
+              alert('Failed to copy link. Please copy manually:\n\n' + text);
+            }
           }
-          // Legacy fallback
-          const ta = document.createElement('textarea');
-          ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
-          document.body.appendChild(ta); ta.focus(); ta.select();
-          try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
         }
 
         // Lightweight toast utility for feedback
