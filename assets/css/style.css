@@ -60,13 +60,12 @@ body {
 }
 .hero-inner { max-width: 960px; margin: 0 auto; padding: 0 16px; text-align: center; }
 .hero-logo {
-  height: 80px;
+  height: 128px; /* increased by three steps for prominence */
   width: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 6px;
   background: #f2f6ff; /* visibility for white-on-transparent PNG */
-  box-shadow: 0 8px 22px rgba(10,46,90,0.10);
   object-fit: contain;
   margin-bottom: 14px;
 }
