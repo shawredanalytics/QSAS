@@ -1,6 +1,7 @@
 // Simple branding initializer for QSAS aligning with quxat.com elements
 (() => {
   const logoEl = document.getElementById('brandLogo');
+  const bottomLogoEl = document.getElementById('brandLogoBottom');
   const certLogoEl = document.getElementById('certificateLogo');
   const cookieBanner = document.getElementById('cookieBanner');
   const acceptBtn = document.getElementById('acceptCookiesBtn');
@@ -13,6 +14,14 @@
     logoEl.onerror = () => {
       logoEl.onerror = null;
       logoEl.src = pngLogoAbs;
+    };
+  }
+  // Ensure bottom brand bar logo on User page loads even in embedded contexts
+  if (bottomLogoEl) {
+    bottomLogoEl.src = pngLogo;
+    bottomLogoEl.onerror = () => {
+      bottomLogoEl.onerror = null;
+      bottomLogoEl.src = pngLogoAbs;
     };
   }
   if (certLogoEl) {
