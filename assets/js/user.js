@@ -137,6 +137,29 @@
     "Public & Community Organizations",
   ];
 
+  // Light pastel color per category for visual differentiation
+  function categoryColor(cat) {
+    const palette = [
+      '#FFF7ED', // orange-50
+      '#F0FDF4', // green-50
+      '#F0F9FF', // sky-50
+      '#FDF2F8', // pink-50
+      '#F5F3FF', // violet-50
+      '#EEF2FF', // indigo-50
+      '#FEF2F2', // red-50
+      '#ECFDF5', // emerald-50
+      '#FFFBEB', // amber-50
+      '#F1F5F9'  // slate-100
+    ];
+    if (!cat) return '#F1F5F9';
+    let h = 0;
+    const s = String(cat);
+    for (let i = 0; i < s.length; i++) {
+      h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    }
+    return palette[Math.abs(h) % palette.length];
+  }
+
   const ORG_TYPES_BY_CATEGORY = {
     "Hospitals & Healthcare": [
       "Hospitals & Healthcare",
@@ -234,6 +257,7 @@
     const tbody = document.createElement("tbody");
     categories.forEach(cat => {
       const tr = document.createElement("tr");
+      tr.style.background = categoryColor(cat);
       const tdCat = document.createElement("td"); tdCat.textContent = cat;
       const tdOrg = document.createElement("td");
       const orgs = ORG_TYPES_BY_CATEGORY[cat] || [];
@@ -445,6 +469,7 @@
       const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
       if (items.length === 0) {
         const tr = document.createElement("tr");
+        tr.style.background = categoryColor(cat);
         const tdCat = document.createElement("td"); tdCat.textContent = cat; tdCat.style.padding = "8px";
         const tdEmpty = document.createElement("td"); tdEmpty.colSpan = 4; tdEmpty.textContent = "No checklists published for this category yet."; tdEmpty.className = "hint"; tdEmpty.style.padding = "8px";
         tr.append(tdCat, tdEmpty); tbody.appendChild(tr);
@@ -452,6 +477,7 @@
       }
       items.forEach((c, idx) => {
         const tr = document.createElement("tr"); tr.style.borderTop = "1px solid #eef1f6";
+        tr.style.background = categoryColor(cat);
         const tdCat = document.createElement("td"); tdCat.textContent = idx === 0 ? cat : ""; tdCat.style.padding = "8px"; tdCat.style.fontWeight = idx === 0 ? "600" : "normal";
         const tdName = document.createElement("td"); tdName.style.padding = "8px"; tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`;
         const tdDesc = document.createElement("td"); tdDesc.style.padding = "8px"; tdDesc.textContent = c.description || "";
