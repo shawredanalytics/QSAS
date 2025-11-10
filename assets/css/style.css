@@ -200,6 +200,8 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
   background: transparent; /* match Home logo's flat style */
   object-fit: contain;
 }
+/* Make the User page bottom brand logo match Home hero size */
+#brandLogoBottom { height: 128px; }
 .brand-title { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.2px; }
 .brand-nav { display: flex; gap: 8px; align-items: center; }
 /* Navigation links: pill style with better hit area */
