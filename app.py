@@ -293,10 +293,7 @@ elif section == "User Assessment":
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 else:  # Admin
-    # Page header for other sections appears at the top
-    st.title("QuXAT Self Assessment (QSA)")
-    st.caption("Assess your organization's quality journey and generate score & certificates")
-    st.subheader("Admin")
+    # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
         st.components.v1.html(
             '<iframe src="http://localhost:8000/admin.html" style="width:100%; height:100vh; border:none;"></iframe>',
