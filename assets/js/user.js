@@ -118,7 +118,7 @@
         buttonEl.innerHTML = '✅ Copied!';
         setTimeout(() => { buttonEl.innerHTML = prev; }, 1200);
       }
-      try { showToast('Link copied to clipboard. You can share it now.'); } catch(e) {}
+      try { showToast('Copied link: ' + text); } catch(e) {}
     };
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
       navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
