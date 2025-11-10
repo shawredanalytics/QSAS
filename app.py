@@ -56,6 +56,13 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
         body = html[start:end] if end != -1 else html[start:]
     else:
         body = html
+    # Inline asset references found in the body using data URLs so they render inside the embedded iframe
+    try:
+        for key, data_url in assets_map.items():
+            if data_url:
+                body = body.replace(key, data_url)
+    except Exception:
+        pass
     assets_js = f"<script>window.QSAS_ASSETS = {assets_map!r};</script>"
     # Compose embedded HTML
     composed = f"""
