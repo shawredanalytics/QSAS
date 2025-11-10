@@ -64,8 +64,8 @@ body {
   width: auto;
   border: none; /* flat logo: remove border */
   border-radius: 12px;
-  padding: 6px;
-  background: #f2f6ff; /* visibility for white-on-transparent PNG */
+  padding: 0; /* remove padding for pure image look */
+  background: transparent; /* remove background for flat appearance */
   object-fit: contain;
   margin-bottom: 14px;
 }
