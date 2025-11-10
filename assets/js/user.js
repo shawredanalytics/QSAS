@@ -524,7 +524,26 @@
 
   // Print certificate
   printCertBtn?.addEventListener("click", () => {
-    if (certEl?.hidden) return alert("Please start the assessment and select a checklist first.");
+    try {
+      if (certEl?.hidden) {
+        // If the certificate is hidden but the assessment has been approved, load it for printing
+        const prev = currentEmail ? getAssessmentByEmail(currentEmail, currentChecklistId || null) : null;
+        let approvedAssessment = prev && prev.status === "approved" ? prev : null;
+        if (!approvedAssessment && currentEmail) {
+          const arr = getAssessmentsByEmail(currentEmail).filter(a => a.status === "approved");
+          approvedAssessment = arr.sort((a,b) => new Date(b.verifiedAt||0) - new Date(a.verifiedAt||0))[0] || null;
+        }
+        if (approvedAssessment) {
+          // Populate state from the approved assessment so the certificate card renders
+          currentChecklistId = approvedAssessment.checklistId || currentChecklistId || "";
+          try { selections = new Set((approvedAssessment.selectedMetrics || []).map(m => m.id)); } catch {}
+          awaitingChoice = false;
+          render();
+          updateActionButtonsVisibility();
+          if (certEl) certEl.hidden = false;
+        }
+      }
+    } catch(e) {}
     window.print();
   });
 
@@ -666,6 +685,9 @@
     lines.push({ t: "QuXAT Self Assessment Certificate", style: "h1" });
     lines.push({ t: statusLabel, style: verified ? "ok" : "warn" });
     lines.push({ t: `Email: ${assessment.email}` });
+    if (assessment.checklistName || assessment.checklistId) {
+      lines.push({ t: `Checklist: ${assessment.checklistName || assessment.checklistId}` });
+    }
     if (assessment.orgName) lines.push({ t: `Organization: ${assessment.orgName}` });
     if (assessment.orgType) lines.push({ t: `Organization Type: ${assessment.orgType}` });
     if (assessment.repName) lines.push({ t: `Representative Name: ${assessment.repName}` });
@@ -717,6 +739,9 @@
     };
 
     writeLine(`Email: ${assessment.email}`);
+    if (assessment.checklistName || assessment.checklistId) {
+      writeLine(`Checklist: ${assessment.checklistName || assessment.checklistId}`);
+    }
     if (assessment.orgName) writeLine(`Organization: ${assessment.orgName}`);
     if (assessment.repName) writeLine(`Representative Name: ${assessment.repName}`);
     if (assessment.repDesignation) writeLine(`Designation: ${assessment.repDesignation}`);
