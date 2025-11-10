@@ -93,10 +93,9 @@ st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", l
 st.markdown(
     """
     <style>
-    /* Target the menu button directly and the toolbar container as fallback */
+    /* Hide only the 3‑dots app menu button, keep toolbar visible for sidebar toggle */
     button[title="View app menu"] { display: none !important; visibility: hidden !important; }
-    [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; height: 0 !important; }
-    /* Legacy selector support */
+    /* Legacy selector support for older Streamlit versions */
     #MainMenu { display: none !important; visibility: hidden !important; }
     </style>
     """,
