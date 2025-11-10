@@ -82,6 +82,20 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
+# Hide Streamlit's default 3-dots app menu on the top-right
+st.markdown(
+    """
+    <style>
+    /* Target the menu button directly and the toolbar container as fallback */
+    button[title="View app menu"] { display: none !important; visibility: hidden !important; }
+    [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; height: 0 !important; }
+    /* Legacy selector support */
+    #MainMenu { display: none !important; visibility: hidden !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Query param helpers to support end-to-end navigation from embedded pages
 def _get_query_params():
     try:
