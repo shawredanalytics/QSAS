@@ -62,7 +62,7 @@ body {
 .hero-logo {
   height: 128px; /* increased by three steps for prominence */
   width: auto;
-  border: 1px solid var(--border);
+  border: none; /* flat logo: remove border */
   border-radius: 12px;
   padding: 6px;
   background: #f2f6ff; /* visibility for white-on-transparent PNG */
