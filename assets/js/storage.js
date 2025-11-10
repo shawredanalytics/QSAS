@@ -232,6 +232,51 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality Improvement Checklists across requested categories
+    const QI_METRICS = [
+      { name: "Internal Audit Schedule and Reports", points: 5 },
+      { name: "Corrective and Preventive Actions (CAPA) Tracking", points: 5 },
+      { name: "SOP Review Cycle and Version Control", points: 5 },
+      { name: "Training Plan and Competence Records", points: 5 },
+      { name: "Feedback Collection and Analysis (stakeholders)", points: 5 },
+      { name: "Risk Register and Mitigation Actions", points: 5 },
+      { name: "Management Review Minutes and Actions", points: 5 },
+      { name: "Process KPIs Monitoring and Trends", points: 5 },
+      { name: "Data Quality Monitoring and Validation", points: 5 },
+      { name: "Continuous Improvement Projects (PDCA)", points: 5 },
+      { name: "Compliance Self‑Inspection Checks", points: 5 },
+      { name: "Documentation and Records Retention Controls", points: 5 },
+    ];
+
+    addBaselineIfMissing(
+      "Schools - Quality Improvement Checklist",
+      "Quality improvement framework focusing on audits, CAPA, SOPs, training, and KPIs.",
+      "Schools",
+      QI_METRICS
+    );
+
+    // Create separate visible entries for Colleges and Universities, grouped under the combined category
+    addBaselineIfMissing(
+      "Colleges - Quality Improvement Checklist",
+      "Quality improvement framework for colleges focusing on audits, CAPA, SOPs, training, and KPIs.",
+      "Colleges & Universities",
+      QI_METRICS
+    );
+
+    addBaselineIfMissing(
+      "Universities - Quality Improvement Checklist",
+      "Quality improvement framework for universities focusing on audits, CAPA, SOPs, training, and KPIs.",
+      "Colleges & Universities",
+      QI_METRICS
+    );
+
+    addBaselineIfMissing(
+      "Public & Community Organizations - Quality Improvement Checklist",
+      "Quality improvement framework for public/community organizations covering audits, CAPA, SOPs, and KPIs.",
+      "Public & Community Organizations",
+      QI_METRICS
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
