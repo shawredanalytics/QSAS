@@ -586,13 +586,25 @@
           const url = buildShareUrl(cat, c.id);
           copyToClipboard(url, copy);
         };
-        copy.oncontextmenu = (ev) => {
+        const getUrl = () => buildShareUrl(cat, c.id);
+        copy.addEventListener('contextmenu', (ev) => {
           ev.preventDefault();
-          const url = buildShareUrl(cat, c.id);
-          showContextMenu(ev.clientX, ev.clientY, [
+          ev.stopPropagation();
+          const url = getUrl();
+          showContextMenu(ev.clientX || 0, ev.clientY || 0, [
             { label: 'Copy link', onClick: () => copyToClipboard(url, copy) }
           ]);
-        };
+        }, { capture: true });
+        copy.addEventListener('mousedown', (ev) => {
+          if (ev.button === 2) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const url = getUrl();
+            showContextMenu(ev.clientX || 0, ev.clientY || 0, [
+              { label: 'Copy link', onClick: () => copyToClipboard(url, copy) }
+            ]);
+          }
+        }, { capture: true });
         tdAct.appendChild(start);
         tdAct.appendChild(copy);
         tr.append(tdCat, tdName, tdDesc, tdCount, tdAct); tbody.appendChild(tr);
