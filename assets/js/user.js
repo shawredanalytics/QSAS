@@ -118,6 +118,7 @@
         buttonEl.innerHTML = '✅ Copied!';
         setTimeout(() => { buttonEl.innerHTML = prev; }, 1200);
       }
+      try { showToast('Link copied to clipboard. You can share it now.'); } catch(e) {}
     };
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
       navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
@@ -132,6 +133,31 @@
     ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
     document.body.appendChild(ta); ta.focus(); ta.select();
     try { document.execCommand('copy'); onSuccess(); } finally { document.body.removeChild(ta); }
+  }
+
+  // Lightweight toast utility for feedback
+  function showToast(message) {
+    let el = document.getElementById('qsasToast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'qsasToast';
+      el.style.position = 'fixed';
+      el.style.bottom = '16px';
+      el.style.right = '16px';
+      el.style.background = '#111827';
+      el.style.color = '#fff';
+      el.style.padding = '8px 12px';
+      el.style.borderRadius = '6px';
+      el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+      el.style.zIndex = '9999';
+      el.style.fontSize = '14px';
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 150ms ease';
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.style.opacity = '1';
+    setTimeout(() => { el.style.opacity = '0'; }, 1800);
   }
   function limitedMetrics(id) {
     const all = id ? (getMetrics(id) || []) : [];
