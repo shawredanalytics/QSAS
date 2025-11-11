@@ -8,6 +8,8 @@ const QSAS_KEYS = {
   checklists: "qsas_checklists",
   metricsByChecklist: "qsas_metrics_by_checklist",
   assessments: "qsas_assessments",
+  // Healthcare Quality Grid registrations
+  gridRegistrations: "qsas_grid_registrations",
   seeded: "qsas_seeded_v4",
 };
 
@@ -33,6 +35,9 @@ function ensureDefaults() {
   }
   if (!localStorage.getItem(QSAS_KEYS.assessments)) {
     localStorage.setItem(QSAS_KEYS.assessments, JSON.stringify([]));
+  }
+  if (!localStorage.getItem(QSAS_KEYS.gridRegistrations)) {
+    localStorage.setItem(QSAS_KEYS.gridRegistrations, JSON.stringify([]));
   }
   // Migrate legacy baseline names to organization-oriented titles
   try {
@@ -679,4 +684,73 @@ function generateReportText(assessment, verified) {
     lines.push("This report has been verified and approved by Admin.");
   }
   return lines.join("\n");
+}
+
+// -----------------------------
+// Healthcare Quality Grid API
+// -----------------------------
+function getGridRegistrations() {
+  ensureDefaults();
+  try {
+    const raw = localStorage.getItem(QSAS_KEYS.gridRegistrations) || "[]";
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+
+function saveGridRegistrations(list) {
+  localStorage.setItem(QSAS_KEYS.gridRegistrations, JSON.stringify(Array.isArray(list) ? list : []));
+}
+
+// metricsAll: array of { id, name, points }
+// selectedIds: array of ids
+// details: { orgName, orgType, repName, repDesignation, email, achievements, consent }
+function submitGridRegistration(metricsAll, selectedIds, details = {}) {
+  const all = Array.isArray(metricsAll) ? metricsAll : [];
+  const ids = Array.isArray(selectedIds) ? selectedIds : [];
+  const perMetric = all.length ? (QSAS_MAX_SCORE / all.length) : 0;
+  const selected = all.filter(m => ids.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: perMetric }));
+  const score = Math.round(selected.length * perMetric);
+  const cls = classifyScore(score, QSAS_MAX_SCORE, { metrics: all, selectedIds: ids });
+  const now = new Date().toISOString();
+  const payload = {
+    id: generateId(),
+    email: String(details?.email || ""),
+    orgName: String(details?.orgName || ""),
+    orgType: String(details?.orgType || ""),
+    repName: String(details?.repName || ""),
+    repDesignation: String(details?.repDesignation || ""),
+    achievements: String(details?.achievements || ""),
+    consent: !!details?.consent,
+    selectedMetrics: selected,
+    score,
+    scorePercent: cls.percent,
+    classification: cls.label,
+    suggestions: cls.suggestions,
+    status: "pending",
+    submittedAt: now,
+    verifiedAt: null,
+    adminNote: "",
+  };
+  const regs = getGridRegistrations();
+  // replace existing by email if present
+  const idx = regs.findIndex(r => (r.email || "").toLowerCase() === String(payload.email).toLowerCase());
+  if (idx !== -1) regs[idx] = payload; else regs.push(payload);
+  saveGridRegistrations(regs);
+  return payload;
+}
+
+function updateGridRegistrationStatusById(id, status, adminNote = "") {
+  const regs = getGridRegistrations();
+  const idx = regs.findIndex(r => r.id === id);
+  if (idx === -1) return false;
+  regs[idx].status = status;
+  regs[idx].adminNote = String(adminNote || "");
+  if (status === "approved") regs[idx].verifiedAt = new Date().toISOString();
+  saveGridRegistrations(regs);
+  return true;
+}
+
+function getApprovedGridRegistrations() {
+  return getGridRegistrations().filter(r => r.status === "approved");
 }

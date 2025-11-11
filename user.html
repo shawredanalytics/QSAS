@@ -22,7 +22,7 @@
             const url = base + '/?section=' + encodeURIComponent(s);
             const port = String(topWin.location.port || '');
             const host = String(topWin.location.hostname || '');
-            const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
+            const isStreamlit = host.includes('streamlit') || ['8501','8502','8503','8504'].includes(port);
             if (isStreamlit) {
               // Open Streamlit section in a fresh tab
               try {

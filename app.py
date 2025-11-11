@@ -139,6 +139,7 @@ def render_sidebar_once():
         st.subheader("Navigation")
         go_home = st.button("Home", use_container_width=True)
         go_admin = st.button("Admin Portal", use_container_width=True)
+        go_hq_grid = st.button("Healthcare Quality Grid", use_container_width=True)
 
     if go_home:
         st.session_state["section"] = "Home"
@@ -147,6 +148,10 @@ def render_sidebar_once():
     if go_admin:
         st.session_state["section"] = "Admin"
         _set_query_section("Admin")
+        st.rerun()
+    if go_hq_grid:
+        st.session_state["section"] = "Healthcare Quality Grid"
+        _set_query_section("Healthcare Quality Grid")
         st.rerun()
 
 _sync_section_from_query()
@@ -292,6 +297,10 @@ elif section == "User Assessment":
     """
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
+elif section == "Healthcare Quality Grid":
+    # Embed the new Healthcare Quality Grid page
+    html_grid = build_embedded_page("hq-grid.html")
+    st.components.v1.html(html_grid, height=2200, scrolling=True)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":

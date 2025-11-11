@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthcare Quality Grid — QuXAT QSAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+    <script>
+      (function(){
+        // Navigation links open sections in Streamlit or fall back to static pages
+        const links = document.querySelectorAll('a[data-section]');
+        links.forEach(a => {
+          a.addEventListener('click', function(e){
+            e.preventDefault();
+            const s = a.dataset.section;
+            const topWin = window.top || window.parent || window;
+            const base = topWin.location.origin;
+            const url = base + '/?section=' + encodeURIComponent(s);
+            const port = String(topWin.location.port || '');
+            const host = String(topWin.location.hostname || '');
+            const isStreamlit = host.includes('streamlit') || ['8501','8502','8503','8504'].includes(port);
+            if (isStreamlit) {
+              try { const w = topWin.open(url, '_blank'); if (w && w.focus) w.focus(); } catch(err) {
+                try { const w2 = window.open(url, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(e) {}
+              }
+            } else {
+              let fallback = 'hq-grid.html';
+              try { const w = topWin.open(fallback, '_blank'); if (w && w.focus) w.focus(); } catch(e) {
+                try { const w2 = window.open(fallback, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(_) {}
+              }
+            }
+          });
+        });
+      })();
+    </script>
+
+    <header class="site-header">
+      <div class="brand-bar container wide">
+        <div class="brand-left">
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+          <div>
+            <div class="brand-title">Healthcare Quality Grid</div>
+            <div class="subtitle">Assess Quality, Safety, and Compliance credentials</div>
+          </div>
+        </div>
+        <nav class="brand-nav">
+          <a href="#" data-section="Home" class="btn btn-outline">Home</a>
+          <a href="#" data-section="User Assessment" class="btn btn-outline">User Assessment</a>
+          <a href="#" data-section="Healthcare Quality Grid" class="btn btn-primary">Open Grid</a>
+          <a href="#" data-section="Admin" class="btn btn-outline">Admin Portal</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container wide">
+      <section class="card">
+        <h2>QuXAT Healthcare Quality Grid</h2>
+        <p class="hint">QuXAT Healthcare Quality Grid is based on Quality, Safety and Compliance standards. The Grid contains organizations that comply on these 3 pillar of standardization. Recognition with QuXAT Healthcare Quality Grid will open opportunities for industries to network among organizations that stand by Quality, Safety and Compliance requirements.</p>
+        <div id="gridIntro" class="card info">
+          <h3>Guideline Domains</h3>
+          <ul class="list">
+            <li><strong>Quality</strong> — Clinical governance, evidence‑based care, audits, feedback.</li>
+            <li><strong>Safety</strong> — Infection control, medication safety, incident reporting, training.</li>
+            <li><strong>Compliance</strong> — Licensing, privacy, accreditation alignment, emergency preparedness.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Quality Grid Marketplace — Industries & Registered Organizations</h3>
+        <p class="hint">QuXAT Healthcare Quality Grid is a market place where all stakeholder of quality healthcare delivery can connect and network with similar quality centric ideals to build business relationships. Quality grid should be the platform where organization that have proven quality credentials can reach to similar organizations through the quality grid portal. The various industries registered with the quality grid are mentioned on the quality grid homepage under respective industry heads.</p>
+        <div id="gridIndustryEmpty" class="empty" hidden>No verified registrations yet.</div>
+        <div id="gridIndustryMount" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:12px;"></div>
+      </section>
+
+      <section class="card">
+        <h3>Register for the Healthcare Quality Grid</h3>
+        <p class="hint">Share your organization details and achievements to be listed on the Healthcare Quality Grid after admin verification.</p>
+        <form id="hqRegForm" class="form-grid">
+          <label>
+            Organization Name
+            <input type="text" id="orgName" placeholder="e.g., City General Hospital" required />
+          </label>
+          <label>
+            Organization Type
+            <select id="orgType" required>
+              <option value="">Select type</option>
+              <option>Hospital</option>
+              <option>Diagnostic Laboratory</option>
+              <option>Pharmacy</option>
+              <option>Dental Clinic</option>
+              <option>Health Center</option>
+              <option>Other Healthcare</option>
+            </select>
+          </label>
+          <label>
+            Representative Name
+            <input type="text" id="repName" placeholder="Authorized representative" required />
+          </label>
+          <label>
+            Designation
+            <input type="text" id="repDesignation" placeholder="e.g., Quality Manager" required />
+          </label>
+          <label>
+            Contact Email
+            <input type="email" id="contactEmail" placeholder="name@example.com" required />
+          </label>
+          <hr class="mt" />
+          <!-- Checklist import removed as requested -->
+
+          <hr class="mt" />
+          <h4>Quality</h4>
+          <ul id="qualityList" class="list checklist"></ul>
+          <h4>Safety</h4>
+          <ul id="safetyList" class="list checklist"></ul>
+          <h4>Compliance</h4>
+          <ul id="complianceList" class="list checklist"></ul>
+          <!-- Move achievements and consent just before submit button -->
+          <label class="full">
+            Achievements (Quality, Safety, Compliance)
+            <textarea id="achievements" rows="4" placeholder="Briefly summarize notable achievements, programs, or certifications" required></textarea>
+          </label>
+          <label class="full" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="consent" />
+            <span>I confirm the information is accurate and consent to listing after admin verification.</span>
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Register for Healthcare Quality Grid</button>
+          </div>
+        </form>
+        <div id="hqRegHint" class="hint">Your registration will appear on the Home page once approved.</div>
+      </section>
+
+      
+
+      <!-- Score bar and suggestions removed per request -->
+    </main>
+
+    <script>
+      (function(){
+        const qualityGuidelines = [
+          { id: 'q1', text: 'Clinical governance and QMS documentation approved by leadership' },
+          { id: 'q2', text: 'Evidence‑based clinical protocols standardized across departments' },
+          { id: 'q3', text: 'Continuous clinical audit program with action tracking' },
+          { id: 'q4', text: 'Patient feedback captured and reviewed; actions communicated' },
+        ];
+        const safetyGuidelines = [
+          { id: 's1', text: 'Infection prevention & control program with surveillance indicators' },
+          { id: 's2', text: 'Medication safety processes (prescribing, dispensing, administration)' },
+          { id: 's3', text: 'Incident reporting and root‑cause analysis (RCA) performed' },
+          { id: 's4', text: 'Staff training and competency checks on safety‑critical tasks' },
+        ];
+        const complianceGuidelines = [
+          { id: 'c1', text: 'Licensing & statutory compliance current and documented' },
+          { id: 'c2', text: 'Data protection and patient privacy compliance implemented' },
+          { id: 'c3', text: 'Accreditation alignment (e.g., NABH/ISO) roadmap and gap log' },
+          { id: 'c4', text: 'Emergency preparedness plan with regular drills' },
+        ];
+
+        function perMetricFor(total){
+          const t = Math.max(1, Number(total) || 0);
+          return Math.round((100 / t) * 100) / 100;
+        }
+
+        const qualityList = document.getElementById('qualityList');
+        const safetyList = document.getElementById('safetyList');
+        const complianceList = document.getElementById('complianceList');
+        // Score bar and suggestions removed
+        const hqRegForm = document.getElementById('hqRegForm');
+        const orgNameInput = document.getElementById('orgName');
+        const orgTypeInput = document.getElementById('orgType');
+        const repNameInput = document.getElementById('repName');
+        const repDesignationInput = document.getElementById('repDesignation');
+        const contactEmailInput = document.getElementById('contactEmail');
+        const achievementsInput = document.getElementById('achievements');
+        const consentInput = document.getElementById('consent');
+
+        const state = new Set();
+
+        function classify(percent){
+          if (percent >= 90) return { label: 'Exemplary', badge: 'badge-exemplary' };
+          if (percent >= 75) return { label: 'Strong', badge: 'badge-strong' };
+          if (percent >= 50) return { label: 'Developing', badge: 'badge-developing' };
+          if (percent >= 25) return { label: 'Early', badge: 'badge-early' };
+          return { label: 'Needs Immediate Improvement', badge: 'badge-needs-improvement' };
+        }
+
+        function getSuggestions(selectedCount){
+          const s = [];
+          if (selectedCount < 4) s.push('Establish core governance, infection control, and licensing baseline.');
+          if (selectedCount < 8) s.push('Standardize protocols and medication safety; begin audits and RCA.');
+          s.push('Schedule regular drills and monitor safety indicators; close gaps via PDSA.');
+          return s;
+        }
+
+        function renderList(container, items){
+          container.innerHTML = '';
+          items.forEach(it => {
+            const li = document.createElement('li');
+            const label = document.createElement('label');
+            label.style.padding = '8px';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = state.has(it.id);
+            cb.addEventListener('change', () => {
+              if (cb.checked) state.add(it.id); else state.delete(it.id);
+              updateScore();
+            });
+            const span = document.createElement('span');
+            span.textContent = it.text;
+            span.style.marginLeft = '10px';
+            label.append(cb, span);
+            li.appendChild(label);
+            container.appendChild(li);
+          });
+        }
+
+        function updateScore(){ /* UI score display removed */ }
+
+        function resetGrid(){
+          state.clear();
+          renderAll();
+          updateScore();
+        }
+
+        function renderAll(){
+          renderList(qualityList, qualityGuidelines);
+          renderList(safetyList, safetyGuidelines);
+          renderList(complianceList, complianceGuidelines);
+        }
+
+        // Checklist import removed: selector and rendering logic deleted
+
+        // Marketplace: group approved registrations under industry heads and provide Connect actions
+        function normalizeIndustry(raw) {
+          const s = String(raw || '').toLowerCase();
+          if (!s) return 'Other Healthcare';
+          if (s.includes('hospital')) return 'Hospitals';
+          if (s.includes('diagnostic') || s.includes('laborator')) return 'Diagnostic Laboratories';
+          if (s.includes('pharma') || s.includes('pharmacy')) return 'Pharmacies';
+          if (s.includes('dental')) return 'Dental Clinics';
+          if (s.includes('health') && s.includes('center')) return 'Health Centers';
+          if (s.includes('clinic')) return 'Clinics';
+          return 'Other Healthcare';
+        }
+
+        function renderIndustryGrid() {
+          const mount = document.getElementById('gridIndustryMount');
+          const empty = document.getElementById('gridIndustryEmpty');
+          if (!mount || !empty) return;
+          let regs = [];
+          try { regs = (typeof getApprovedGridRegistrations === 'function') ? getApprovedGridRegistrations() : []; } catch(e) { regs = []; }
+          mount.innerHTML = '';
+          empty.hidden = regs.length !== 0;
+          if (!regs.length) return;
+          const byHead = new Map();
+          regs.forEach(r => {
+            const head = normalizeIndustry(r.orgType);
+            if (!byHead.has(head)) byHead.set(head, []);
+            byHead.get(head).push(r);
+          });
+          const heads = Array.from(byHead.keys()).sort((a,b) => a.localeCompare(b));
+          heads.forEach(head => {
+            const items = (byHead.get(head) || []).sort((a,b) => String(a.orgName||'').localeCompare(String(b.orgName||'')));
+            const card = document.createElement('div');
+            card.className = 'card info';
+            const title = document.createElement('div');
+            title.className = 'item-title';
+            title.textContent = `${head} (${items.length})`;
+            const list = document.createElement('ul');
+            list.className = 'list';
+            items.forEach(r => {
+              const li = document.createElement('li');
+              const top = document.createElement('div');
+              top.className = 'item-title';
+              top.textContent = r.orgName || 'Organization';
+              const sub = document.createElement('div');
+              sub.className = 'item-sub';
+              sub.textContent = `Classification: ${r.classification || '-'} (${r.scorePercent ?? 0}%)`;
+              const actions = document.createElement('div');
+              actions.className = 'item-actions';
+              const connect = document.createElement('a');
+              connect.href = `mailto:${encodeURIComponent(r.email || '')}?subject=${encodeURIComponent('QuXAT Healthcare Quality Grid • Connection Request')}`;
+              connect.className = 'btn';
+              connect.textContent = 'Connect';
+              const details = document.createElement('button');
+              details.className = 'btn';
+              details.textContent = 'View Achievements';
+              details.onclick = () => {
+                const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join('\n');
+                const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join('\n')}\n` : '';
+                const extra = [
+                  r.repName ? `Representative: ${r.repName}` : null,
+                  r.repDesignation ? `Designation: ${r.repDesignation}` : null,
+                  r.achievements ? `Achievements: ${r.achievements}` : null,
+                ].filter(Boolean).join('\n');
+                alert(`${r.orgName || 'Organization'} • ${normalizeIndustry(r.orgType)}\n${extra ? extra + '\n' : ''}${sug}\nSelected Guidelines:\n${lines}`);
+              };
+              actions.append(connect, details);
+              li.append(top, sub, actions);
+              list.appendChild(li);
+            });
+            card.append(title, list);
+            mount.appendChild(card);
+          });
+        }
+
+        // Registration submit handler
+        hqRegForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const orgName = orgNameInput.value.trim();
+          const orgType = orgTypeInput.value.trim();
+          const repName = repNameInput.value.trim();
+          const repDesignation = repDesignationInput.value.trim();
+          const email = contactEmailInput.value.trim();
+          const achievements = achievementsInput.value.trim();
+          const consent = consentInput.checked;
+          if (!consent) {
+            return alert('Please provide consent to proceed with registration.');
+          }
+          if (!orgName || !orgType || !repName || !repDesignation || !email || !achievements) {
+            return alert('Please fill in all required fields.');
+          }
+          const baseItems = [...qualityGuidelines, ...safetyGuidelines, ...complianceGuidelines].map(it => ({ id: it.id, name: it.text }));
+          const perMetric = perMetricFor(baseItems.length);
+          const allItems = baseItems.map(it => ({ id: it.id, name: it.name, points: perMetric }));
+          const selectedIds = Array.from(state);
+          try {
+            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, achievements, consent });
+            alert('Registration submitted successfully. Admin will review and verify.');
+            hqRegForm.reset();
+          } catch(err) {
+            console.error(err);
+            alert('Failed to submit registration. Please try again.');
+          }
+        });
+
+        // Download report and reset controls removed
+
+        renderAll();
+        updateScore();
+        renderIndustryGrid();
+      })();
+    </script>
+  </body>
+</html>

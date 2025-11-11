@@ -28,7 +28,7 @@
           const streamlitUrl = base + '/?' + params.toString();
           const port = String(topWin.location.port || '');
           const host = String(topWin.location.hostname || '');
-          const isStreamlit = host.includes('streamlit') || port === '8501' || port === '8502';
+          const isStreamlit = host.includes('streamlit') || ['8501','8502','8503','8504'].includes(port);
           if (isStreamlit) {
             // Open Streamlit section in a fresh tab
             try {
@@ -116,6 +116,13 @@
         <p class="hint">Pick your industry and start with a relevant checklist.</p>
         <div id="industryCards" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
         <p id="industryEmpty" class="empty" hidden>No published checklists yet. Create and publish them in the Admin portal.</p>
+      </section>
+
+      <section class="card">
+        <h3>Healthcare Quality Grid — Verified Organizations</h3>
+        <p class="hint">Organizations verified by Admin and compliant with the Healthcare Quality Grid are listed here.</p>
+        <div id="hqGridEmpty" class="empty" hidden>No verified organizations yet.</div>
+        <div id="hqGridApproved" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
       </section>
 
       
@@ -333,6 +340,48 @@
 
         renderTable();
         renderCards();
+      })();
+      (function(){
+        // Render approved Healthcare Quality Grid organizations
+        const mount = document.getElementById('hqGridApproved');
+        const empty = document.getElementById('hqGridEmpty');
+        let regs = [];
+        try {
+          regs = (typeof getApprovedGridRegistrations === 'function')
+            ? getApprovedGridRegistrations()
+            : (getGridRegistrations() || []).filter(r => r.status === 'approved');
+        } catch(e) { regs = []; }
+        if (!regs.length) { empty.hidden = false; return; }
+        empty.hidden = true;
+        regs.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'card info';
+          const title = document.createElement('div');
+          title.className = 'item-title';
+          title.textContent = r.orgName || 'Organization';
+          const sub = document.createElement('div');
+          sub.className = 'item-sub';
+          sub.textContent = `${r.orgType || 'Healthcare'} • Classification: ${r.classification || '-'} (${r.scorePercent ?? 0}%)`;
+          const actions = document.createElement('div');
+          actions.className = 'actions';
+          const a = document.createElement('a');
+          a.href = '#'; a.className = 'btn';
+          a.textContent = 'View Grid Details';
+          a.onclick = (e) => { e.preventDefault();
+            const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join('\n');
+            const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join('\n')}\n` : '';
+            const extra = [
+              r.email ? `Contact Email: ${r.email}` : null,
+              r.repName ? `Representative: ${r.repName}` : null,
+              r.repDesignation ? `Designation: ${r.repDesignation}` : null,
+              r.achievements ? `Achievements: ${r.achievements}` : null,
+            ].filter(Boolean).join('\n');
+            alert(`${r.orgName || 'Organization'} • ${r.orgType || 'Healthcare'}\n${extra ? extra + '\n' : ''}${sug}\nSelected Guidelines:\n${lines}`);
+          };
+          actions.appendChild(a);
+          card.append(title, sub, actions);
+          mount.appendChild(card);
+        });
       })();
     </script>
   </body>

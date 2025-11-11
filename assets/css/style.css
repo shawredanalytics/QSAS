@@ -212,6 +212,11 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 .brand-nav .btn:hover { box-shadow: 0 10px 22px rgba(71,116,226,0.24); }
 @media (max-width: 860px) { .brand-bar { flex-wrap: wrap; gap: 10px; } .brand-nav { flex-wrap: wrap; gap: 6px; } }
 
+/* Outline button variant for header navigation to improve visibility */
+.btn-outline { background: transparent; color: var(--primary); border-color: #355fd1; }
+.btn-outline:hover { background: #eef3ff; color: #1f5eea; }
+.brand-nav .btn-outline { color: var(--primary); box-shadow: none; }
+
 /* Cookie banner */
 .cookie-banner {
   position: fixed; bottom: 16px; left: 16px; right: 16px;
@@ -312,3 +317,25 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 /* Legend list compact layout */
 .legend-list li { display: grid; grid-template-columns: 1fr; gap: 6px; }
 .legend-list .item-title { display: flex; align-items: center; gap: 8px; }
+
+/* Compact checklist layout within registration form */
+.form-grid .list.checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 8px;
+}
+.form-grid .list.checklist li {
+  padding: 8px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fbff;
+}
+.form-grid .list.checklist label {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.form-grid .list.checklist input[type=checkbox] { transform: scale(1.1); }
