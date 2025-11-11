@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HQ Grid Admin — QuXAT QSAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+    <script>
+      (function(){
+        // Navigation links open sections in Streamlit or fall back to static pages
+        const links = document.querySelectorAll('a[data-section]');
+        links.forEach(a => {
+          a.addEventListener('click', function(e){
+            e.preventDefault();
+            const s = a.dataset.section;
+            const topWin = window.top || window.parent || window;
+            const base = topWin.location.origin;
+            const params = new URLSearchParams();
+            params.set('section', s);
+            const streamlitUrl = base + '/?' + params.toString();
+            const port = String(topWin.location.port || '');
+            const host = String(topWin.location.hostname || '');
+            const isStreamlit = host.includes('streamlit') || ['8501','8502','8503','8504'].includes(port);
+            if (isStreamlit) {
+              try { const w = topWin.open(streamlitUrl, '_blank'); if (w && w.focus) w.focus(); } catch(err) {
+                try { const w2 = window.open(streamlitUrl, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(e) {}
+              }
+            } else {
+              let fallback = 'hq-admin.html';
+              if (s && s.toLowerCase().includes('home')) fallback = 'index.html';
+              if (s && s.toLowerCase().includes('user')) fallback = 'user.html';
+              if (s && s.toLowerCase().includes('grid')) fallback = 'hq-grid.html';
+              try { const w = topWin.open(fallback, '_blank'); if (w && w.focus) w.focus(); } catch(e) {
+                try { const w2 = window.open(fallback, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(_) {}
+              }
+            }
+          });
+        });
+      })();
+    </script>
+
+    <header class="site-header">
+      <div class="brand-bar container wide">
+        <div class="brand-left">
+          <img class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+          <div>
+            <div class="brand-title">HQ Grid Admin</div>
+            <div class="subtitle">Review and verify Healthcare Quality Grid registrations</div>
+          </div>
+        </div>
+        <!-- Navigation removed per request -->
+      </div>
+    </header>
+
+    <main class="container wide">
+      <section class="card">
+        <h3>Admin Login</h3>
+        <form id="loginForm" class="form-grid">
+          <label>
+            Username
+            <input type="text" id="adminUsername" placeholder="admin" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="adminPassword" placeholder="quxat123" required />
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+          <p class="hint">Use your QSAS Admin credentials.</p>
+        </form>
+      </section>
+
+      <section id="gridAdminPanel" class="card" hidden>
+        <h3>Healthcare Quality Grid Registrations</h3>
+        <div class="actions" style="gap:8px;">
+          <select id="statusFilter" class="btn">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button id="refreshRegs" class="btn">Refresh</button>
+        </div>
+        <div id="gridRegsEmpty" class="empty" hidden>No grid registrations yet.</div>
+        <div id="gridRegsMount" class="list"></div>
+      </section>
+    </main>
+
+    <script src="assets/js/hq-admin.js"></script>
+  </body>
+</html>

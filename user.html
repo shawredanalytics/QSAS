@@ -36,7 +36,12 @@
               }
             } else {
               // Static fallback
-              let fallback = (s && s.toLowerCase().includes('admin')) ? 'admin.html' : 'user.html';
+              let fallback = 'user.html';
+              const sl = String(s || '').toLowerCase();
+              if (sl.includes('hq grid admin')) fallback = 'hq-admin.html';
+              else if (sl === 'admin' || (sl.includes('admin') && !sl.includes('hq'))) fallback = 'admin.html';
+              else if (sl.includes('grid')) fallback = 'hq-grid.html';
+              else if (sl.includes('home')) fallback = 'index.html';
               try {
                 const w = topWin.open(fallback, '_blank');
                 if (w && typeof w.focus === 'function') w.focus();

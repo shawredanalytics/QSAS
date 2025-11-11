@@ -273,7 +273,6 @@
     credPasswordInput.value = creds.password;
     renderChecklists();
     renderMetrics();
-    renderGridRegistrations();
     renderSubmissions();
   }
 
@@ -421,7 +420,7 @@
   }
 
   // Refresh submissions list when window gains focus
-  window.addEventListener("focus", () => { renderSubmissions(); renderGridRegistrations(); });
+  window.addEventListener("focus", () => { renderSubmissions(); });
 
   // Checklist selection controls
   checklistSelect?.addEventListener("change", () => {
@@ -478,58 +477,3 @@
   // Metrics search
   const metricsSearchInput = document.getElementById("metricsSearch");
   metricsSearchInput?.addEventListener("input", () => { renderMetrics(); });
-
-// Render Healthcare Quality Grid registrations
-function renderGridRegistrations() {
-  const regs = getGridRegistrations();
-  if (!gridRegsList || !gridRegsEmpty) return;
-  gridRegsList.innerHTML = "";
-  gridRegsEmpty.hidden = regs.length !== 0;
-  regs.forEach(r => {
-    const li = document.createElement("li");
-    const left = document.createElement("div");
-    const badge = (function(lbl){
-      const l = String(lbl || "").toLowerCase();
-      if (l.includes("exemplary")) return "badge-exemplary";
-      if (l.includes("strong")) return "badge-strong";
-      if (l.includes("develop")) return "badge-developing";
-      if (l.includes("early")) return "badge-early";
-      if (l.includes("needs")) return "badge-needs-improvement";
-      return "";
-    })(r.classification);
-    left.innerHTML = `<div class="item-title">${r.orgName || "Organization"} • ${r.orgType || "Healthcare"}</div><div class="item-sub">Score ${r.score} • Classification <span class="badge ${badge}">${r.classification || "-"}</span> (${r.scorePercent ?? 0}%) • ${r.status.toUpperCase()} • submitted ${new Date(r.submittedAt).toLocaleString()}</div>`;
-    const actions = document.createElement("div");
-    actions.className = "item-actions";
-
-    const viewBtn = document.createElement("button");
-    viewBtn.className = "btn";
-    viewBtn.textContent = "View";
-    viewBtn.onclick = () => {
-      const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join("\n");
-      const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
-      const extra = [
-        r.email ? `Contact Email: ${r.email}` : null,
-        r.repName ? `Representative: ${r.repName}` : null,
-        r.repDesignation ? `Designation: ${r.repDesignation}` : null,
-        r.achievements ? `Achievements: ${r.achievements}` : null,
-      ].filter(Boolean).join("\n");
-      alert(`${r.orgName || "Organization"} • ${r.orgType || "Healthcare"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Guidelines:\n${lines}`);
-    };
-
-    const approveBtn = document.createElement("button");
-    approveBtn.className = "btn btn-primary";
-    approveBtn.textContent = "Approve";
-    approveBtn.disabled = r.status === "approved";
-    approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); renderGridRegistrations(); };
-
-    const rejectBtn = document.createElement("button");
-    rejectBtn.className = "btn btn-danger";
-    rejectBtn.textContent = "Reject";
-    rejectBtn.disabled = r.status === "rejected";
-    rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); renderGridRegistrations(); };
-
-    actions.append(viewBtn, approveBtn, rejectBtn);
-    li.append(left, actions);
-    gridRegsList.appendChild(li);
-  });
-}

@@ -32,6 +32,11 @@
               }
             } else {
               let fallback = 'hq-grid.html';
+              // Route to specific static pages when not in Streamlit
+              if (s && s.toLowerCase().includes('hq grid admin')) fallback = 'hq-admin.html';
+              else if (s && s.toLowerCase() === 'admin') fallback = 'admin.html';
+              else if (s && s.toLowerCase().includes('user')) fallback = 'user.html';
+              else if (s && s.toLowerCase().includes('home')) fallback = 'index.html';
               try { const w = topWin.open(fallback, '_blank'); if (w && w.focus) w.focus(); } catch(e) {
                 try { const w2 = window.open(fallback, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(_) {}
               }
@@ -50,12 +55,7 @@
             <div class="subtitle">Assess Quality, Safety, and Compliance credentials</div>
           </div>
         </div>
-        <nav class="brand-nav">
-          <a href="#" data-section="Home" class="btn btn-outline">Home</a>
-          <a href="#" data-section="User Assessment" class="btn btn-outline">User Assessment</a>
-          <a href="#" data-section="Healthcare Quality Grid" class="btn btn-primary">Open Grid</a>
-          <a href="#" data-section="Admin" class="btn btn-outline">Admin Portal</a>
-        </nav>
+        <!-- Navigation removed per request -->
       </div>
     </header>
 

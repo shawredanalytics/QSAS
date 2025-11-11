@@ -44,7 +44,12 @@
             // Fallback to static pages when not embedded in Streamlit
             let fallback = a.getAttribute('href');
             if (!fallback || fallback === '#') {
-              fallback = (s && s.toLowerCase().includes('admin')) ? 'admin.html' : 'user.html';
+              const sl = String(s || '').toLowerCase();
+              if (sl.includes('hq grid admin')) fallback = 'hq-admin.html';
+              else if (sl === 'admin' || (sl.includes('admin') && !sl.includes('hq'))) fallback = 'admin.html';
+              else if (sl.includes('grid')) fallback = 'hq-grid.html';
+              else if (sl.includes('home')) fallback = 'index.html';
+              else fallback = 'user.html';
             }
             try {
               const w = topWin.open(fallback, '_blank');

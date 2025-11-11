@@ -36,6 +36,8 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
         page_js = read_text("assets/js/user.js")
     elif "admin.html" in html_rel:
         page_js = read_text("assets/js/admin.js")
+    elif "hq-admin.html" in html_rel:
+        page_js = read_text("assets/js/hq-admin.js")
     else:
         page_js = ""
     # Assets mapping (include both encoded and unencoded key variants)
@@ -137,9 +139,19 @@ def render_sidebar_once():
 
     with st.sidebar:
         st.subheader("Navigation")
-        go_home = st.button("Home", use_container_width=True)
-        go_admin = st.button("Admin Portal", use_container_width=True)
+        # Primary navigation at the top
+        go_home = st.button("QSAS Portal", use_container_width=True)
         go_hq_grid = st.button("Healthcare Quality Grid", use_container_width=True)
+
+        # Visual separation, admin actions moved to the bottom area
+        try:
+            st.divider()
+        except Exception:
+            st.markdown("<hr>", unsafe_allow_html=True)
+
+        st.subheader("Admin")
+        go_admin = st.button("QSAS Admin Portal", use_container_width=True)
+        go_hq_admin = st.button("HQ Grid Admin", use_container_width=True)
 
     if go_home:
         st.session_state["section"] = "Home"
@@ -148,6 +160,10 @@ def render_sidebar_once():
     if go_admin:
         st.session_state["section"] = "Admin"
         _set_query_section("Admin")
+        st.rerun()
+    if go_hq_admin:
+        st.session_state["section"] = "HQ Grid Admin"
+        _set_query_section("HQ Grid Admin")
         st.rerun()
     if go_hq_grid:
         st.session_state["section"] = "Healthcare Quality Grid"
@@ -285,22 +301,51 @@ elif section == "User Assessment":
         chk = raw_chk[0] if raw_chk else None
     elif isinstance(raw_chk, str):
         chk = raw_chk
-    js_bootstrap = f"""
+    js_bootstrap = """
     (function(){{
       try {{
-        var cat = {cat!r};
-        var chk = {chk!r};
+        var cat = {cat};
+        var chk = {chk};
         if (cat) localStorage.setItem('qsas_boot_category', String(cat));
         if (chk) localStorage.setItem('qsas_boot_checklist', String(chk));
       }} catch(e) {{}}
     }})();
-    """
+    """.format(cat=repr(cat), chk=repr(chk))
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 elif section == "Healthcare Quality Grid":
     # Embed the new Healthcare Quality Grid page
     html_grid = build_embedded_page("hq-grid.html")
     st.components.v1.html(html_grid, height=2200, scrolling=True)
+elif section == "HQ Grid Admin":
+    # Embed the HQ Grid Admin page and inject/admin-fill credentials for convenience
+    _u = admin_username or "admin"
+    _p = admin_password or "quxat123"
+    js_bootstrap = """
+    (function(){{
+      try {{
+        const K={{u:'qsas_admin_username',p:'qsas_admin_password'}};
+        const u={u};
+        const p={p};
+        if (u) localStorage.setItem(K.u, u);
+        if (p) localStorage.setItem(K.p, p);
+      }} catch(e) {{}}
+      window.addEventListener('load', function(){{
+        try {{
+          const form = document.getElementById('loginForm');
+          const uEl = document.getElementById('adminUsername');
+          const pEl = document.getElementById('adminPassword');
+          if (uEl) uEl.value = {u};
+          if (pEl) pEl.value = {p};
+          if ({auto_login}) {{
+            if (form) form.dispatchEvent(new Event('submit', {{ bubbles: true, cancelable: true }}));
+          }}
+        }} catch(e) {{}}
+      }});
+    }})();
+    """.format(u=repr(_u), p=repr(_p), auto_login=str(bool(admin_auto_login)).lower())
+    html_hq_admin = build_embedded_page("hq-admin.html", bootstrap_js=js_bootstrap)
+    st.components.v1.html(html_hq_admin, height=1600, scrolling=True)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
@@ -311,28 +356,28 @@ else:  # Admin
         )
     else:
         # Inject admin credentials and optional auto-login into embedded Admin page
-        js_bootstrap = f"""
+        js_bootstrap = """
         (function(){{
           try {{
             const K={{u:'qsas_admin_username',p:'qsas_admin_password'}};
-            const u={admin_username!r};
-            const p={admin_password!r};
+            const u={u};
+            const p={p};
             if (u) localStorage.setItem(K.u, u);
             if (p) localStorage.setItem(K.p, p);
           }} catch(e) {{}}
-          if ({str(bool(admin_auto_login)).lower()}) {{
+          if ({auto_login}) {{
             window.addEventListener('load', function(){{
               try {{
                 const form = document.getElementById('loginForm');
                 const uEl = document.getElementById('adminUsername');
                 const pEl = document.getElementById('adminPassword');
-                if (uEl) uEl.value = {admin_username!r};
-                if (pEl) pEl.value = {admin_password!r};
+                if (uEl) uEl.value = {u};
+                if (pEl) pEl.value = {p};
                 if (form) form.dispatchEvent(new Event('submit', {{ bubbles: true, cancelable: true }}));
               }} catch(e) {{}}
             }});
           }}
         }})();
-        """
+        """.format(u=repr(admin_username), p=repr(admin_password), auto_login=str(bool(admin_auto_login)).lower())
         html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
