@@ -132,9 +132,12 @@ def _sync_section_from_query():
 
 def _set_query_section(value: str):
     try:
-        st.experimental_set_query_params(section=value)
+        st.query_params["section"] = value
     except Exception:
-        pass
+        try:
+            st.experimental_set_query_params(section=value)
+        except Exception:
+            pass
 
 # Sidebar: render navigation buttons for Home and Admin
 def render_sidebar_once():
