@@ -68,6 +68,9 @@
           <h3>Compliance</h3>
           <ul id="complianceList" class="list checklist"></ul>
 
+          <h3>Accreditations</h3>
+          <ul id="accreditationsList" class="list checklist"></ul>
+
           <label class="full">
             Achievements (Quality, Safety, Compliance)
             <textarea id="achievements" rows="4" placeholder="Briefly summarize notable achievements, programs, or certifications" required></textarea>
@@ -98,6 +101,7 @@
         const qualityList = document.getElementById('qualityList');
         const safetyList = document.getElementById('safetyList');
         const complianceList = document.getElementById('complianceList');
+        const accreditationsList = document.getElementById('accreditationsList');
 
         // Base guidelines
         const qualityGuidelines = [
@@ -117,6 +121,15 @@
           { id: 'c2', text: 'Data protection and patient privacy compliance implemented' },
           { id: 'c3', text: 'Accreditation alignment (e.g., NABH/ISO) roadmap and gap log' },
           { id: 'c4', text: 'Emergency preparedness plan with regular drills' },
+        ];
+
+        const accreditationItems = [
+          { id: 'acc_iso', text: 'ISO Accreditation (Healthcare relevant)' },
+          { id: 'acc_nabh_entry', text: 'NABH Entry Level Accreditation' },
+          { id: 'acc_nabh', text: 'NABH Accreditation' },
+          { id: 'acc_nabl_entry', text: 'NABL Entry Level Accreditation' },
+          { id: 'acc_nabl', text: 'NABL Accreditation' },
+          { id: 'acc_jci', text: 'JCI Accreditation' },
         ];
 
         // Exclude non-relevant base items by organization type
@@ -235,6 +248,7 @@
           renderList(qualityList, active.quality);
           renderList(safetyList, active.safety);
           renderList(complianceList, active.compliance);
+          renderList(accreditationsList, accreditationItems);
         }
 
         try { orgTypeInput.addEventListener('change', renderAll); } catch(e) {}
@@ -269,9 +283,10 @@
           const perMetric = perMetricFor(baseItems.length);
           const allItems = baseItems.map(it => ({ id: it.id, name: it.name, points: perMetric }));
           const selectedIds = Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]')).filter(cb => cb.checked).map(cb => cb.dataset.itemId);
+          const selectedAccreditations = Array.from(accreditationsList.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked).map(cb => cb.parentElement && cb.parentElement.querySelector('span') ? cb.parentElement.querySelector('span').textContent : '') .filter(Boolean);
 
           try {
-            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, achievements, consent });
+            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, achievements, consent, accreditations: selectedAccreditations });
             alert('Registration submitted successfully. Admin will review and verify.');
             hqRegForm.reset();
             renderAll();

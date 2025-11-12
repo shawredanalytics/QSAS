@@ -730,6 +730,7 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
     repDesignation: String(details?.repDesignation || ""),
     achievements: String(details?.achievements || ""),
     consent: !!details?.consent,
+    accreditations: Array.isArray(details?.accreditations) ? details.accreditations : [],
     selectedMetrics: selected,
     score,
     scorePercent: cls.percent,

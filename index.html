@@ -381,6 +381,7 @@
               r.repName ? `Representative: ${r.repName}` : null,
               r.repDesignation ? `Designation: ${r.repDesignation}` : null,
               r.achievements ? `Achievements: ${r.achievements}` : null,
+              Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
             ].filter(Boolean).join('\n');
             alert(`${r.orgName || 'Organization'} • ${r.orgType || 'Healthcare'}\n${extra ? extra + '\n' : ''}${sug}\nSelected Guidelines:\n${lines}`);
           };

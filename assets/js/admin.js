@@ -454,6 +454,7 @@
           r.repName ? `Representative Name: ${r.repName}` : null,
           r.repDesignation ? `Designation: ${r.repDesignation}` : null,
           r.achievements ? `Achievements: ${r.achievements}` : null,
+          Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
           r.adminNote ? `Admin Note: ${r.adminNote}` : null,
         ].filter(Boolean).join("\n");
         alert(`Organization: ${r.orgName || "-"}\nType: ${r.orgType || "-"}\nGrid Score: ${r.score}\nClassification: ${r.classification || "-"} (${r.scorePercent ?? 0}%)\nStatus: ${r.status || "pending"}\nSubmitted: ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Metrics:\n${lines}`);
