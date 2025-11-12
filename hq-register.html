@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register for the Healthcare Quality Grid — QuXAT QSAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+
+    <header class="site-header">
+      <div class="brand-bar container wide">
+        <div class="brand-left">
+          <img id="brandLogo" class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+          <div>
+            <div class="brand-title">Register for the Healthcare Quality Grid</div>
+            <div class="subtitle">Enter your organization details and selected guidelines</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container wide">
+      <section class="card">
+        <h2>Healthcare Quality Grid Information Sheet</h2>
+        <p class="hint">Select applicable guidelines and provide organization details. Admin will review and verify your submission before listing.</p>
+
+        <form id="hqRegForm" class="form-grid">
+          <label>
+            Organization Name
+            <input type="text" id="orgName" placeholder="e.g., City General Hospital" required />
+          </label>
+          <label>
+            Organization Type
+            <select id="orgType" required>
+              <option value="">Select type</option>
+              <option>Hospital</option>
+              <option>Diagnostic Laboratory</option>
+              <option>Pharmacy</option>
+              <option>Dental Clinic</option>
+              <option>Health Center</option>
+              <option>Other Healthcare</option>
+            </select>
+          </label>
+          <label>
+            Representative Name
+            <input type="text" id="repName" placeholder="Authorized representative" required />
+          </label>
+          <label>
+            Designation
+            <input type="text" id="repDesignation" placeholder="e.g., Quality Manager" required />
+          </label>
+          <label>
+            Contact Email
+            <input type="email" id="contactEmail" placeholder="name@example.com" required />
+          </label>
+
+          <hr class="mt" />
+          <h3>Quality</h3>
+          <ul id="qualityList" class="list checklist"></ul>
+          <h3>Safety</h3>
+          <ul id="safetyList" class="list checklist"></ul>
+          <h3>Compliance</h3>
+          <ul id="complianceList" class="list checklist"></ul>
+
+          <label class="full">
+            Achievements (Quality, Safety, Compliance)
+            <textarea id="achievements" rows="4" placeholder="Briefly summarize notable achievements, programs, or certifications" required></textarea>
+          </label>
+          <label class="full" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="consent" />
+            <span>I confirm the information is accurate and consent to listing after admin verification.</span>
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Submit Registration</button>
+          </div>
+        </form>
+        <div id="hqRegHint" class="hint">Your registration will appear on the Home page once approved.</div>
+      </section>
+    </main>
+
+    <script>
+      (function(){
+        // Elements
+        const hqRegForm = document.getElementById('hqRegForm');
+        const orgTypeInput = document.getElementById('orgType');
+        const orgNameInput = document.getElementById('orgName');
+        const repNameInput = document.getElementById('repName');
+        const repDesignationInput = document.getElementById('repDesignation');
+        const contactEmailInput = document.getElementById('contactEmail');
+        const achievementsInput = document.getElementById('achievements');
+        const consentInput = document.getElementById('consent');
+        const qualityList = document.getElementById('qualityList');
+        const safetyList = document.getElementById('safetyList');
+        const complianceList = document.getElementById('complianceList');
+
+        // Base guidelines
+        const qualityGuidelines = [
+          { id: 'q1', text: 'Clinical governance and QMS documentation approved by leadership' },
+          { id: 'q2', text: 'Evidence‑based clinical protocols standardized across departments' },
+          { id: 'q3', text: 'Continuous clinical audit program with action tracking' },
+          { id: 'q4', text: 'Patient feedback captured and reviewed; actions communicated' },
+        ];
+        const safetyGuidelines = [
+          { id: 's1', text: 'Infection prevention & control program with surveillance indicators' },
+          { id: 's2', text: 'Medication safety processes (prescribing, dispensing, administration)' },
+          { id: 's3', text: 'Incident reporting and root‑cause analysis (RCA) performed' },
+          { id: 's4', text: 'Staff training and competency checks on safety‑critical tasks' },
+        ];
+        const complianceGuidelines = [
+          { id: 'c1', text: 'Licensing & statutory compliance current and documented' },
+          { id: 'c2', text: 'Data protection and patient privacy compliance implemented' },
+          { id: 'c3', text: 'Accreditation alignment (e.g., NABH/ISO) roadmap and gap log' },
+          { id: 'c4', text: 'Emergency preparedness plan with regular drills' },
+        ];
+
+        // Exclude non-relevant base items by organization type
+        // Per request: Diagnostic Laboratory should not include clinical governance (q1)
+        // and clinical audit programs (q3) from base Quality guidelines.
+        const baseExclusions = {
+          'Diagnostic Laboratory': {
+            quality: new Set(['q1','q3']),
+            // Add safety/compliance exclusions here if needed in future
+          },
+        };
+
+        // Type‑specific items
+        const typeGuidelines = {
+          'Hospital': {
+            quality: [
+              { id: 'q_hosp_1', text: 'Surgical safety checklist compliance in all theatres' },
+              { id: 'q_hosp_2', text: 'ICU clinical protocols and handover standards defined' },
+            ],
+            safety: [
+              { id: 's_hosp_1', text: 'Biomedical waste segregation and disposal audited' },
+              { id: 's_hosp_2', text: 'Transfusion safety (blood bank) policies implemented' },
+            ],
+            compliance: [
+              { id: 'c_hosp_1', text: 'Clinical establishment license and specialty approvals current' },
+            ],
+          },
+          'Diagnostic Laboratory': {
+            quality: [
+              { id: 'q_lab_1', text: 'Internal QC logs reviewed and corrective actions tracked' },
+              { id: 'q_lab_2', text: 'External proficiency testing participation results analyzed' },
+            ],
+            safety: [
+              { id: 's_lab_1', text: 'Specimen chain‑of‑custody documented end‑to‑end' },
+              { id: 's_lab_2', text: 'Biohazard handling SOPs and PPE adherence monitored' },
+            ],
+            compliance: [
+              { id: 'c_lab_1', text: 'Lab accreditation/recognition (e.g., NABL) roadmap maintained' },
+            ],
+          },
+          'Pharmacy': {
+            quality: [
+              { id: 'q_pharm_1', text: 'Dispensing SOPs and counselling standards implemented' },
+            ],
+            safety: [
+              { id: 's_pharm_1', text: 'Cold chain for temperature‑sensitive medicines monitored' },
+            ],
+            compliance: [
+              { id: 'c_pharm_1', text: 'Drug license and schedule compliance documented' },
+            ],
+          },
+          'Dental Clinic': {
+            quality: [
+              { id: 'q_dent_1', text: 'Clinical protocols for common procedures standardized' },
+            ],
+            safety: [
+              { id: 's_dent_1', text: 'Sterilization cycles logged; instrument tracking in place' },
+              { id: 's_dent_2', text: 'Radiography safety and exposure monitoring implemented' },
+            ],
+            compliance: [
+              { id: 'c_dent_1', text: 'Radiology equipment licensing and calibration records' },
+            ],
+          },
+          'Health Center': {
+            quality: [
+              { id: 'q_hc_1', text: 'Primary care pathways and referral protocols defined' },
+            ],
+            safety: [
+              { id: 's_hc_1', text: 'Vaccination cold chain compliance and monitoring' },
+            ],
+            compliance: [
+              { id: 'c_hc_1', text: 'Community program documentation and regulatory reporting' },
+            ],
+          },
+          'Other Healthcare': { quality: [], safety: [], compliance: [] }
+        };
+
+        function getActiveGuidelines(orgType){
+          const type = String(orgType || '').trim();
+          const extras = typeGuidelines[type] || typeGuidelines['Other Healthcare'];
+          const ex = baseExclusions[type] || {};
+          const baseQuality = Array.isArray(qualityGuidelines) ? qualityGuidelines.filter(it => !(ex.quality && ex.quality.has(it.id))) : [];
+          const baseSafety = Array.isArray(safetyGuidelines) ? safetyGuidelines.filter(it => !(ex.safety && ex.safety.has(it.id))) : [];
+          const baseCompliance = Array.isArray(complianceGuidelines) ? complianceGuidelines.filter(it => !(ex.compliance && ex.compliance.has(it.id))) : [];
+          return {
+            quality: [...baseQuality, ...((extras && extras.quality) || [])],
+            safety: [...baseSafety, ...((extras && extras.safety) || [])],
+            compliance: [...baseCompliance, ...((extras && extras.compliance) || [])],
+          };
+        }
+
+        // Checklist UI
+        function renderList(container, items){
+          container.innerHTML = '';
+          items.forEach(it => {
+            const li = document.createElement('li');
+            li.className = 'list-item';
+            const label = document.createElement('label');
+            label.style.display = 'flex';
+            label.style.alignItems = 'center';
+            label.style.gap = '10px';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.dataset.itemId = it.id;
+            const span = document.createElement('span');
+            span.textContent = it.text;
+            label.append(cb, span);
+            li.appendChild(label);
+            container.appendChild(li);
+          });
+        }
+
+        function renderAll(){
+          const selected = String(orgTypeInput && orgTypeInput.value ? orgTypeInput.value : '').trim();
+          const active = getActiveGuidelines(selected);
+          renderList(qualityList, active.quality);
+          renderList(safetyList, active.safety);
+          renderList(complianceList, active.compliance);
+        }
+
+        try { orgTypeInput.addEventListener('change', renderAll); } catch(e) {}
+        renderAll();
+
+        // Registration submit
+        function perMetricFor(total){
+          const maxPoints = 100; // distribute points evenly across selected guidelines
+          const n = Math.max(1, Number(total || 0));
+          return Math.round(maxPoints / n);
+        }
+
+        hqRegForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const orgName = orgNameInput.value.trim();
+          const orgType = orgTypeInput.value.trim();
+          const repName = repNameInput.value.trim();
+          const repDesignation = repDesignationInput.value.trim();
+          const email = contactEmailInput.value.trim();
+          const achievements = achievementsInput.value.trim();
+          const consent = consentInput.checked;
+          if (!consent) {
+            return alert('Please provide consent to proceed with registration.');
+          }
+          if (!orgName || !orgType || !repName || !repDesignation || !email || !achievements) {
+            return alert('Please fill in all required fields.');
+          }
+
+          // Build metrics payload
+          const active = getActiveGuidelines(orgType);
+          const baseItems = [...active.quality, ...active.safety, ...active.compliance].map(it => ({ id: it.id, name: it.text }));
+          const perMetric = perMetricFor(baseItems.length);
+          const allItems = baseItems.map(it => ({ id: it.id, name: it.name, points: perMetric }));
+          const selectedIds = Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]')).filter(cb => cb.checked).map(cb => cb.dataset.itemId);
+
+          try {
+            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, achievements, consent });
+            alert('Registration submitted successfully. Admin will review and verify.');
+            hqRegForm.reset();
+            renderAll();
+          } catch(err) {
+            console.error(err);
+            alert('Failed to submit registration. Please try again.');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

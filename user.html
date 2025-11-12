@@ -38,7 +38,8 @@
               // Static fallback
               let fallback = 'user.html';
               const sl = String(s || '').toLowerCase();
-              if (sl.includes('hq grid admin')) fallback = 'hq-admin.html';
+          // HQ Grid Admin removed
+          if (sl.includes('register for the healthcare quality grid')) fallback = 'hq-register.html';
               else if (sl === 'admin' || (sl.includes('admin') && !sl.includes('hq'))) fallback = 'admin.html';
               else if (sl.includes('grid')) fallback = 'hq-grid.html';
               else if (sl.includes('home')) fallback = 'index.html';

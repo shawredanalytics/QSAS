@@ -1,7 +1,8 @@
 // Storage utilities for QSAS
 const QSAS_KEYS = {
-  adminUser: "qsas_admin_username",
-  adminPass: "qsas_admin_password",
+  // QSAS Admin Portal credentials (distinct from HQ Grid Admin)
+  adminUser: "qsas_portal_username",
+  adminPass: "qsas_portal_password",
   // legacy single-metrics key
   metrics: "qsas_metrics",
   // new multi-checklist keys

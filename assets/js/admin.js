@@ -219,14 +219,19 @@
   }
 
   function renderMetrics() {
-    const q = (metricsSearchInput?.value || "").trim().toLowerCase();
+    // Query DOM elements on each render to avoid early nulls
+    const input = document.getElementById("metricsSearch");
+    const listEl = document.getElementById("metricsList");
+    const emptyEl = document.getElementById("metricsEmpty");
+    const q = ((input && input.value) || "").trim().toLowerCase();
+    if (!listEl || !emptyEl) return; // wait until DOM is ready
     const metrics = getMetrics(currentChecklistId).filter(m => {
       const name = String(m.name || "").toLowerCase();
       const code = String(m.code || "").toLowerCase();
       return !q || name.includes(q) || code.includes(q);
     });
-    metricsList.innerHTML = "";
-    metricsEmpty.hidden = metrics.length !== 0;
+    listEl.innerHTML = "";
+    emptyEl.hidden = metrics.length !== 0;
     metrics.forEach((m, idx) => {
       const li = document.createElement("li");
       const title = document.createElement("div");
@@ -260,23 +265,24 @@
 
       actions.append(editBtn, delBtn);
       li.append(title, sub, actions);
-      metricsList.appendChild(li);
+      listEl.appendChild(li);
     });
   }
 
   function showPanel() {
     isAuthed = true;
-    loginSection.hidden = true;
-    adminPanel.hidden = false;
+    if (loginSection) loginSection.hidden = true;
+    if (adminPanel) adminPanel.hidden = false;
     const creds = getAdminCreds();
-    credUsernameInput.value = creds.username;
-    credPasswordInput.value = creds.password;
+    if (credUsernameInput) credUsernameInput.value = creds.username;
+    if (credPasswordInput) credPasswordInput.value = creds.password;
     renderChecklists();
     renderMetrics();
     renderSubmissions();
+    renderGridRegistrations();
   }
 
-  loginForm.addEventListener("submit", (e) => {
+  if (loginForm) loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const { username, password } = getAdminCreds();
     const u = document.getElementById("adminUsername").value.trim();
@@ -288,14 +294,14 @@
     }
   });
 
-  logoutBtn.addEventListener("click", () => {
+  if (logoutBtn) logoutBtn.addEventListener("click", () => {
     isAuthed = false;
-    adminPanel.hidden = true;
-    loginSection.hidden = false;
-    loginForm.reset();
+    if (adminPanel) adminPanel.hidden = true;
+    if (loginSection) loginSection.hidden = false;
+    try { loginForm && loginForm.reset(); } catch {}
   });
 
-  metricForm.addEventListener("submit", (e) => {
+  metricForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!currentChecklistId) return alert("Create or select a checklist first.");
     const id = metricIdInput.value.trim();
@@ -312,12 +318,12 @@
     renderMetrics();
   });
 
-  resetFormBtn.addEventListener("click", () => {
+  resetFormBtn?.addEventListener("click", () => {
     metricForm.reset();
     metricIdInput.value = "";
   });
 
-  credForm.addEventListener("submit", (e) => {
+  credForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const u = credUsernameInput.value.trim();
     const p = credPasswordInput.value;
@@ -326,7 +332,7 @@
     alert("Credentials updated");
   });
 
-  exportBtn.addEventListener("click", () => {
+  exportBtn?.addEventListener("click", () => {
     if (!currentChecklistId) return alert("Select a checklist to export metrics.");
     const metrics = getMetrics(currentChecklistId);
     const json = JSON.stringify({ checklistId: currentChecklistId, metrics }, null, 2);
@@ -339,7 +345,7 @@
     URL.revokeObjectURL(url);
   });
 
-  importInput.addEventListener("change", async (e) => {
+  importInput?.addEventListener("change", async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!currentChecklistId) { importInput.value = ""; return alert("Select a checklist before importing metrics."); }
@@ -356,7 +362,7 @@
     importInput.value = "";
   });
 
-  clearBtn.addEventListener("click", () => {
+  clearBtn?.addEventListener("click", () => {
     if (!currentChecklistId) return alert("Select a checklist before clearing metrics.");
     if (confirm("Clear all metrics?")) {
       saveMetrics(currentChecklistId, []);
@@ -365,9 +371,12 @@
   });
 
   function renderSubmissions() {
+    const listEl = document.getElementById("subsList");
+    const emptyEl = document.getElementById("subsEmpty");
+    if (!listEl || !emptyEl) return;
     const subs = getAssessments();
-    subsList.innerHTML = "";
-    subsEmpty.hidden = subs.length !== 0;
+    listEl.innerHTML = "";
+    emptyEl.hidden = subs.length !== 0;
     subs.forEach(s => {
       const li = document.createElement("li");
       const left = document.createElement("div");
@@ -415,12 +424,61 @@
 
       actions.append(viewBtn, approveBtn, rejectBtn, certBtn);
       li.append(left, actions);
-      subsList.appendChild(li);
+      listEl.appendChild(li);
+    });
+  }
+
+  function renderGridRegistrations() {
+    const listEl = document.getElementById("gridRegsList");
+    const emptyEl = document.getElementById("gridRegsEmpty");
+    if (!listEl || !emptyEl) return;
+    const regs = getGridRegistrations();
+    listEl.innerHTML = "";
+    emptyEl.hidden = regs.length !== 0;
+    regs.forEach(r => {
+      const li = document.createElement("li");
+      const left = document.createElement("div");
+      const badge = clsToBadge(r.classification);
+      left.innerHTML = `<div class="item-title">${r.orgName || "-"} • ${r.orgType || "-"}</div><div class="item-sub">Grid Score ${r.score} • Classification <span class="badge ${badge}">${r.classification || "-"}</span> (${r.scorePercent ?? 0}%) • ${String(r.status || "pending").toUpperCase()} • submitted ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}</div>`;
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      const viewBtn = document.createElement("button");
+      viewBtn.className = "btn";
+      viewBtn.textContent = "View";
+      viewBtn.onclick = () => {
+        const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join("\n");
+        const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
+        const extra = [
+          r.email ? `Email: ${r.email}` : null,
+          r.repName ? `Representative Name: ${r.repName}` : null,
+          r.repDesignation ? `Designation: ${r.repDesignation}` : null,
+          r.achievements ? `Achievements: ${r.achievements}` : null,
+          r.adminNote ? `Admin Note: ${r.adminNote}` : null,
+        ].filter(Boolean).join("\n");
+        alert(`Organization: ${r.orgName || "-"}\nType: ${r.orgType || "-"}\nGrid Score: ${r.score}\nClassification: ${r.classification || "-"} (${r.scorePercent ?? 0}%)\nStatus: ${r.status || "pending"}\nSubmitted: ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Metrics:\n${lines}`);
+      };
+
+      const approveBtn = document.createElement("button");
+      approveBtn.className = "btn btn-primary";
+      approveBtn.textContent = "Approve";
+      approveBtn.disabled = r.status === "approved";
+      approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); renderGridRegistrations(); };
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "btn btn-danger";
+      rejectBtn.textContent = "Reject";
+      rejectBtn.disabled = r.status === "rejected";
+      rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); renderGridRegistrations(); };
+
+      actions.append(viewBtn, approveBtn, rejectBtn);
+      li.append(left, actions);
+      listEl.appendChild(li);
     });
   }
 
   // Refresh submissions list when window gains focus
-  window.addEventListener("focus", () => { renderSubmissions(); });
+  window.addEventListener("focus", () => { renderSubmissions(); renderGridRegistrations(); });
 
   // Checklist selection controls
   checklistSelect?.addEventListener("change", () => {

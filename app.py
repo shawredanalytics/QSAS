@@ -123,7 +123,12 @@ def _sync_section_from_query():
     if isinstance(val, list):
         val = val[0] if val else None
     if isinstance(val, str) and val:
-        st.session_state["section"] = val
+        # Normalize URL-encoded variants: treat '+' as space for manual links
+        try:
+            normalized = val.replace('+', ' ').strip()
+        except Exception:
+            normalized = val
+        st.session_state["section"] = normalized
 
 def _set_query_section(value: str):
     try:
@@ -142,6 +147,7 @@ def render_sidebar_once():
         # Primary navigation at the top
         go_home = st.button("QSAS Portal", use_container_width=True)
         go_hq_grid = st.button("Healthcare Quality Grid", use_container_width=True)
+        go_hq_register = st.button("Register for Healthcare Quality Grid", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -151,7 +157,6 @@ def render_sidebar_once():
 
         st.subheader("Admin")
         go_admin = st.button("QSAS Admin Portal", use_container_width=True)
-        go_hq_admin = st.button("HQ Grid Admin", use_container_width=True)
 
     if go_home:
         st.session_state["section"] = "Home"
@@ -161,9 +166,9 @@ def render_sidebar_once():
         st.session_state["section"] = "Admin"
         _set_query_section("Admin")
         st.rerun()
-    if go_hq_admin:
-        st.session_state["section"] = "HQ Grid Admin"
-        _set_query_section("HQ Grid Admin")
+    if go_hq_register:
+        st.session_state["section"] = "Register for the Healthcare Quality Grid"
+        _set_query_section("Register for the Healthcare Quality Grid")
         st.rerun()
     if go_hq_grid:
         st.session_state["section"] = "Healthcare Quality Grid"
@@ -317,35 +322,10 @@ elif section == "Healthcare Quality Grid":
     # Embed the new Healthcare Quality Grid page
     html_grid = build_embedded_page("hq-grid.html")
     st.components.v1.html(html_grid, height=2200, scrolling=True)
-elif section == "HQ Grid Admin":
-    # Embed the HQ Grid Admin page and inject/admin-fill credentials for convenience
-    _u = admin_username or "admin"
-    _p = admin_password or "quxat123"
-    js_bootstrap = """
-    (function(){{
-      try {{
-        const K={{u:'qsas_admin_username',p:'qsas_admin_password'}};
-        const u={u};
-        const p={p};
-        if (u) localStorage.setItem(K.u, u);
-        if (p) localStorage.setItem(K.p, p);
-      }} catch(e) {{}}
-      window.addEventListener('load', function(){{
-        try {{
-          const form = document.getElementById('loginForm');
-          const uEl = document.getElementById('adminUsername');
-          const pEl = document.getElementById('adminPassword');
-          if (uEl) uEl.value = {u};
-          if (pEl) pEl.value = {p};
-          if ({auto_login}) {{
-            if (form) form.dispatchEvent(new Event('submit', {{ bubbles: true, cancelable: true }}));
-          }}
-        }} catch(e) {{}}
-      }});
-    }})();
-    """.format(u=repr(_u), p=repr(_p), auto_login=str(bool(admin_auto_login)).lower())
-    html_hq_admin = build_embedded_page("hq-admin.html", bootstrap_js=js_bootstrap)
-    st.components.v1.html(html_hq_admin, height=1600, scrolling=True)
+elif section == "Register for the Healthcare Quality Grid":
+    # Embed the dedicated registration page
+    html_reg = build_embedded_page("hq-register.html")
+    st.components.v1.html(html_reg, height=2200, scrolling=True)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
@@ -359,7 +339,7 @@ else:  # Admin
         js_bootstrap = """
         (function(){{
           try {{
-            const K={{u:'qsas_admin_username',p:'qsas_admin_password'}};
+            const K={{u:'qsas_portal_username',p:'qsas_portal_password'}};
             const u={u};
             const p={p};
             if (u) localStorage.setItem(K.u, u);

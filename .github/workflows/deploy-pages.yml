@@ -27,7 +27,7 @@ jobs:
       - name: Build static site artifact
         run: |
           mkdir -p site
-          cp admin.html index.html hq-admin.html hq-grid.html user.html site/
+      cp admin.html index.html hq-grid.html hq-register.html user.html site/
           cp -r assets site/assets
 
       - name: Upload artifact
