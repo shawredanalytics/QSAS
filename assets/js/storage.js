@@ -283,6 +283,13 @@ function ensureDefaults() {
       QI_METRICS
     );
 
+    addBaselineIfMissing(
+      "Industrial & Manufacturing - Quality Improvement Checklist",
+      "Quality improvement framework for industrial and manufacturing organizations focusing on audits, CAPA, SOPs, training, KPIs, and risk management.",
+      "Industrial & Manufacturing",
+      QI_METRICS
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
