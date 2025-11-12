@@ -453,7 +453,6 @@
           r.email ? `Email: ${r.email}` : null,
           r.repName ? `Representative Name: ${r.repName}` : null,
           r.repDesignation ? `Designation: ${r.repDesignation}` : null,
-          r.achievements ? `Achievements: ${r.achievements}` : null,
           Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
           r.adminNote ? `Admin Note: ${r.adminNote}` : null,
         ].filter(Boolean).join("\n");

@@ -71,10 +71,6 @@
           <h3>Accreditations</h3>
           <ul id="accreditationsList" class="list checklist"></ul>
 
-          <label class="full">
-            Achievements (Quality, Safety, Compliance)
-            <textarea id="achievements" rows="4" placeholder="Briefly summarize notable achievements, programs, or certifications" required></textarea>
-          </label>
           <label class="full" style="display:flex; align-items:center; gap:8px;">
             <input type="checkbox" id="consent" />
             <span>I confirm the information is accurate and consent to listing after admin verification.</span>
@@ -96,7 +92,6 @@
         const repNameInput = document.getElementById('repName');
         const repDesignationInput = document.getElementById('repDesignation');
         const contactEmailInput = document.getElementById('contactEmail');
-        const achievementsInput = document.getElementById('achievements');
         const consentInput = document.getElementById('consent');
         const qualityList = document.getElementById('qualityList');
         const safetyList = document.getElementById('safetyList');
@@ -268,12 +263,11 @@
           const repName = repNameInput.value.trim();
           const repDesignation = repDesignationInput.value.trim();
           const email = contactEmailInput.value.trim();
-          const achievements = achievementsInput.value.trim();
           const consent = consentInput.checked;
           if (!consent) {
             return alert('Please provide consent to proceed with registration.');
           }
-          if (!orgName || !orgType || !repName || !repDesignation || !email || !achievements) {
+          if (!orgName || !orgType || !repName || !repDesignation || !email) {
             return alert('Please fill in all required fields.');
           }
 
@@ -286,7 +280,7 @@
           const selectedAccreditations = Array.from(accreditationsList.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked).map(cb => cb.parentElement && cb.parentElement.querySelector('span') ? cb.parentElement.querySelector('span').textContent : '') .filter(Boolean);
 
           try {
-            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, achievements, consent, accreditations: selectedAccreditations });
+            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, consent, accreditations: selectedAccreditations });
             alert('Registration submitted successfully. Admin will review and verify.');
             hqRegForm.reset();
             renderAll();

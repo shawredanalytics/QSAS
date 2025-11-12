@@ -728,7 +728,6 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
     orgType: String(details?.orgType || ""),
     repName: String(details?.repName || ""),
     repDesignation: String(details?.repDesignation || ""),
-    achievements: String(details?.achievements || ""),
     consent: !!details?.consent,
     accreditations: Array.isArray(details?.accreditations) ? details.accreditations : [],
     selectedMetrics: selected,
