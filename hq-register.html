@@ -60,6 +60,25 @@
             <input type="email" id="contactEmail" placeholder="name@example.com" required />
           </label>
 
+          <div class="grid two">
+            <label>
+              Country
+              <input type="text" id="orgCountry" placeholder="e.g., India" />
+            </label>
+            <label>
+              State
+              <input type="text" id="orgState" placeholder="e.g., Karnataka" />
+            </label>
+            <label>
+              District
+              <input type="text" id="orgDistrict" placeholder="e.g., Bengaluru Urban" />
+            </label>
+            <label>
+              City / Town / Village
+              <input type="text" id="orgCity" placeholder="e.g., Bengaluru" />
+            </label>
+          </div>
+
           <hr class="mt" />
           <h3>Quality</h3>
           <ul id="qualityList" class="list checklist"></ul>
@@ -92,6 +111,10 @@
         const repNameInput = document.getElementById('repName');
         const repDesignationInput = document.getElementById('repDesignation');
         const contactEmailInput = document.getElementById('contactEmail');
+        const orgCountryInput = document.getElementById('orgCountry');
+        const orgStateInput = document.getElementById('orgState');
+        const orgDistrictInput = document.getElementById('orgDistrict');
+        const orgCityInput = document.getElementById('orgCity');
         const consentInput = document.getElementById('consent');
         const qualityList = document.getElementById('qualityList');
         const safetyList = document.getElementById('safetyList');
@@ -280,7 +303,19 @@
           const selectedAccreditations = Array.from(accreditationsList.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked).map(cb => cb.parentElement && cb.parentElement.querySelector('span') ? cb.parentElement.querySelector('span').textContent : '') .filter(Boolean);
 
           try {
-            const payload = submitGridRegistration(allItems, selectedIds, { orgName, orgType, repName, repDesignation, email, consent, accreditations: selectedAccreditations });
+            const payload = submitGridRegistration(allItems, selectedIds, {
+              orgName,
+              orgType,
+              repName,
+              repDesignation,
+              email,
+              consent,
+              accreditations: selectedAccreditations,
+              orgCountry: String(orgCountryInput.value || ''),
+              orgState: String(orgStateInput.value || ''),
+              orgDistrict: String(orgDistrictInput.value || ''),
+              orgCity: String(orgCityInput.value || ''),
+            });
             alert('Registration submitted successfully. Admin will review and verify.');
             hqRegForm.reset();
             renderAll();

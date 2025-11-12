@@ -451,6 +451,10 @@
         const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
         const extra = [
           r.email ? `Email: ${r.email}` : null,
+          r.orgCountry ? `Country: ${r.orgCountry}` : null,
+          r.orgState ? `State: ${r.orgState}` : null,
+          r.orgDistrict ? `District: ${r.orgDistrict}` : null,
+          r.orgCity ? `City/Town/Village: ${r.orgCity}` : null,
           r.repName ? `Representative Name: ${r.repName}` : null,
           r.repDesignation ? `Designation: ${r.repDesignation}` : null,
           Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
