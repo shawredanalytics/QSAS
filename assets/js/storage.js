@@ -304,6 +304,24 @@ function ensureDefaults() {
     );
 
     addBaselineIfMissing(
+      "Identify Toxic Workplace and Culture",
+      "Checklist to identify and address toxic workplace behaviors and cultural risks in offices and corporate environments.",
+      "Offices & Corporate",
+      [
+        { name: "Anonymous reporting and whistleblower protection implemented", points: 10 },
+        { name: "Anti‑harassment policy and training with enforcement records", points: 10 },
+        { name: "Retaliation policy enforced; investigation logs maintained", points: 10 },
+        { name: "Leadership accountability and 360‑degree feedback practiced", points: 10 },
+        { name: "Workload and overtime monitoring with corrective actions", points: 10 },
+        { name: "Compensation and promotion transparency (pay equity reviews)", points: 10 },
+        { name: "Grievance redressal mechanism responsive with SLA", points: 10 },
+        { name: "Respectful communication code and conflict resolution SOP", points: 10 },
+        { name: "Mental health support and EAP access promoted", points: 10 },
+        { name: "Diversity, equity, inclusion metrics tracked and reviewed", points: 10 },
+      ]
+    );
+
+    addBaselineIfMissing(
       "Industrial & Manufacturing - Quality Improvement Checklist",
       "Quality improvement framework for industrial and manufacturing organizations focusing on audits, CAPA, SOPs, training, KPIs, and risk management.",
       "Industrial & Manufacturing",
