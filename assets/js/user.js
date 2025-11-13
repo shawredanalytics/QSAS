@@ -11,12 +11,6 @@
   const selectedDescStartEl = document.getElementById("selectedChecklistDescStart");
   const mediaEl = document.getElementById("selectedChecklistMedia");
   const mediaStartEl = document.getElementById("selectedChecklistMediaStart");
-  const actionsEl = document.getElementById("selectedChecklistActions");
-  const actionsStartEl = document.getElementById("selectedChecklistActionsStart");
-  const copyShareLinkBtn = document.getElementById("copyShareLink");
-  const copyShortLinkBtn = document.getElementById("copyShortLink");
-  const copyShareLinkStartBtn = document.getElementById("copyShareLinkStart");
-  const copyShortLinkStartBtn = document.getElementById("copyShortLinkStart");
   const scoreEl = document.getElementById("scoreValue");
   const countEl = document.getElementById("selectedCount");
   const resetBtn = document.getElementById("resetSelectionBtn");
@@ -320,7 +314,7 @@
         selectedTitleEl && (selectedTitleEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescEl && (selectedDescEl.textContent = cl.description || "");
         setHeaderMedia(mediaEl, cl.name);
-        if (actionsEl) { actionsEl.style.display = 'flex'; }
+        
       }
       // Also show header at the start form section
       selectedHeaderStartEl && (selectedHeaderStartEl.hidden = !showHeader);
@@ -328,8 +322,7 @@
         selectedTitleStartEl && (selectedTitleStartEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescStartEl && (selectedDescStartEl.textContent = cl.description || "");
         setHeaderMedia(mediaStartEl, cl.name);
-        if (actionsStartEl) { actionsStartEl.style.display = 'flex'; }
-        wireShareButtons();
+        
       }
     } catch(e) {}
     if (!currentChecklistId && currentEmail && !awaitingChoice) renderChecklistButtons();
@@ -935,37 +928,4 @@
       targetEl.style.display = 'none';
       targetEl.innerHTML = '';
     }
-  }
-
-  function currentShareUrl() {
-    try {
-      const base = (window.top || window).location.origin;
-      const params = new URLSearchParams();
-      params.set('section','User Assessment');
-      if (currentCategory) params.set('category', currentCategory);
-      if (currentChecklistId) params.set('checklist', currentChecklistId);
-      return base + '/?' + params.toString();
-    } catch(e) { return ''; }
-  }
-
-  function currentShortUrl() {
-    try {
-      const base = (window.top || window).location.origin;
-      const payload = { section: 'User Assessment', category: currentCategory || '', checklist: currentChecklistId || '' };
-      const b64 = btoa(JSON.stringify(payload)).replace(/\+/g,'-').replace(/\//g,'_');
-      const params = new URLSearchParams();
-      params.set('section','User Assessment');
-      params.set('s', b64);
-      return base + '/?' + params.toString();
-    } catch(e) { return ''; }
-  }
-
-  function wireShareButtons() {
-    const full = currentShareUrl();
-    const short = currentShortUrl();
-    function copy(text){ try { navigator.clipboard.writeText(text); alert('Link copied to clipboard'); } catch(e){ alert(text); } }
-    if (copyShareLinkBtn) copyShareLinkBtn.onclick = () => copy(full);
-    if (copyShortLinkBtn) copyShortLinkBtn.onclick = () => copy(short);
-    if (copyShareLinkStartBtn) copyShareLinkStartBtn.onclick = () => copy(full);
-    if (copyShortLinkStartBtn) copyShortLinkStartBtn.onclick = () => copy(short);
   }
