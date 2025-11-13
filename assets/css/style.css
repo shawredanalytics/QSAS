@@ -39,10 +39,11 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .site-footer { border-top: 1px solid var(--border); color: var(--muted); text-align: center; }
 
 .container { max-width: 960px; margin: 8px auto; padding: 0 16px; }
+.container { margin-bottom: 0; }
 /* Admin full-width option */
 .container.wide { max-width: 100%; }
-/* Extra bottom space on User page to avoid overlay by floating bars */
-.container.user { padding-bottom: 96px; }
+/* Remove extra bottom space */
+.container.user { padding-bottom: 0; }
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -51,6 +52,7 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
   margin-bottom: 16px;
   box-shadow: 0 6px 18px rgba(10,46,90,0.08);
 }
+.card:last-child { margin-bottom: 0; }
 .hero-card {
   background: linear-gradient(135deg, #f0f6ff, #fff5f7);
   border-color: #e1e7f5;
@@ -156,6 +158,7 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 
 .list { list-style: none; padding: 0; margin: 0; }
 .list li { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; background: #f9fbff; display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.list li:last-child { margin-bottom: 0; }
 .list .item-title { font-weight: 600; }
 .list .item-sub { color: var(--muted); }
 .list .item-actions { display: flex; gap: 8px; align-items: center; }
