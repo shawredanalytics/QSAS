@@ -284,6 +284,26 @@ function ensureDefaults() {
     );
 
     addBaselineIfMissing(
+      "Highway Development Organizations - Quality & Safety Improvement",
+      "Quality and safety improvement checklist for highway development organizations in India, focusing on traffic management, worksite safety, materials quality, and environmental controls.",
+      "Public & Community Organizations",
+      [
+        { name: "Work Zone Traffic Management Plan implemented", points: 5 },
+        { name: "Road Safety Audit conducted at key stages", points: 5 },
+        { name: "Signage and Barricading per IRC standards", points: 5 },
+        { name: "PPE compliance for site workers and supervisors", points: 5 },
+        { name: "Contractor Safety Induction and Toolbox Talks", points: 5 },
+        { name: "Incident/Near‑miss Reporting and Root‑Cause Analysis", points: 5 },
+        { name: "Equipment Preventive Maintenance and Logs", points: 5 },
+        { name: "Material Testing and Quality Control (aggregate, asphalt, concrete)", points: 5 },
+        { name: "Compaction and Layer Thickness Verification records", points: 5 },
+        { name: "Environmental Management: dust, noise, waste controls", points: 5 },
+        { name: "Emergency Response and First‑Aid Readiness on site", points: 5 },
+        { name: "Public Communication and Grievance Handling mechanisms", points: 5 },
+      ]
+    );
+
+    addBaselineIfMissing(
       "Industrial & Manufacturing - Quality Improvement Checklist",
       "Quality improvement framework for industrial and manufacturing organizations focusing on audits, CAPA, SOPs, training, KPIs, and risk management.",
       "Industrial & Manufacturing",
