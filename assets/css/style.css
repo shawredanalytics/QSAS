@@ -55,6 +55,18 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
   box-shadow: 0 6px 18px rgba(10,46,90,0.08);
 }
 .card:last-child { margin-bottom: 0; }
+
+.card.accent-blue { border-top: 4px solid #4774E2; }
+.card.accent-green { border-top: 4px solid #2EB980; }
+.card.accent-amber { border-top: 4px solid #F59E0B; }
+.card.accent-violet { border-top: 4px solid #7C3AED; }
+.card.accent-slate { border-top: 4px solid #334155; }
+
+.table-wrap.accent-amber { border-top: 3px solid #F59E0B; }
+.table-wrap.accent-indigo { border-top: 3px solid #6366F1; }
+.qsas-table thead th { background: #F8FAFF; }
+.card.accent-amber .qsas-table thead th { background: #FFF7ED; }
+.card.accent-violet .qsas-table thead th { background: #F5F3FF; }
 .hero-card {
   background: linear-gradient(135deg, #f0f6ff, #fff5f7);
   border-color: #e1e7f5;
