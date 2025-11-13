@@ -138,6 +138,10 @@ def _sync_section_from_query():
 
 def _set_query_section(value: str):
     try:
+        try:
+            st.query_params.clear()
+        except Exception:
+            pass
         st.query_params["section"] = value
     except Exception:
         try:
