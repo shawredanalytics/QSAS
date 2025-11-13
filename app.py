@@ -322,7 +322,7 @@ def build_home_hero_html():
 
 if section == "Home":
     # Embed the updated Home page from index.html so UI changes are visible.
-    html_index = build_embedded_page("index.html", bootstrap_js=_no_persist_bootstrap_js())
+    html_index = build_embedded_page("index.html")
     st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
@@ -350,18 +350,18 @@ elif section == "User Assessment":
       }} catch(e) {{}}
     }})();
     """.format(cat=repr(cat), chk=repr(chk))
-    html_user = build_embedded_page("user.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
+    html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 elif section == "Healthcare Quality Grid":
     # Embed the new Healthcare Quality Grid page
-    html_grid = build_embedded_page("hq-grid.html", bootstrap_js=_no_persist_bootstrap_js())
+    html_grid = build_embedded_page("hq-grid.html")
     st.components.v1.html(html_grid, height=2200, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
     # Embed the dedicated registration page (no internal iframe scroll)
-    html_reg = build_embedded_page("hq-register.html", bootstrap_js=_no_persist_bootstrap_js())
+    html_reg = build_embedded_page("hq-register.html")
     st.components.v1.html(html_reg, height=4200, scrolling=False)
 elif section == "QuXAT Advisory Services":
-    html_adv = build_embedded_page("advisory.html", bootstrap_js=_no_persist_bootstrap_js())
+    html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)
 elif section == "Gap Assessment":
     qp = _get_query_params()
@@ -379,7 +379,7 @@ elif section == "Gap Assessment":
       } catch(e) {}
     })();
     """ % (repr(plan))
-    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
+    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
@@ -414,5 +414,5 @@ else:  # Admin
           }}
         }})();
         """.format(u=repr(admin_username), p=repr(admin_password), auto_login=str(bool(admin_auto_login)).lower())
-        html_admin = build_embedded_page("admin.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
+        html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
