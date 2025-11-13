@@ -99,6 +99,12 @@ st.markdown(
     #MainMenu { display: none !important; visibility: hidden !important; }
     button[aria-label*="feedback"], button[title*="feedback"] { display: none !important; visibility: hidden !important; }
     a[href*="streamlit.app"], a[href*="streamlit.io"] { display: none !important; visibility: hidden !important; }
+    /* Hide specific Streamlit toolbar actions, keep sidebar toggle visible */
+    button[title*="Fork"], button[aria-label*="Fork"],
+    button[title*="Deploy"], button[aria-label*="Deploy"],
+    button[title*="Rerun"], button[aria-label*="Rerun"] {
+      display: none !important; visibility: hidden !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
