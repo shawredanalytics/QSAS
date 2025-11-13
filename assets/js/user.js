@@ -3,6 +3,9 @@
   const listEl = document.getElementById("userMetrics");
   const emptyEl = document.getElementById("userEmpty");
   const gateMsgEl = document.getElementById("gateMsg");
+  const selectedHeaderEl = document.getElementById("selectedChecklistHeader");
+  const selectedTitleEl = document.getElementById("selectedChecklistTitle");
+  const selectedDescEl = document.getElementById("selectedChecklistDesc");
   const scoreEl = document.getElementById("scoreValue");
   const countEl = document.getElementById("selectedCount");
   const resetBtn = document.getElementById("resetSelectionBtn");
@@ -280,6 +283,17 @@
     gateMsgEl.hidden = !!currentEmail;
     listEl.hidden = !currentEmail || awaitingChoice || !currentChecklistId;
     checklistChooser.hidden = !(currentEmail && !awaitingChoice && !currentChecklistId);
+    // Update selected checklist header
+    try {
+      const lists = getChecklists();
+      const cl = lists.find(c => c.id === currentChecklistId);
+      const showHeader = !!(currentEmail && currentChecklistId && cl);
+      selectedHeaderEl && (selectedHeaderEl.hidden = !showHeader);
+      if (showHeader) {
+        selectedTitleEl && (selectedTitleEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
+        selectedDescEl && (selectedDescEl.textContent = cl.description || "");
+      }
+    } catch(e) {}
     if (!currentChecklistId && currentEmail && !awaitingChoice) renderChecklistButtons();
     metrics.forEach((m, idx) => {
       const li = document.createElement("li");
