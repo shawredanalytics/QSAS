@@ -389,7 +389,7 @@
       viewBtn.className = "btn";
       viewBtn.textContent = "View";
       viewBtn.onclick = () => {
-        const lines = s.selectedMetrics.map(m => `- ${m.name} (+${m.points})`).join("\n");
+        const lines = s.selectedMetrics.map(m => `- ${m.name}`).join("\n");
         const sug = Array.isArray(s.suggestions) && s.suggestions.length ? `\nSuggested Improvements:\n${s.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
         const extra = [
           s.orgName ? `Organization: ${s.orgName}` : null,
@@ -447,7 +447,7 @@
       viewBtn.className = "btn";
       viewBtn.textContent = "View";
       viewBtn.onclick = () => {
-        const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join("\n");
+        const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name}`).join("\n");
         const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
         const extra = [
           r.email ? `Email: ${r.email}` : null,

@@ -374,7 +374,7 @@
           a.href = '#'; a.className = 'btn';
           a.textContent = 'View Grid Details';
           a.onclick = (e) => { e.preventDefault();
-            const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name} (+${m.points})`).join('\n');
+            const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name}`).join('\n');
             const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join('\n')}\n` : '';
             const extra = [
               r.email ? `Contact Email: ${r.email}` : null,
