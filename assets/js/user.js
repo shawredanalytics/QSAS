@@ -296,7 +296,7 @@
     try {
       const lists = getChecklists();
       const cl = lists.find(c => c.id === currentChecklistId);
-      const showHeader = !!(currentEmail && currentChecklistId && cl);
+      const showHeader = !!(currentChecklistId && cl);
       selectedHeaderEl && (selectedHeaderEl.hidden = !showHeader);
       if (showHeader) {
         selectedTitleEl && (selectedTitleEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
