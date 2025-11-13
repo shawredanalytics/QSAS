@@ -95,14 +95,9 @@ st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", l
 st.markdown(
     """
     <style>
-    /* Hide only the 3‑dots app menu button, keep toolbar visible for sidebar toggle */
     button[title="View app menu"] { display: none !important; visibility: hidden !important; }
-    /* Legacy selector support for older Streamlit versions */
     #MainMenu { display: none !important; visibility: hidden !important; }
-    /* Hide floating Streamlit feedback/help/tool badges */
     button[aria-label*="feedback"], button[title*="feedback"] { display: none !important; visibility: hidden !important; }
-    [data-testid="stToolbar"], [data-testid="stFeedback"], [data-testid="stHeaderActionButtons"], [data-testid="stDecoration"] { display: none !important; visibility: hidden !important; }
-    /* Hide Streamlit Cloud floating badge/buttons when present */
     a[href*="streamlit.app"], a[href*="streamlit.io"] { display: none !important; visibility: hidden !important; }
     </style>
     """,
