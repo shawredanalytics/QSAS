@@ -151,6 +151,7 @@ def render_sidebar_once():
         go_home = st.button("QSAS Portal", use_container_width=True)
         go_hq_grid = st.button("Healthcare Quality Grid", use_container_width=True)
         go_hq_register = st.button("Register for Healthcare Quality Grid", use_container_width=True)
+        go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -176,6 +177,10 @@ def render_sidebar_once():
     if go_hq_grid:
         st.session_state["section"] = "Healthcare Quality Grid"
         _set_query_section("Healthcare Quality Grid")
+        st.rerun()
+    if go_advisory:
+        st.session_state["section"] = "QuXAT Advisory Services"
+        _set_query_section("QuXAT Advisory Services")
         st.rerun()
 
 _sync_section_from_query()
@@ -329,6 +334,9 @@ elif section == "Register for the Healthcare Quality Grid":
     # Embed the dedicated registration page (no internal iframe scroll)
     html_reg = build_embedded_page("hq-register.html")
     st.components.v1.html(html_reg, height=4200, scrolling=False)
+elif section == "QuXAT Advisory Services":
+    html_adv = build_embedded_page("advisory.html")
+    st.components.v1.html(html_adv, height=3800, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
