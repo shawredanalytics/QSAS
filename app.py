@@ -142,6 +142,22 @@ def _set_query_section(value: str):
             st.query_params.clear()
         except Exception:
             pass
+
+def _no_persist_bootstrap_js() -> str:
+    return """
+    (function(){
+      try {
+        try { window.localStorage && window.localStorage.clear && window.localStorage.clear(); } catch(e){}
+        var __mem = {};
+        if (window.localStorage) {
+          window.localStorage.setItem = function(k,v){ __mem[String(k)] = String(v); };
+          window.localStorage.getItem = function(k){ return Object.prototype.hasOwnProperty.call(__mem,String(k)) ? __mem[String(k)] : null; };
+          window.localStorage.removeItem = function(k){ delete __mem[String(k)]; };
+          window.localStorage.clear = function(){ __mem = {}; };
+        }
+      } catch(e){}
+    })();
+    """
         st.query_params["section"] = value
     except Exception:
         try:
@@ -306,7 +322,7 @@ def build_home_hero_html():
 
 if section == "Home":
     # Embed the updated Home page from index.html so UI changes are visible.
-    html_index = build_embedded_page("index.html")
+    html_index = build_embedded_page("index.html", bootstrap_js=_no_persist_bootstrap_js())
     st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
@@ -334,18 +350,18 @@ elif section == "User Assessment":
       }} catch(e) {{}}
     }})();
     """.format(cat=repr(cat), chk=repr(chk))
-    html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
+    html_user = build_embedded_page("user.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 elif section == "Healthcare Quality Grid":
     # Embed the new Healthcare Quality Grid page
-    html_grid = build_embedded_page("hq-grid.html")
+    html_grid = build_embedded_page("hq-grid.html", bootstrap_js=_no_persist_bootstrap_js())
     st.components.v1.html(html_grid, height=2200, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
     # Embed the dedicated registration page (no internal iframe scroll)
-    html_reg = build_embedded_page("hq-register.html")
+    html_reg = build_embedded_page("hq-register.html", bootstrap_js=_no_persist_bootstrap_js())
     st.components.v1.html(html_reg, height=4200, scrolling=False)
 elif section == "QuXAT Advisory Services":
-    html_adv = build_embedded_page("advisory.html")
+    html_adv = build_embedded_page("advisory.html", bootstrap_js=_no_persist_bootstrap_js())
     st.components.v1.html(html_adv, height=3800, scrolling=False)
 elif section == "Gap Assessment":
     qp = _get_query_params()
@@ -363,7 +379,7 @@ elif section == "Gap Assessment":
       } catch(e) {}
     })();
     """ % (repr(plan))
-    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
+    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
@@ -398,5 +414,5 @@ else:  # Admin
           }}
         }})();
         """.format(u=repr(admin_username), p=repr(admin_password), auto_login=str(bool(admin_auto_login)).lower())
-        html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap)
+        html_admin = build_embedded_page("admin.html", bootstrap_js=_no_persist_bootstrap_js()+js_bootstrap)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
