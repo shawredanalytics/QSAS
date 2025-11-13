@@ -331,9 +331,9 @@ elif section == "Healthcare Quality Grid":
     html_grid = build_embedded_page("hq-grid.html")
     st.components.v1.html(html_grid, height=2200, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
-    # Embed the dedicated registration page
+    # Embed the dedicated registration page (no internal iframe scroll)
     html_reg = build_embedded_page("hq-register.html")
-    st.components.v1.html(html_reg, height=2200, scrolling=True)
+    st.components.v1.html(html_reg, height=4200, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
