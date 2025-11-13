@@ -9,6 +9,14 @@
   const selectedHeaderStartEl = document.getElementById("selectedChecklistHeaderStart");
   const selectedTitleStartEl = document.getElementById("selectedChecklistTitleStart");
   const selectedDescStartEl = document.getElementById("selectedChecklistDescStart");
+  const mediaEl = document.getElementById("selectedChecklistMedia");
+  const mediaStartEl = document.getElementById("selectedChecklistMediaStart");
+  const actionsEl = document.getElementById("selectedChecklistActions");
+  const actionsStartEl = document.getElementById("selectedChecklistActionsStart");
+  const copyShareLinkBtn = document.getElementById("copyShareLink");
+  const copyShortLinkBtn = document.getElementById("copyShortLink");
+  const copyShareLinkStartBtn = document.getElementById("copyShareLinkStart");
+  const copyShortLinkStartBtn = document.getElementById("copyShortLinkStart");
   const scoreEl = document.getElementById("scoreValue");
   const countEl = document.getElementById("selectedCount");
   const resetBtn = document.getElementById("resetSelectionBtn");
@@ -95,6 +103,18 @@
       const sp = new URLSearchParams(window.location.search);
       const qCat = sp.get('category');
       const qChk = sp.get('checklist');
+      const short = sp.get('s');
+      if (short) {
+        try {
+          const b64 = String(short).replace(/-/g,'+').replace(/_/g,'/');
+          const json = JSON.parse(atob(b64));
+          if (json && typeof json === 'object') {
+            if (json.category) currentCategory = String(json.category);
+            if (json.checklist) currentChecklistId = String(json.checklist);
+            try { localStorage.setItem('qsas_last_user_category', currentCategory); } catch {}
+          }
+        } catch(e) {}
+      }
       if (qCat) {
         currentCategory = String(qCat);
         try { localStorage.setItem('qsas_last_user_category', currentCategory); } catch {}
@@ -299,12 +319,17 @@
       if (showHeader) {
         selectedTitleEl && (selectedTitleEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescEl && (selectedDescEl.textContent = cl.description || "");
+        setHeaderMedia(mediaEl, cl.name);
+        if (actionsEl) { actionsEl.style.display = 'flex'; }
       }
       // Also show header at the start form section
       selectedHeaderStartEl && (selectedHeaderStartEl.hidden = !showHeader);
       if (showHeader) {
         selectedTitleStartEl && (selectedTitleStartEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescStartEl && (selectedDescStartEl.textContent = cl.description || "");
+        setHeaderMedia(mediaStartEl, cl.name);
+        if (actionsStartEl) { actionsStartEl.style.display = 'flex'; }
+        wireShareButtons();
       }
     } catch(e) {}
     if (!currentChecklistId && currentEmail && !awaitingChoice) renderChecklistButtons();
@@ -898,3 +923,49 @@
 
   render();
 })();
+  function setHeaderMedia(targetEl, checklistName){
+    if (!targetEl) return;
+    const name = String(checklistName || '').toLowerCase();
+    // Inline SVG icon for "How Safe is your City ?"
+    const showCity = name.includes('how safe is your city');
+    if (showCity) {
+      targetEl.style.display = 'block';
+      targetEl.innerHTML = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="60" height="60"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4774E2"/><stop offset="100%" stop-color="#49D2A8"/></linearGradient></defs><rect x="2" y="36" width="60" height="26" rx="6" fill="#E9EEF9"/><path d="M8 36 V22 l6-4 v18 M22 36 V18 l6-6 v24 M36 36 V24 l8-4 v16" stroke="url(#g)" stroke-width="2" fill="none"/><circle cx="52" cy="20" r="8" fill="#FFE08A" stroke="#E5B84C"/><path d="M6 58 h52" stroke="#B8C2D9" stroke-width="2"/></svg>';
+    } else {
+      targetEl.style.display = 'none';
+      targetEl.innerHTML = '';
+    }
+  }
+
+  function currentShareUrl() {
+    try {
+      const base = (window.top || window).location.origin;
+      const params = new URLSearchParams();
+      params.set('section','User Assessment');
+      if (currentCategory) params.set('category', currentCategory);
+      if (currentChecklistId) params.set('checklist', currentChecklistId);
+      return base + '/?' + params.toString();
+    } catch(e) { return ''; }
+  }
+
+  function currentShortUrl() {
+    try {
+      const base = (window.top || window).location.origin;
+      const payload = { section: 'User Assessment', category: currentCategory || '', checklist: currentChecklistId || '' };
+      const b64 = btoa(JSON.stringify(payload)).replace(/\+/g,'-').replace(/\//g,'_');
+      const params = new URLSearchParams();
+      params.set('section','User Assessment');
+      params.set('s', b64);
+      return base + '/?' + params.toString();
+    } catch(e) { return ''; }
+  }
+
+  function wireShareButtons() {
+    const full = currentShareUrl();
+    const short = currentShortUrl();
+    function copy(text){ try { navigator.clipboard.writeText(text); alert('Link copied to clipboard'); } catch(e){ alert(text); } }
+    if (copyShareLinkBtn) copyShareLinkBtn.onclick = () => copy(full);
+    if (copyShortLinkBtn) copyShortLinkBtn.onclick = () => copy(short);
+    if (copyShareLinkStartBtn) copyShareLinkStartBtn.onclick = () => copy(full);
+    if (copyShortLinkStartBtn) copyShortLinkStartBtn.onclick = () => copy(short);
+  }
