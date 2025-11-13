@@ -292,7 +292,7 @@ def build_home_hero_html():
 if section == "Home":
     # Embed the updated Home page from index.html so UI changes are visible.
     html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=2200, scrolling=True)
+    st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
