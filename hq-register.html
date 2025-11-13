@@ -135,6 +135,24 @@
     </main>
 
     <script>
+      // Route anchors with data-section to Streamlit sections in a new tab
+      (function(){
+        try {
+          document.addEventListener('click', function(e){
+            const a = e.target.closest('a[data-section]');
+            if (!a) return;
+            e.preventDefault();
+            const section = a.dataset.section || '';
+            const topWin = window.top || window.parent || window;
+            const base = topWin.location.origin;
+            const url = base + '/?section=' + encodeURIComponent(section);
+            try { const w = topWin.open(url, '_blank'); if (w && w.focus) w.focus(); } catch(err) {
+              try { const w2 = window.open(url, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(_) {}
+            }
+          });
+        } catch(e) {}
+      })();
+
       (function(){
         // Elements
         const hqRegForm = document.getElementById('hqRegForm');
