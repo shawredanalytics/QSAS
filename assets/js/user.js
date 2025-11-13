@@ -49,9 +49,9 @@
   const certEmailEl = document.getElementById("certEmail");
   const certChecklistEl = document.getElementById("certChecklist");
   const certDateEl = document.getElementById("certDate");
-  const certScoreEl = document.getElementById("certScore");
-  const certPercentEl = document.getElementById("certPercent");
-  const certClassEl = document.getElementById("certClass");
+  const certScoreEl = null;
+  const certPercentEl = null;
+  const certClassEl = null;
   const certChecklistDescEl = document.getElementById("certChecklistDesc");
   const certSelectedCountEl = document.getElementById("certSelectedCount");
   const certStatusEl = document.getElementById("certStatus");
@@ -357,8 +357,7 @@
 
       const pts = document.createElement("div");
       pts.className = "item-sub";
-      const pm = perMetricPoints(metrics);
-      pts.textContent = `Code: ${m.code || "N/A"} • Yes = ${Math.round(pm)} pts`;
+      pts.textContent = `Code: ${m.code || "N/A"}`;
 
       li.append(title, controls, pts);
       listEl.appendChild(li);
@@ -409,34 +408,18 @@
     const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
     const pm = perMetricPoints(metrics);
-    const score = Math.round(selected.length * pm);
-    if (scoreEl) scoreEl.textContent = String(score);
+    // scoring removed
+    if (scoreEl) scoreEl.textContent = "";
     if (countEl) countEl.textContent = String(selected.length);
-    // Classification & suggestions
-    const total = 100;
-    const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
+    // Classification & suggestions removed
     const show = !!currentEmail && !!currentChecklistId && metrics.length > 0;
-    suggestionsEl.hidden = !show;
+    suggestionsEl.hidden = true;
     if (certEl) certEl.hidden = !show;
     if (show) {
-      const list = (cls.suggestions || []).map(s => `<li>${s}</li>`).join("");
-      suggestionsEl.innerHTML = `<h3>Suggested Improvements</h3><ul class="list">${list}</ul>`;
+      suggestionsEl.innerHTML = "";
       // Certificate population
       // Animations on change
-      if (score !== lastScore && certScoreEl) {
-        certScoreEl.textContent = String(score);
-        certScoreEl.parentElement?.classList.add("animate");
-        setTimeout(() => certScoreEl.parentElement?.classList.remove("animate"), 350);
-        lastScore = score;
-      } else {
-        certScoreEl && (certScoreEl.textContent = String(score));
-      }
-      if (cls.percent !== lastPercent && certPercentEl) {
-        certPercentEl.textContent = String(cls.percent);
-        lastPercent = cls.percent;
-      } else {
-        certPercentEl && (certPercentEl.textContent = String(cls.percent));
-      }
+      // scoring/classification outputs removed
       certEmailEl && (certEmailEl.textContent = currentEmail);
       const missing = "Details Not Provided by Self - Assessment User";
       certOrgEl && (certOrgEl.textContent = currentOrgName || missing);
@@ -450,13 +433,7 @@
       const prev = getAssessmentByEmail(currentEmail, currentChecklistId);
       certStatusEl && (certStatusEl.textContent = prev ? String(prev.status || "pending") : "Not submitted");
       updateActionButtonsVisibility();
-      if (certClassEl) {
-        certClassEl.textContent = cls.label || "—";
-        const b = clsToBadge(cls.label);
-        certClassEl.className = `badge ${b}`;
-        certClassEl.classList.add("flash");
-        setTimeout(() => certClassEl.classList.remove("flash"), 800);
-      }
+      // classification badge removed
     }
   }
 
@@ -469,14 +446,9 @@
     const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
     const pm = perMetricPoints(metrics);
-    const score = Math.round(selected.length * pm);
-    const total = 100;
-    const cls = classifyScore(score, total, { metrics, selectedIds: Array.from(selections) });
     const lines = [
-      `QuXAT Self Assessment Score: ${score}`,
-      `Classification: ${cls.label} (${cls.percent}%)`,
       `Selected metrics (${selected.length}):`,
-      ...selected.map(m => `- ${m.code ? `[${m.code}] ` : ""}${m.name} (+${Math.round(pm)})`) 
+      ...selected.map(m => `- ${m.code ? `[${m.code}] ` : ""}${m.name}`) 
     ].join("\n");
     try {
       await navigator.clipboard.writeText(lines);
@@ -505,7 +477,7 @@
       const verifiedAt = prev.verifiedAt ? new Date(prev.verifiedAt).toLocaleString() : "-";
       const selectedCount = Array.isArray(prev.selectedMetrics) ? prev.selectedMetrics.length : 0;
       const statusLabel = String(prev.status || "pending").toUpperCase();
-      prevSummaryEl.textContent = `Email: ${prev.email} • QSAS ${prev.score} • ${statusLabel} • ${selectedCount} metrics • submitted ${submittedAt}${prev.verifiedAt ? ` • verified ${verifiedAt}` : ""}`;
+      prevSummaryEl.textContent = `Email: ${prev.email} • ${statusLabel} • ${selectedCount} metrics • submitted ${submittedAt}${prev.verifiedAt ? ` • verified ${verifiedAt}` : ""}`;
       prevPanel.hidden = false;
       render();
     } else {
@@ -669,9 +641,6 @@
     const metrics = limitedMetrics(currentChecklistId);
     const selected = metrics.filter(m => selections.has(m.id));
     const pm = perMetricPoints(metrics);
-    const score = Math.round(selected.length * pm);
-    const total = 100;
-    const cls = classifyScore(score, total, { metrics, selectedIds: selected.map(m => m.id) });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId);
     const logoSrc = (document.getElementById("certificateLogo")?.getAttribute("src")) ||
@@ -708,24 +677,14 @@
     const certCode = generateCertificateCode();
     row("Certificate Code", certCode);
     row("Certificate Generated", new Date().toLocaleString());
-    // Score block
-    y += 2;
-    doc.setFontSize(22); doc.setTextColor(71,116,226);
-    doc.text(String(score), left, y);
-    doc.setFontSize(12); doc.setTextColor(0,0,0);
-    doc.text("QuXAT Self Assessment Score", left+10, y);
-    y += 10;
-    doc.text(`Score Percent: ${cls.percent}%`, left, y); y += 7;
-    doc.text(`Classification: ${cls.label}`, left, y); y += 10;
+    // Score/classification block removed
     // Self-assessment statement
     doc.setTextColor(107,119,140);
     const stmt = "This certificate is based on the self assessment provided by the organization’s authorized representative.";
     const splitStmt = doc.splitTextToSize(stmt, 180);
     splitStmt.forEach(ln => { doc.text(ln, left, y); y += 6; });
     doc.setTextColor(0,0,0);
-    // Suggestions header
-    doc.setFont(undefined, "bold"); doc.text("Suggested Improvements", left, y); doc.setFont(undefined, "normal"); y += 7;
-    (cls.suggestions || []).forEach(s => { const split = doc.splitTextToSize(`• ${s}`, 180); split.forEach(ln => { doc.text(ln, left, y); y += 6; if (y > 275) { doc.addPage(); y = 20; } }); });
+    // Suggestions removed
     doc.save(`QuXAT-Certificate-${currentEmail}.pdf`);
   });
 
@@ -776,8 +735,7 @@
     if (assessment.repName) lines.push({ t: `Representative Name: ${assessment.repName}` });
     if (assessment.repDesignation) lines.push({ t: `Designation: ${assessment.repDesignation}` });
     if (assessment.userNote) lines.push({ t: `User Note: ${assessment.userNote}` });
-    lines.push({ t: `QuXAT Self Assessment Score: ${assessment.score}` });
-    lines.push({ t: `Classification: ${assessment.classification || "-"} (${assessment.scorePercent ?? 0}%)` });
+    // Score/classification removed from report
     lines.push({ t: `Submitted At: ${assessment.submittedAt || "-"}` });
     lines.push({ t: `Verified At: ${assessment.verifiedAt || "-"}` });
     const code = assessment.certificateCode || generateCertificateCode();
@@ -829,8 +787,7 @@
     if (assessment.repName) writeLine(`Representative Name: ${assessment.repName}`);
     if (assessment.repDesignation) writeLine(`Designation: ${assessment.repDesignation}`);
     if (assessment.userNote) writeLine(`User Note: ${assessment.userNote}`);
-    writeLine(`QuXAT Self Assessment Score: ${assessment.score}`);
-    writeLine(`Classification: ${assessment.classification || "-"} (${assessment.scorePercent ?? 0}%)`);
+    // Score/classification removed from certificate text
     writeLine(`Submitted At: ${assessment.submittedAt || "-"}`);
     writeLine(`Verified At: ${assessment.verifiedAt || "-"}`);
     const code2 = assessment.certificateCode || generateCertificateCode();
@@ -846,7 +803,7 @@
       y += 4;
     }
     writeLine("Selected Metrics:", { style: "h2" });
-    assessment.selectedMetrics.forEach(m => writeLine(`• ${m.name} (+${m.points})`));
+    assessment.selectedMetrics.forEach(m => writeLine(`• ${m.name}`));
     y += 4;
     writeLine("Notes:", { style: "h2" });
     writeLine("This certificate is based on the self assessment provided by the organization’s authorized representative.");
@@ -895,13 +852,10 @@
     const metrics = limitedMetrics(currentChecklistId);
     const pm = perMetricPoints(metrics);
     const selected = metrics.filter(m => selectedIds.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: Math.round(pm) }));
-    const score = Math.round(selected.length * pm);
-    const total = 100;
-    const cls = classifyScore(score, total, { metrics, selectedIds });
     const lists = getChecklists();
     const cl = lists.find(c => c.id === currentChecklistId) || { id: currentChecklistId, name: "General" };
     const missing = "Details Not Provided by Self - Assessment User";
-    const tempAssessment = { email: currentEmail, checklistId: cl.id, checklistName: cl.name, selectedMetrics: selected, score, scorePercent: cls.percent, classification: cls.label, suggestions: cls.suggestions, submittedAt: new Date().toISOString(), verifiedAt: null, adminNote: "", orgName: currentOrgName || missing, orgType: currentOrgType || missing, repName: currentRepName || missing, repDesignation: currentRepDesignation || missing, userNote: currentUserNote || missing };
+    const tempAssessment = { email: currentEmail, checklistId: cl.id, checklistName: cl.name, selectedMetrics: selected, score: undefined, scorePercent: undefined, classification: "", suggestions: [], submittedAt: new Date().toISOString(), verifiedAt: null, adminNote: "", orgName: currentOrgName || missing, orgType: currentOrgType || missing, repName: currentRepName || missing, repDesignation: currentRepDesignation || missing, userNote: currentUserNote || missing };
     generatePdfReport(tempAssessment, false, `QuXAT-Self-Assessment-${currentEmail}-UNVERIFIED.pdf`);
   });
 
