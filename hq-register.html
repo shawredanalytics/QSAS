@@ -90,6 +90,31 @@
           <h3>Accreditations</h3>
           <ul id="accreditationsList" class="list checklist"></ul>
 
+          <section class="card">
+            <h3>Selected Guidelines Summary</h3>
+            <div class="summary-grid">
+              <div class="summary-card">
+                <div class="summary-title">Selected</div>
+                <div id="selCount" class="summary-value">0</div>
+              </div>
+              <div class="summary-card">
+                <div class="summary-title">Score</div>
+                <div id="selScore" class="summary-value">0</div>
+              </div>
+              <div class="summary-card">
+                <div class="summary-title">Classification</div>
+                <div id="selClass" class="summary-value">—</div>
+              </div>
+            </div>
+            <div id="selSuggestions" class="card info" style="margin-top:12px;" hidden>
+              <h3>Suggested Improvements</h3>
+              <ul id="selSuggestionsList" class="list"></ul>
+            </div>
+            <div class="actions mt">
+              <button type="button" id="resetSelBtn" class="btn">Reset Selection</button>
+            </div>
+          </section>
+
           <label class="full" style="display:flex; align-items:center; gap:8px;">
             <input type="checkbox" id="consent" />
             <span>I confirm the information is accurate and consent to listing after admin verification.</span>
@@ -120,6 +145,12 @@
         const safetyList = document.getElementById('safetyList');
         const complianceList = document.getElementById('complianceList');
         const accreditationsList = document.getElementById('accreditationsList');
+        const selCountEl = document.getElementById('selCount');
+        const selScoreEl = document.getElementById('selScore');
+        const selClassEl = document.getElementById('selClass');
+        const selSugEl = document.getElementById('selSuggestions');
+        const selSugList = document.getElementById('selSuggestionsList');
+        const resetSelBtn = document.getElementById('resetSelBtn');
 
         // Base guidelines
         const qualityGuidelines = [
@@ -249,16 +280,17 @@
             label.style.display = 'flex';
             label.style.alignItems = 'center';
             label.style.gap = '10px';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.dataset.itemId = it.id;
-            const span = document.createElement('span');
-            span.textContent = it.text;
-            label.append(cb, span);
-            li.appendChild(label);
-            container.appendChild(li);
-          });
-        }
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.dataset.itemId = it.id;
+          cb.addEventListener('change', updateSummary);
+          const span = document.createElement('span');
+          span.textContent = it.text;
+          label.append(cb, span);
+          li.appendChild(label);
+          container.appendChild(li);
+        });
+      }
 
         function renderAll(){
           const selected = String(orgTypeInput && orgTypeInput.value ? orgTypeInput.value : '').trim();
@@ -271,6 +303,39 @@
 
         try { orgTypeInput.addEventListener('change', renderAll); } catch(e) {}
         renderAll();
+
+        function selectedIds() {
+          return Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]'))
+            .filter(cb => cb.checked)
+            .map(cb => cb.dataset.itemId);
+        }
+
+        function updateSummary() {
+          try {
+            const selected = selectedIds();
+            const type = String(orgTypeInput.value || '').trim();
+            const active = getActiveGuidelines(type);
+            const baseItems = [...active.quality, ...active.safety, ...active.compliance].map(it => ({ id: it.id, name: it.text }));
+            const per = baseItems.length ? Math.round(100 / baseItems.length) : 0;
+            const score = Math.round(selected.length * per);
+            const cls = classifyScore(score, 100, { metrics: baseItems.map(it => ({ id: it.id, name: it.name, points: per })), selectedIds: selected });
+            if (selCountEl) selCountEl.textContent = String(selected.length);
+            if (selScoreEl) selScoreEl.textContent = String(score);
+            if (selClassEl) selClassEl.textContent = cls.label || '—';
+            if (Array.isArray(cls.suggestions) && cls.suggestions.length) {
+              selSugEl.hidden = false;
+              selSugList.innerHTML = '';
+              cls.suggestions.slice(0, 8).forEach(s => {
+                const li = document.createElement('li');
+                li.textContent = s;
+                selSugList.appendChild(li);
+              });
+            } else {
+              selSugEl.hidden = true;
+              selSugList.innerHTML = '';
+            }
+          } catch(e) {}
+        }
 
         // Registration submit
         function perMetricFor(total){
@@ -299,11 +364,11 @@
           const baseItems = [...active.quality, ...active.safety, ...active.compliance].map(it => ({ id: it.id, name: it.text }));
           const perMetric = perMetricFor(baseItems.length);
           const allItems = baseItems.map(it => ({ id: it.id, name: it.name, points: perMetric }));
-          const selectedIds = Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]')).filter(cb => cb.checked).map(cb => cb.dataset.itemId);
+          const selectedIdsArr = selectedIds();
           const selectedAccreditations = Array.from(accreditationsList.querySelectorAll('input[type="checkbox"]')).filter(cb => cb.checked).map(cb => cb.parentElement && cb.parentElement.querySelector('span') ? cb.parentElement.querySelector('span').textContent : '') .filter(Boolean);
 
           try {
-            const payload = submitGridRegistration(allItems, selectedIds, {
+            const payload = submitGridRegistration(allItems, selectedIdsArr, {
               orgName,
               orgType,
               repName,
@@ -319,11 +384,25 @@
             alert('Registration submitted successfully. Admin will review and verify.');
             hqRegForm.reset();
             renderAll();
+            updateSummary();
           } catch(err) {
             console.error(err);
             alert('Failed to submit registration. Please try again.');
           }
         });
+
+        resetSelBtn?.addEventListener('click', () => {
+          Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]')).forEach(cb => { cb.checked = false; });
+          updateSummary();
+        });
+
+        consentInput?.addEventListener('change', () => {
+          const btn = hqRegForm.querySelector('button[type="submit"]');
+          if (btn) btn.disabled = !consentInput.checked;
+        });
+        const initBtn = hqRegForm.querySelector('button[type="submit"]');
+        if (initBtn) initBtn.disabled = !consentInput.checked;
+        updateSummary();
       })();
     </script>
   </body>
