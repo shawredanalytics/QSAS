@@ -779,9 +779,14 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
   const now = new Date().toISOString();
   function generateRegCode16() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let out = '';
-    for (let i = 0; i < 16; i++) out += chars[Math.floor(Math.random() * chars.length)];
-    return out;
+    function make() { let out = ''; for (let i = 0; i < 16; i++) out += chars[Math.floor(Math.random() * chars.length)]; return out; }
+    let code = make();
+    try {
+      const existing = (getGridRegistrations() || []).map(r => String(r.regCode || ''));
+      const set = new Set(existing);
+      while (set.has(code)) code = make();
+    } catch(e) {}
+    return code;
   }
   const payload = {
     id: generateId(),
