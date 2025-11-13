@@ -61,24 +61,28 @@
     <main class="container wide">
       <section class="card">
         <h2>Start Self Assessment of your Organization</h2>
+        <div id="selectedChecklistHeaderStart" class="card info" hidden>
+          <div class="item-title" id="selectedChecklistTitleStart"></div>
+          <div class="item-sub" id="selectedChecklistDescStart"></div>
+        </div>
         <form id="startForm" class="form-grid">
           <label>
             Email ID
             <input type="email" id="userEmail" placeholder="you@example.com" required />
           </label>
           <details class="card info" style="margin-top:8px;">
-            <summary>Enter Organization Details</summary>
+            <summary id="orgDetailsSummary">Enter Organization Details</summary>
             <div class="form-grid two" style="margin-top:8px;">
               <!-- Category and Organization type inputs removed per request -->
-              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+              <label id="orgNameLabel" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
                 Organization Name
                 <input type="text" id="orgName" placeholder="Your organization" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
               </label>
-              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+              <label id="repNameLabel" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
                 Representative Name
                 <input type="text" id="repName" placeholder="Full name of representative" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
               </label>
-              <label title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
+              <label id="repDesignationLabel" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’.">
                 Representative Designation
                 <input type="text" id="repDesignation" placeholder="Designation/Title" title="If left blank, reports show ‘Details Not Provided by Self - Assessment User’." />
               </label>

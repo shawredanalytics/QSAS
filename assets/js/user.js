@@ -6,6 +6,9 @@
   const selectedHeaderEl = document.getElementById("selectedChecklistHeader");
   const selectedTitleEl = document.getElementById("selectedChecklistTitle");
   const selectedDescEl = document.getElementById("selectedChecklistDesc");
+  const selectedHeaderStartEl = document.getElementById("selectedChecklistHeaderStart");
+  const selectedTitleStartEl = document.getElementById("selectedChecklistTitleStart");
+  const selectedDescStartEl = document.getElementById("selectedChecklistDescStart");
   const scoreEl = document.getElementById("scoreValue");
   const countEl = document.getElementById("selectedCount");
   const resetBtn = document.getElementById("resetSelectionBtn");
@@ -15,6 +18,10 @@
   const orgNameInput = document.getElementById("orgName");
   const orgTypeInput = document.getElementById("orgType");
   const orgCategoryInput = document.getElementById("orgCategory");
+  const orgDetailsSummaryEl = document.getElementById("orgDetailsSummary");
+  const orgNameLabelEl = document.getElementById("orgNameLabel");
+  const repNameLabelEl = document.getElementById("repNameLabel");
+  const repDesignationLabelEl = document.getElementById("repDesignationLabel");
   const industryTableMount = document.getElementById("industryTable");
   const repNameInput = document.getElementById("repName");
   const repDesignationInput = document.getElementById("repDesignation");
@@ -293,6 +300,12 @@
         selectedTitleEl && (selectedTitleEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescEl && (selectedDescEl.textContent = cl.description || "");
       }
+      // Also show header at the start form section
+      selectedHeaderStartEl && (selectedHeaderStartEl.hidden = !showHeader);
+      if (showHeader) {
+        selectedTitleStartEl && (selectedTitleStartEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
+        selectedDescStartEl && (selectedDescStartEl.textContent = cl.description || "");
+      }
     } catch(e) {}
     if (!currentChecklistId && currentEmail && !awaitingChoice) renderChecklistButtons();
     metrics.forEach((m, idx) => {
@@ -334,6 +347,44 @@
     });
     updateScore();
     updateActionButtonsVisibility();
+    // Customize organization detail labels/placeholders based on category
+    try {
+      const cat = deriveCategory(currentCategory);
+      let nameLabel = 'Organization Name';
+      let namePlaceholder = 'Your organization';
+      let summaryText = 'Enter Organization Details';
+      if (cat === 'Schools') {
+        nameLabel = 'Name of the School';
+        namePlaceholder = 'Your school';
+        summaryText = 'Enter School Details';
+      } else if (cat === 'Colleges & Universities') {
+        nameLabel = 'Name of the College/University';
+        namePlaceholder = 'Your college or university';
+        summaryText = 'Enter College/University Details';
+      } else if (cat === 'Hospitals & Healthcare') {
+        nameLabel = 'Name of the Hospital / Healthcare Organization';
+        namePlaceholder = 'Your hospital or healthcare organization';
+        summaryText = 'Enter Hospital/Healthcare Organization Details';
+      } else if (cat === 'Industrial & Manufacturing') {
+        nameLabel = 'Name of the Company / Plant';
+        namePlaceholder = 'Your company or plant';
+        summaryText = 'Enter Industrial/Manufacturing Details';
+      } else if (cat === 'Offices & Corporate') {
+        nameLabel = 'Name of the Office / Company';
+        namePlaceholder = 'Your office or company';
+        summaryText = 'Enter Office/Corporate Details';
+      } else if (cat === 'Public & Community Organizations') {
+        nameLabel = 'Name of the Organization / Department';
+        namePlaceholder = 'Your organization or department';
+        summaryText = 'Enter Organization/Department Details';
+      }
+      if (orgNameLabelEl) orgNameLabelEl.childNodes[0].nodeValue = nameLabel + '\n';
+      if (orgNameInput) orgNameInput.placeholder = namePlaceholder;
+      if (orgDetailsSummaryEl) orgDetailsSummaryEl.textContent = summaryText;
+      // Representative fields can remain generic but ensure present
+      if (repNameLabelEl) repNameLabelEl.childNodes[0].nodeValue = 'Representative Name' + '\n';
+      if (repDesignationLabelEl) repDesignationLabelEl.childNodes[0].nodeValue = 'Representative Designation' + '\n';
+    } catch(e) {}
   }
 
   function updateScore() {
