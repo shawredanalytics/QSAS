@@ -41,7 +41,7 @@
               <li><div class="item-title">Training & Competency</div><div class="item-sub">Staff training plans and records</div></li>
               <li><div class="item-title">Internal Audits</div><div class="item-sub">Audit cycles, CAPA tracking, readiness drills</div></li>
             </ul>
-            <div class="actions mt"><a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Get Advisory Plan</a></div>
+            <div class="actions mt"><a href="#" class="btn btn-primary" data-section="Gap Assessment" data-plan="NABH_FULL">Conduct Gap Assessment</a></div>
           </div>
 
           <div class="card info">
@@ -53,7 +53,7 @@
               <li><div class="item-title">Mock Assessment</div><div class="item-sub">Pre‑submission review and corrections</div></li>
               <li><div class="item-title">Submission Support</div><div class="item-sub">Guidance through application and evidence</div></li>
             </ul>
-            <div class="actions mt"><a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Get Advisory Plan</a></div>
+            <div class="actions mt"><a href="#" class="btn btn-primary" data-section="Gap Assessment" data-plan="NABH_ENTRY">Conduct Gap Assessment</a></div>
           </div>
 
           <div class="card info">
@@ -65,7 +65,7 @@
               <li><div class="item-title">Method Validation</div><div class="item-sub">Verification, uncertainty, and documentation</div></li>
               <li><div class="item-title">Audit & CAPA</div><div class="item-sub">Internal audits and corrective actions</div></li>
             </ul>
-            <div class="actions mt"><a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Get Advisory Plan</a></div>
+            <div class="actions mt"><a href="#" class="btn btn-primary" data-section="Gap Assessment" data-plan="NABL_FULL">Conduct Gap Assessment</a></div>
           </div>
 
           <div class="card info">
@@ -77,7 +77,7 @@
               <li><div class="item-title">Staff Competence</div><div class="item-sub">Role‑based training and assessments</div></li>
               <li><div class="item-title">Application Guidance</div><div class="item-sub">Documentation assembly and submission</div></li>
             </ul>
-            <div class="actions mt"><a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Get Advisory Plan</a></div>
+            <div class="actions mt"><a href="#" class="btn btn-primary" data-section="Gap Assessment" data-plan="NABL_ENTRY">Conduct Gap Assessment</a></div>
           </div>
 
           <div class="card info">
@@ -91,7 +91,7 @@
               <li><div class="item-title">Measurement & Improvement</div><div class="item-sub">Indicators, audits, CAPA, and continuous improvement</div></li>
               <li><div class="item-title">Mock Survey & Readiness</div><div class="item-sub">Pre‑survey drills, findings, and closure actions</div></li>
             </ul>
-            <div class="actions mt"><a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Get Advisory Plan</a></div>
+            <div class="actions mt"><a href="#" class="btn btn-primary" data-section="Gap Assessment" data-plan="JCI">Conduct Gap Assessment</a></div>
           </div>
         </div>
       </section>
@@ -105,10 +105,24 @@
           <div class="card"><div class="item-title">Outcome Focus</div><div class="item-sub">CAPA tracking and continuous improvement</div></div>
         </div>
       </section>
-    </main>
+  </main>
 
     <footer class="site-footer">
       <small>© QuXAT — QSAS • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
     </footer>
+    <script>
+      (function(){
+        document.addEventListener('click', function(e){
+          const a = e.target.closest('a[data-section]'); if (!a) return;
+          e.preventDefault();
+          const s = a.dataset.section; const plan = a.dataset.plan || '';
+          const topWin = window.top || window.parent || window;
+          const base = topWin.location.origin;
+          const params = new URLSearchParams(); params.set('section', s); if (plan) params.set('plan', plan);
+          const url = base + '/?' + params.toString();
+          try { const w = topWin.open(url, '_blank'); if (w && w.focus) w.focus(); } catch(err) { try { const w2 = window.open(url, '_blank'); if (w2 && w2.focus) w2.focus(); } catch(_){} }
+        });
+      })();
+    </script>
   </body>
   </html>

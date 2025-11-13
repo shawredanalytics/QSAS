@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gap Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header logo-only">
+      <div class="brand-bar container wide">
+        <div class="brand-left">
+          <img class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <h1 class="hero-title" id="gapTitle">Gap Assessment</h1>
+        <p class="hero-subtitle" id="gapSub">Evaluate your preparedness for the selected advisory plan.</p>
+      </div>
+    </section>
+
+    <main class="container wide">
+      <section class="card">
+        <h3 id="planHeader">Plan</h3>
+        <p class="hint" id="planDesc"></p>
+        <div id="gapList" class="list checklist"></div>
+        <div class="score-row">
+          <div class="actions">
+            <button id="resetBtn" class="btn">Reset Selection</button>
+            <a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Contact Advisory Team</a>
+          </div>
+        </div>
+        <div class="card certificate">
+          <div class="certificate-body">
+            <div class="certificate-rows">
+              <div class="certificate-row"><span class="label">Selected Items</span><span id="selCount">0</span></div>
+              <div class="certificate-row"><span class="label">Preparedness Score</span><span id="prepScore">0</span></div>
+              <div class="certificate-row"><span class="label">Classification</span><span id="prepClass">—</span></div>
+            </div>
+          </div>
+        </div>
+        <div id="sugs" class="card info" hidden>
+          <h3>Suggested Improvements</h3>
+          <ul id="sugList" class="list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/js/storage.js"></script>
+    <script>
+      (function(){
+        const GAP_PLANS = {
+          NABH_FULL: {
+            title: 'NABH Full Accreditation — Hospitals',
+            desc: 'Comprehensive advisory for hospital‑wide implementation, documentation, and audits.',
+            items: [
+              'Governance committees formed and chartered',
+              'SOPs for critical clinical processes documented',
+              'Medication reconciliation and high‑risk drug controls implemented',
+              'Incident reporting and RCA tracked',
+              'Infection prevention program with indicators',
+              'Emergency codes drills performed and recorded',
+              'Staff training and competence records maintained',
+              'Internal audits scheduled and CAPA tracked',
+              'Patient privacy and data protection enforced',
+              'Clinical documentation standards applied consistently'
+            ]
+          },
+          NABH_ENTRY: {
+            title: 'NABH Entry Level Certification — Hospitals',
+            desc: 'Focused advisory to meet entry‑level requirements efficiently.',
+            items: [
+              'Essential policies and registers prepared',
+              'Safety signage and basic emergency readiness',
+              'Staff induction and role‑based responsibilities defined',
+              'Basic infection control practices implemented',
+              'Medication storage and expiry controls in place',
+              'Incident reporting and near‑miss log maintained',
+              'Mock assessment performed with action list',
+              'Patient identification process defined',
+              'Consent and basic documentation templates in use',
+              'Submission package assembled'
+            ]
+          },
+          NABL_FULL: {
+            title: 'NABL Accreditation — Diagnostic Medical Laboratories',
+            desc: 'End‑to‑end advisory for quality systems, traceability, and proficiency testing.',
+            items: [
+              'Quality manual and procedure documents complete',
+              'IQC and EQA participation documented',
+              'Equipment calibration and maintenance logs',
+              'Specimen chain‑of‑custody controls',
+              'LIS integrity and access controls',
+              'Method validation/verification evidence',
+              'Uncertainty of measurement documented',
+              'Corrective actions for audit findings',
+              'Staff competence and training records',
+              'Result validation and critical value reporting'
+            ]
+          },
+          NABL_ENTRY: {
+            title: 'NABL Entry Level Certification — Diagnostic Laboratories',
+            desc: 'Practical advisory to establish baseline compliance quickly.',
+            items: [
+              'Starter SOPs and templates prepared',
+              'Calibration and preventive maintenance logs',
+              'Basic IQC documentation available',
+              'PPE and biosafety practices in place',
+              'Specimen labeling and traceability',
+              'Waste segregation compliance',
+              'Staff role definitions and training',
+              'Records and registers organized',
+              'Mock review performed',
+              'Submission readiness checklist completed'
+            ]
+          },
+          JCI: {
+            title: 'JCI Accreditation — Healthcare Organizations',
+            desc: 'International standards advisory for patient safety and governance.',
+            items: [
+              'Gap analysis against JCI standards performed',
+              'Leadership and governance structures defined',
+              'International Patient Safety Goals implemented',
+              'Evidence‑based clinical pathways documented',
+              'Medical record and documentation controls enforced',
+              'Measurement and improvement indicators tracked',
+              'Internal survey/mock audit conducted',
+              'CAPA process established and monitored',
+              'Training plans aligned to JCI requirements',
+              'Readiness review and risk mitigation plan'
+            ]
+          }
+        };
+
+        const planKey = localStorage.getItem('qsas_gap_plan') || 'NABH_FULL';
+        const plan = GAP_PLANS[planKey] || GAP_PLANS['NABH_FULL'];
+        document.getElementById('gapTitle').textContent = 'Gap Assessment — ' + plan.title;
+        document.getElementById('planHeader').textContent = plan.title;
+        document.getElementById('planDesc').textContent = plan.desc;
+
+        const list = document.getElementById('gapList');
+        const selCount = document.getElementById('selCount');
+        const prepScore = document.getElementById('prepScore');
+        const prepClass = document.getElementById('prepClass');
+        const sugBox = document.getElementById('sugs');
+        const sugList = document.getElementById('sugList');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const metrics = plan.items.map((t, i) => ({ id: 'm'+i, name: t, points: Math.round(100 / plan.items.length) }));
+        const selected = new Set();
+
+        function renderList(){
+          list.innerHTML = '';
+          metrics.forEach((m) => {
+            const li = document.createElement('li');
+            const title = document.createElement('div'); title.className = 'item-title'; title.textContent = m.name;
+            const actions = document.createElement('div'); actions.className = 'item-actions';
+            const yes = document.createElement('input'); yes.type = 'checkbox'; yes.checked = selected.has(m.id);
+            yes.onchange = () => { if (yes.checked) selected.add(m.id); else selected.delete(m.id); update(); };
+            actions.append(yes);
+            li.append(title, actions);
+            list.appendChild(li);
+          });
+        }
+
+        function update(){
+          const ids = Array.from(selected);
+          const per = metrics.length ? Math.round(100 / metrics.length) : 0;
+          const score = Math.round(ids.length * per);
+          const cls = classifyScore(score, 100, { metrics, selectedIds: ids });
+          selCount.textContent = String(ids.length);
+          prepScore.textContent = String(score);
+          prepClass.textContent = cls.label || '—';
+          if (Array.isArray(cls.suggestions) && cls.suggestions.length){
+            sugBox.hidden = false; sugList.innerHTML = '';
+            cls.suggestions.slice(0,8).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
+          } else { sugBox.hidden = true; sugList.innerHTML = ''; }
+        }
+
+        resetBtn.addEventListener('click', () => { selected.clear(); renderList(); update(); });
+        renderList(); update();
+      })();
+    </script>
+  </body>
+  </html>

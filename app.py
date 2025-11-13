@@ -337,6 +337,24 @@ elif section == "Register for the Healthcare Quality Grid":
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)
+elif section == "Gap Assessment":
+    qp = _get_query_params()
+    raw_plan = qp.get("plan")
+    plan = None
+    if isinstance(raw_plan, list):
+        plan = raw_plan[0] if raw_plan else None
+    elif isinstance(raw_plan, str):
+        plan = raw_plan
+    js_bootstrap = """
+    (function(){
+      try {
+        var plan = %s;
+        if (plan) localStorage.setItem('qsas_gap_plan', String(plan));
+      } catch(e) {}
+    })();
+    """ % (repr(plan))
+    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
+    st.components.v1.html(html_gap, height=3800, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
