@@ -22,6 +22,8 @@
   const orgNameLabelEl = document.getElementById("orgNameLabel");
   const repNameLabelEl = document.getElementById("repNameLabel");
   const repDesignationLabelEl = document.getElementById("repDesignationLabel");
+  const selectedCategoryFieldEl = document.getElementById("selectedCategoryField");
+  const selectedChecklistFieldEl = document.getElementById("selectedChecklistField");
   const industryTableMount = document.getElementById("industryTable");
   const repNameInput = document.getElementById("repName");
   const repDesignationInput = document.getElementById("repDesignation");
@@ -305,6 +307,10 @@
       if (showHeader) {
         selectedTitleStartEl && (selectedTitleStartEl.textContent = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`);
         selectedDescStartEl && (selectedDescStartEl.textContent = cl.description || "");
+        const catText = deriveCategory(currentCategory) || "—";
+        if (selectedCategoryFieldEl) selectedCategoryFieldEl.value = catText;
+        if (selectedChecklistFieldEl) selectedChecklistFieldEl.value = `${cl.code ? '[' + cl.code + '] ' : ''}${cl.name}`;
+        if (orgDetailsSummaryEl) orgDetailsSummaryEl.textContent = `Details — ${catText} • ${cl.name}`;
       }
     } catch(e) {}
     if (!currentChecklistId && currentEmail && !awaitingChoice) renderChecklistButtons();
