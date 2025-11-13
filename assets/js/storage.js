@@ -304,6 +304,24 @@ function ensureDefaults() {
     );
 
     addBaselineIfMissing(
+      "How Safe is your City ?",
+      "Assessment checklist for city safety organizations to evaluate citizen safety readiness, response, transparency, and community engagement.",
+      "Public & Community Organizations",
+      [
+        { name: "Crime reporting channels accessible (dial, app, web) and publicized", points: 10 },
+        { name: "Street lighting coverage audits with remediation tracking", points: 10 },
+        { name: "CCTV coverage at critical hotspots with uptime monitoring", points: 10 },
+        { name: "Patrol routes planned and executed with digital logs", points: 10 },
+        { name: "Emergency response time targets defined and measured", points: 10 },
+        { name: "Community policing and citizen outreach programs active", points: 10 },
+        { name: "Victim support services and helplines operational", points: 10 },
+        { name: "Traffic safety controls (speed calming, crossings, signage) audited", points: 10 },
+        { name: "Disaster preparedness plans and drills conducted", points: 10 },
+        { name: "Safety data transparency (dashboards/reports) with grievance redressal", points: 10 },
+      ]
+    );
+
+    addBaselineIfMissing(
       "Identify Toxic Workplace and Culture",
       "Checklist to identify and address toxic workplace behaviors and cultural risks in offices and corporate environments.",
       "Offices & Corporate",
