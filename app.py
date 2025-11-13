@@ -142,6 +142,12 @@ def _set_query_section(value: str):
             st.query_params.clear()
         except Exception:
             pass
+        st.query_params["section"] = value
+    except Exception:
+        try:
+            st.experimental_set_query_params(section=value)
+        except Exception:
+            pass
 
 def _no_persist_bootstrap_js() -> str:
     return """
@@ -158,12 +164,6 @@ def _no_persist_bootstrap_js() -> str:
       } catch(e){}
     })();
     """
-        st.query_params["section"] = value
-    except Exception:
-        try:
-            st.experimental_set_query_params(section=value)
-        except Exception:
-            pass
 
 # Sidebar: render navigation buttons for Home and Admin
 def render_sidebar_once():
