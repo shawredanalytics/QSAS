@@ -97,6 +97,15 @@
         </p>
       </section>
       <section class="card">
+        <h3>Quick Actions</h3>
+        <div class="actions">
+          <a href="#" class="btn btn-primary" data-section="User Assessment">Start Self Assessment</a>
+          <a href="#" class="btn" data-section="Healthcare Quality Grid">Open Healthcare Quality Grid</a>
+          <a href="#" class="btn" data-section="Register for the Healthcare Quality Grid">Register for Healthcare Quality Grid</a>
+          <a href="#" class="btn" data-section="Admin">QSAS Admin Portal</a>
+        </div>
+      </section>
+      <section class="card">
         <h3>Available Self Assessment Checklists</h3>
         <p class="hint">Browse by category and start your self assessment directly from the table.</p>
         <div class="table-wrap">
@@ -122,6 +131,11 @@
         <p class="hint">Pick your industry and start with a relevant checklist.</p>
         <div id="industryCards" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
         <p id="industryEmpty" class="empty" hidden>No published checklists yet. Create and publish them in the Admin portal.</p>
+      </section>
+
+      <section class="card">
+        <h3>At a Glance</h3>
+        <div id="kpiGrid" class="kpi-grid"></div>
       </section>
 
       <section class="card">
@@ -182,14 +196,15 @@
 
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/branding.js"></script>
-    <script>
-      (function(){
-        const emptyEl = document.getElementById('publishedEmpty');
-        const tableBody = document.getElementById('checklistsTbody');
-        const cardsMount = document.getElementById('industryCards');
-        const cardsEmpty = document.getElementById('industryEmpty');
-        let lists = [];
-        try { lists = (getChecklists() || []).filter(c => c.published !== false); } catch(e) { lists = []; }
+      <script>
+        (function(){
+          const emptyEl = document.getElementById('publishedEmpty');
+          const tableBody = document.getElementById('checklistsTbody');
+          const cardsMount = document.getElementById('industryCards');
+          const cardsEmpty = document.getElementById('industryEmpty');
+          const kpiGrid = document.getElementById('kpiGrid');
+          let lists = [];
+          try { lists = (getChecklists() || []).filter(c => c.published !== false); } catch(e) { lists = []; }
 
         // Light pastel color per category for visual differentiation
         function categoryColor(cat) {
@@ -302,51 +317,82 @@
           });
         }
 
-        function renderCards() {
-          if (!cardsMount) return;
-          cardsMount.innerHTML = '';
-          if (!lists.length) { cardsEmpty.hidden = false; return; }
-          cardsEmpty.hidden = true;
-          // Group and sort like the table
-          const byCat = new Map();
-          categories.forEach(cat => byCat.set(cat, []));
-          lists.forEach(c => {
-            const cat = deriveCategory(c) || 'Uncategorized';
-            if (!byCat.has(cat)) byCat.set(cat, []);
-            byCat.get(cat).push(c);
-          });
-          const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
-          sortedCats.forEach(cat => {
-            const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
-            const card = document.createElement('div');
-            card.className = 'card info';
-            card.style.background = categoryColor(cat);
-            card.style.border = '1px solid #e5e7eb';
-            const title = document.createElement('div');
-            title.className = 'item-title';
-            title.textContent = cat;
-            const sub = document.createElement('div');
-            sub.className = 'item-sub';
-            sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
-            const actions = document.createElement('div');
-            actions.className = 'actions';
-            items.forEach(c => {
-              const a = document.createElement('a');
-              a.href = '#'; a.className = 'btn';
-              a.textContent = c.name;
-              a.dataset.section = 'User Assessment';
-              a.dataset.checklist = c.id;
-              a.dataset.category = cat;
-              actions.appendChild(a);
+          function renderCards() {
+            if (!cardsMount) return;
+            cardsMount.innerHTML = '';
+            if (!lists.length) { cardsEmpty.hidden = false; return; }
+            cardsEmpty.hidden = true;
+            // Group and sort like the table
+            const byCat = new Map();
+            categories.forEach(cat => byCat.set(cat, []));
+            lists.forEach(c => {
+              const cat = deriveCategory(c) || 'Uncategorized';
+              if (!byCat.has(cat)) byCat.set(cat, []);
+              byCat.get(cat).push(c);
             });
-            card.append(title, sub, actions);
-            cardsMount.appendChild(card);
-          });
-        }
+            const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+            sortedCats.forEach(cat => {
+              const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
+              const card = document.createElement('div');
+              card.className = 'card info';
+              card.style.background = categoryColor(cat);
+              card.style.border = '1px solid #e5e7eb';
+              const title = document.createElement('div');
+              title.className = 'item-title';
+              title.textContent = cat;
+              const sub = document.createElement('div');
+              sub.className = 'item-sub';
+              sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
+              const actions = document.createElement('div');
+              actions.className = 'actions';
+              items.forEach(c => {
+                const a = document.createElement('a');
+                a.href = '#'; a.className = 'btn';
+                a.textContent = c.name;
+                a.dataset.section = 'User Assessment';
+                a.dataset.checklist = c.id;
+                a.dataset.category = cat;
+                actions.appendChild(a);
+              });
+              card.append(title, sub, actions);
+              cardsMount.appendChild(card);
+            });
+          }
 
-        renderTable();
-        renderCards();
-      })();
+          function renderKpis() {
+            if (!kpiGrid) return;
+            try {
+              const published = lists.length;
+              const catSet = new Set(lists.map(c => deriveCategory(c.category)).filter(Boolean));
+              const industries = catSet.size;
+              let approved = 0;
+              try {
+                approved = (typeof getApprovedGridRegistrations === 'function')
+                  ? (getApprovedGridRegistrations() || []).length
+                  : (getGridRegistrations() || []).filter(r => r.status === 'approved').length;
+              } catch(e) { approved = 0; }
+              const def = [
+                { t: 'Published Checklists', v: String(published), s: 'Available for self assessment' },
+                { t: 'Industries', v: String(industries || 0), s: 'Categories covered' },
+                { t: 'Verified Organizations', v: String(approved || 0), s: 'Listed on Healthcare Quality Grid' },
+              ];
+              kpiGrid.innerHTML = '';
+              def.forEach(k => {
+                const d = document.createElement('div');
+                d.className = 'kpi-card';
+                const tt = document.createElement('div'); tt.className = 'kpi-title'; tt.textContent = k.t;
+                const vv = document.createElement('div'); vv.className = 'kpi-value'; vv.textContent = k.v;
+                const ss = document.createElement('div'); ss.className = 'kpi-sub'; ss.textContent = k.s;
+                d.append(tt, vv, ss);
+                kpiGrid.appendChild(d);
+              });
+            } catch(e) {}
+          }
+
+          renderTable();
+          renderCards();
+          renderKpis();
+        })();
       (function(){
         // Render approved Healthcare Quality Grid organizations
         const mount = document.getElementById('hqGridApproved');

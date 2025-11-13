@@ -363,3 +363,8 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 @media (max-width: 860px) {
   .domain-table .domain-row { grid-template-columns: 1fr; }
 }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.kpi-card { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: 0 6px 18px rgba(10,46,90,0.06); display: grid; gap: 6px; }
+.kpi-title { color: var(--muted); font-size: 0.95rem; }
+.kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+.kpi-sub { color: var(--muted); font-size: 0.9rem; }
