@@ -194,66 +194,91 @@
         // Type‑specific items
         const typeGuidelines = {
           'Hospital': {
+            override: true,
             quality: [
               { id: 'q_hosp_1', text: 'Surgical safety checklist compliance in all theatres' },
               { id: 'q_hosp_2', text: 'ICU clinical protocols and handover standards defined' },
+              { id: 'q_hosp_3', text: 'Medication reconciliation and high‑risk drug controls implemented' },
+              { id: 'q_hosp_4', text: 'Handover and escalation SOPs across wards' },
             ],
             safety: [
               { id: 's_hosp_1', text: 'Biomedical waste segregation and disposal audited' },
               { id: 's_hosp_2', text: 'Transfusion safety (blood bank) policies implemented' },
+              { id: 's_hosp_3', text: 'Emergency codes (blue, red) drills and response documented' },
+              { id: 's_hosp_4', text: 'Infection prevention surveillance with indicators' },
             ],
             compliance: [
               { id: 'c_hosp_1', text: 'Clinical establishment license and specialty approvals current' },
+              { id: 'c_hosp_2', text: 'Radiology and anesthesia compliance (AERB/standards)' },
+              { id: 'c_hosp_3', text: 'Patient privacy and data protection controls enforced' },
             ],
           },
           'Diagnostic Laboratory': {
+            override: true,
             quality: [
               { id: 'q_lab_1', text: 'Internal QC logs reviewed and corrective actions tracked' },
               { id: 'q_lab_2', text: 'External proficiency testing participation results analyzed' },
+              { id: 'q_lab_3', text: 'Calibration and maintenance of analyzers documented' },
+              { id: 'q_lab_4', text: 'Result validation and critical value reporting SOPs' },
             ],
             safety: [
               { id: 's_lab_1', text: 'Specimen chain‑of‑custody documented end‑to‑end' },
               { id: 's_lab_2', text: 'Biohazard handling SOPs and PPE adherence monitored' },
+              { id: 's_lab_3', text: 'Sharps safety and exposure incident management' },
+              { id: 's_lab_4', text: 'Cold chain transport and storage logs maintained' },
             ],
             compliance: [
               { id: 'c_lab_1', text: 'Lab accreditation/recognition (e.g., NABL) roadmap maintained' },
+              { id: 'c_lab_2', text: 'Reference ranges, LIS integrity, and access controls' },
             ],
           },
           'Pharmacy': {
+            override: true,
             quality: [
               { id: 'q_pharm_1', text: 'Dispensing SOPs and counselling standards implemented' },
+              { id: 'q_pharm_2', text: 'Medication reconciliation and patient counselling records' },
             ],
             safety: [
               { id: 's_pharm_1', text: 'Cold chain for temperature‑sensitive medicines monitored' },
+              { id: 's_pharm_2', text: 'LASA (look‑alike/sound‑alike) labeling and separation' },
             ],
             compliance: [
               { id: 'c_pharm_1', text: 'Drug license and schedule compliance documented' },
+              { id: 'c_pharm_2', text: 'Controlled substances registers and security' },
             ],
           },
           'Dental Clinic': {
+            override: true,
             quality: [
               { id: 'q_dent_1', text: 'Clinical protocols for common procedures standardized' },
+              { id: 'q_dent_2', text: 'Patient consent and documentation practices' },
             ],
             safety: [
               { id: 's_dent_1', text: 'Sterilization cycles logged; instrument tracking in place' },
               { id: 's_dent_2', text: 'Radiography safety and exposure monitoring implemented' },
+              { id: 's_dent_3', text: 'Dental unit waterline disinfection schedule' },
             ],
             compliance: [
               { id: 'c_dent_1', text: 'Radiology equipment licensing and calibration records' },
+              { id: 'c_dent_2', text: 'Biomedical waste disposal compliance' },
             ],
           },
           'Health Center': {
+            override: true,
             quality: [
               { id: 'q_hc_1', text: 'Primary care pathways and referral protocols defined' },
+              { id: 'q_hc_2', text: 'Maternal and child health program documentation' },
             ],
             safety: [
               { id: 's_hc_1', text: 'Vaccination cold chain compliance and monitoring' },
+              { id: 's_hc_2', text: 'Emergency triage and stabilization SOPs' },
             ],
             compliance: [
               { id: 'c_hc_1', text: 'Community program documentation and regulatory reporting' },
+              { id: 'c_hc_2', text: 'Pharmacy storage and expiry management within the center' },
             ],
           },
-          'Other Healthcare': { quality: [], safety: [], compliance: [] }
+          'Other Healthcare': { override: false, quality: [], safety: [], compliance: [] }
         };
 
         function getActiveGuidelines(orgType){
@@ -263,6 +288,13 @@
           const baseQuality = Array.isArray(qualityGuidelines) ? qualityGuidelines.filter(it => !(ex.quality && ex.quality.has(it.id))) : [];
           const baseSafety = Array.isArray(safetyGuidelines) ? safetyGuidelines.filter(it => !(ex.safety && ex.safety.has(it.id))) : [];
           const baseCompliance = Array.isArray(complianceGuidelines) ? complianceGuidelines.filter(it => !(ex.compliance && ex.compliance.has(it.id))) : [];
+          if (extras && extras.override) {
+            return {
+              quality: Array.isArray(extras.quality) ? extras.quality : [],
+              safety: Array.isArray(extras.safety) ? extras.safety : [],
+              compliance: Array.isArray(extras.compliance) ? extras.compliance : [],
+            };
+          }
           return {
             quality: [...baseQuality, ...((extras && extras.quality) || [])],
             safety: [...baseSafety, ...((extras && extras.safety) || [])],
