@@ -439,7 +439,7 @@
       const li = document.createElement("li");
       const left = document.createElement("div");
       const badge = clsToBadge(r.classification);
-      left.innerHTML = `<div class="item-title">${r.orgName || "-"} • ${r.orgType || "-"}</div><div class="item-sub">Grid Score ${r.score} • Classification <span class="badge ${badge}">${r.classification || "-"}</span> (${r.scorePercent ?? 0}%) • ${String(r.status || "pending").toUpperCase()} • submitted ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}</div>`;
+      left.innerHTML = `<div class="item-title">${r.orgName || "-"} • ${r.orgType || "-"}</div><div class="item-sub">Classification <span class="badge ${badge}">${r.classification || "-"}</span> (${r.scorePercent ?? 0}%) • ${String(r.status || "pending").toUpperCase()} • submitted ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}</div>`;
       const actions = document.createElement("div");
       actions.className = "item-actions";
 
@@ -460,7 +460,7 @@
           Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
           r.adminNote ? `Admin Note: ${r.adminNote}` : null,
         ].filter(Boolean).join("\n");
-        alert(`Organization: ${r.orgName || "-"}\nType: ${r.orgType || "-"}\nGrid Score: ${r.score}\nClassification: ${r.classification || "-"} (${r.scorePercent ?? 0}%)\nStatus: ${r.status || "pending"}\nSubmitted: ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Metrics:\n${lines}`);
+        alert(`Organization: ${r.orgName || "-"}\nType: ${r.orgType || "-"}\nClassification: ${r.classification || "-"} (${r.scorePercent ?? 0}%)\nStatus: ${r.status || "pending"}\nSubmitted: ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Metrics:\n${lines}`);
       };
 
       const approveBtn = document.createElement("button");

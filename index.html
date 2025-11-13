@@ -407,9 +407,17 @@
           const title = document.createElement('div');
           title.className = 'item-title';
           title.textContent = r.orgName || 'Organization';
+          if (r.qualityBadge && r.qualityBadge.length) {
+            const badgeEl = document.createElement('span');
+            badgeEl.className = 'pill';
+            badgeEl.style.marginLeft = '8px';
+            badgeEl.textContent = r.qualityBadge;
+            title.appendChild(badgeEl);
+          }
           const sub = document.createElement('div');
           sub.className = 'item-sub';
-          sub.textContent = `${r.orgType || 'Healthcare'} • Classification: ${r.classification || '-'} (${r.scorePercent ?? 0}%)`;
+          const reg = r.regCode ? ` • ID: ${r.regCode}` : '';
+          sub.textContent = `${r.orgType || 'Healthcare'} • Classification: ${r.classification || '-'} (${r.scorePercent ?? 0}%)${reg}`;
           const actions = document.createElement('div');
           actions.className = 'actions';
           const a = document.createElement('a');

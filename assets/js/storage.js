@@ -777,8 +777,15 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
   const score = Math.round(selected.length * perMetric);
   const cls = classifyScore(score, QSAS_MAX_SCORE, { metrics: all, selectedIds: ids });
   const now = new Date().toISOString();
+  function generateRegCode16() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < 16; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
   const payload = {
     id: generateId(),
+    regCode: generateRegCode16(),
     email: String(details?.email || ""),
     orgName: String(details?.orgName || ""),
     orgType: String(details?.orgType || ""),
@@ -790,6 +797,7 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
     repDesignation: String(details?.repDesignation || ""),
     consent: !!details?.consent,
     accreditations: Array.isArray(details?.accreditations) ? details.accreditations : [],
+    qualityBadge: Array.isArray(details?.accreditations) && details.accreditations.length ? 'Accredited' : '',
     selectedMetrics: selected,
     score,
     scorePercent: cls.percent,
