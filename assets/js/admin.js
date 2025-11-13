@@ -447,20 +447,25 @@
       viewBtn.className = "btn";
       viewBtn.textContent = "View";
       viewBtn.onclick = () => {
-        const lines = (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).map(m => `- ${m.name}`).join("\n");
-        const sug = Array.isArray(r.suggestions) && r.suggestions.length ? `\nSuggested Improvements:\n${r.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
-        const extra = [
-          r.email ? `Email: ${r.email}` : null,
-          r.orgCountry ? `Country: ${r.orgCountry}` : null,
-          r.orgState ? `State: ${r.orgState}` : null,
-          r.orgDistrict ? `District: ${r.orgDistrict}` : null,
-          r.orgCity ? `City/Town/Village: ${r.orgCity}` : null,
-          r.repName ? `Representative Name: ${r.repName}` : null,
-          r.repDesignation ? `Designation: ${r.repDesignation}` : null,
-          Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : null,
-          r.adminNote ? `Admin Note: ${r.adminNote}` : null,
-        ].filter(Boolean).join("\n");
-        alert(`Organization: ${r.orgName || "-"}\nType: ${r.orgType || "-"}\nClassification: ${r.classification || "-"}\nStatus: ${r.status || "pending"}\nSubmitted: ${r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-"}\n${extra ? extra + "\n" : ""}${sug}\nSelected Metrics:\n${lines}`);
+        const overlay = document.createElement("div"); overlay.className = "modal-overlay";
+        const card = document.createElement("div"); card.className = "modal-card";
+        const title = document.createElement("div"); title.className = "modal-title"; title.textContent = `${r.orgName || "-"} • ${r.orgType || "-"}`;
+        const sub = document.createElement("div"); sub.className = "modal-sub";
+        const acc = Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : '';
+        const locs = [r.orgCountry,r.orgState,r.orgDistrict,r.orgCity].filter(Boolean).join(', ');
+        const idLine = r.regCode ? `ID: ${r.regCode}` : '';
+        sub.textContent = [idLine, locs ? `Location: ${locs}` : '', r.email ? `Email: ${r.email}` : '', r.adminNote ? `Admin Note: ${r.adminNote}` : '', acc].filter(Boolean).join(' • ');
+        const h = document.createElement("h3"); h.textContent = "Selected Guidelines";
+        const ul = document.createElement("ul"); ul.className = "list";
+        (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).forEach(m => { const li = document.createElement("li"); li.textContent = `- ${m.name}`; ul.appendChild(li); });
+        if (Array.isArray(r.suggestions) && r.suggestions.length) {
+          const h2 = document.createElement("h3"); h2.textContent = "Suggested Improvements"; card.append(h2);
+          const sugUl = document.createElement("ul"); sugUl.className = "list"; r.suggestions.forEach(s => { const li = document.createElement("li"); li.textContent = `- ${s}`; sugUl.appendChild(li); }); card.appendChild(sugUl);
+        }
+        const actions = document.createElement("div"); actions.className = "modal-actions";
+        const close = document.createElement("button"); close.className = "btn"; close.textContent = "Close"; close.onclick = () => { document.body.removeChild(overlay); };
+        actions.appendChild(close);
+        card.append(title, sub, h, ul, actions); overlay.appendChild(card); document.body.appendChild(overlay);
       };
 
       const approveBtn = document.createElement("button");
