@@ -766,3 +766,10 @@ function updateGridRegistrationStatusById(id, status, adminNote = "") {
 function getApprovedGridRegistrations() {
   return getGridRegistrations().filter(r => r.status === "approved");
 }
+
+function deleteGridRegistrationById(id) {
+  const regs = getGridRegistrations();
+  const next = regs.filter(r => r.id !== id);
+  saveGridRegistrations(next);
+  return true;
+}

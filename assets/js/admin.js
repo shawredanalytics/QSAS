@@ -475,7 +475,12 @@
       rejectBtn.disabled = r.status === "rejected";
       rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); renderGridRegistrations(); };
 
-      actions.append(viewBtn, approveBtn, rejectBtn);
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); renderGridRegistrations(); } };
+
+      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn);
       li.append(left, actions);
       listEl.appendChild(li);
     });
