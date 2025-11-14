@@ -346,6 +346,24 @@ function ensureDefaults() {
       QI_METRICS
     );
 
+    addBaselineIfMissing(
+      "How Safe is your Medical Diagnostic Laboratory ?",
+      "Safety and quality readiness checklist for hospital-based medical diagnostic laboratories covering biosafety, QC/EQA, traceability, and emergency preparedness.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Internal QC documentation reviewed; corrective actions tracked", points: 10 },
+        { name: "External proficiency testing (EQA/PT) participation results analyzed", points: 10 },
+        { name: "Specimen chain-of-custody and labeling traceability ensured", points: 10 },
+        { name: "Biohazard handling SOPs and PPE adherence monitored", points: 10 },
+        { name: "Sharps safety program and exposure incident management", points: 10 },
+        { name: "Cold chain storage/transport logs maintained", points: 10 },
+        { name: "Analyzer calibration and preventive maintenance logs", points: 10 },
+        { name: "Result validation SOPs and critical value reporting defined", points: 10 },
+        { name: "LIS integrity, access controls, and data backup procedures", points: 10 },
+        { name: "Emergency preparedness and spill response drills conducted", points: 10 },
+      ]
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
