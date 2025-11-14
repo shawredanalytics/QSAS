@@ -307,7 +307,7 @@
     // Update selected checklist header
     try {
       const lists = getChecklists();
-      const cl = lists.find(c => c.id === currentChecklistId);
+      const cl = lists.find(c => c.id === currentChecklistId || c.code === currentChecklistId);
       const showHeader = !!(currentChecklistId && cl);
       selectedHeaderEl && (selectedHeaderEl.hidden = !showHeader);
       if (showHeader) {
@@ -730,11 +730,7 @@
     if (assessment.checklistName || assessment.checklistId) {
       lines.push({ t: `Checklist: ${assessment.checklistName || assessment.checklistId}` });
     }
-    if (assessment.orgName) lines.push({ t: `Organization: ${assessment.orgName}` });
-    if (assessment.orgType) lines.push({ t: `Organization Type: ${assessment.orgType}` });
-    if (assessment.repName) lines.push({ t: `Representative Name: ${assessment.repName}` });
-    if (assessment.repDesignation) lines.push({ t: `Designation: ${assessment.repDesignation}` });
-    if (assessment.userNote) lines.push({ t: `User Note: ${assessment.userNote}` });
+    // Hide organization, representative, designation, and user note in PDF
     // Score/classification removed from report
     lines.push({ t: `Submitted At: ${assessment.submittedAt || "-"}` });
     lines.push({ t: `Verified At: ${assessment.verifiedAt || "-"}` });
@@ -783,10 +779,7 @@
     if (assessment.checklistName || assessment.checklistId) {
       writeLine(`Checklist: ${assessment.checklistName || assessment.checklistId}`);
     }
-    if (assessment.orgName) writeLine(`Organization: ${assessment.orgName}`);
-    if (assessment.repName) writeLine(`Representative Name: ${assessment.repName}`);
-    if (assessment.repDesignation) writeLine(`Designation: ${assessment.repDesignation}`);
-    if (assessment.userNote) writeLine(`User Note: ${assessment.userNote}`);
+    // Hidden: Organization, Representative Name, Designation, User Note
     // Score/classification removed from certificate text
     writeLine(`Submitted At: ${assessment.submittedAt || "-"}`);
     writeLine(`Verified At: ${assessment.verifiedAt || "-"}`);
