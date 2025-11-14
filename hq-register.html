@@ -373,10 +373,13 @@
             const type = String(orgTypeInput.value || '').trim();
             const active = getActiveGuidelines(type);
             const baseItems = [...active.quality, ...active.safety, ...active.compliance].map(it => ({ id: it.id, name: it.text }));
-            const per = baseItems.length ? Math.round(100 / baseItems.length) : 0;
-            const score = Math.round(selected.length * per);
-            const cls = classifyScore(score, 100, { metrics: baseItems.map(it => ({ id: it.id, name: it.name, points: per })), selectedIds: selected });
-            if (selCountEl) selCountEl.textContent = String(selected.length);
+            const baseIds = new Set(baseItems.map(it => it.id));
+            const selGuidelineIds = selected.filter(id => baseIds.has(id));
+            const per = baseItems.length ? (100 / baseItems.length) : 0;
+            const selCount = Math.min(selGuidelineIds.length, baseItems.length);
+            const score = Math.min(100, Math.round(selCount * per));
+            const cls = classifyScore(score, 100, { metrics: baseItems.map(it => ({ id: it.id, name: it.name, points: per })), selectedIds: selGuidelineIds });
+            if (selCountEl) selCountEl.textContent = String(selCount);
             if (selScoreEl) selScoreEl.textContent = String(score);
             if (selClassEl) selClassEl.textContent = cls.label || '—';
             if (Array.isArray(cls.suggestions) && cls.suggestions.length) {
