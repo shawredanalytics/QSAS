@@ -407,11 +407,22 @@
           const title = document.createElement('div');
           title.className = 'item-title';
           title.textContent = r.orgName || 'Organization';
-          if (r.qualityBadge && r.qualityBadge.length) {
+          const badgeText = (function(){
+            const accs = Array.isArray(r.accreditations) ? r.accreditations.join(' | ') : '';
+            const s = accs.toLowerCase();
+            if (s.includes('nabl accreditation')) return 'NABL Accredited';
+            if (s.includes('nabl entry')) return 'NABL Entry Level';
+            if (s.includes('nabh accreditation')) return 'NABH Accredited';
+            if (s.includes('nabh entry')) return 'NABH Entry Level';
+            if (s.includes('jci')) return 'JCI Accredited';
+            if (s.includes('iso')) return 'ISO Accredited';
+            return r.qualityBadge || '';
+          })();
+          if (badgeText && badgeText.length) {
             const badgeEl = document.createElement('span');
             badgeEl.className = 'pill';
             badgeEl.style.marginLeft = '8px';
-            badgeEl.textContent = r.qualityBadge;
+            badgeEl.textContent = badgeText;
             title.appendChild(badgeEl);
           }
           const sub = document.createElement('div');

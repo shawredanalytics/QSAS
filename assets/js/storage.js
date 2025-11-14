@@ -806,6 +806,19 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
     } catch(e) {}
     return code;
   }
+  const accs = Array.isArray(details?.accreditations) ? details.accreditations : [];
+  function deriveQualityBadge(list) {
+    try {
+      const s = (Array.isArray(list) ? list.join(" | ") : "").toLowerCase();
+      if (s.includes("nabl accreditation")) return "NABL Accredited";
+      if (s.includes("nabl entry")) return "NABL Entry Level";
+      if (s.includes("nabh accreditation")) return "NABH Accredited";
+      if (s.includes("nabh entry")) return "NABH Entry Level";
+      if (s.includes("jci")) return "JCI Accredited";
+      if (s.includes("iso")) return "ISO Accredited";
+    } catch {}
+    return accs && accs.length ? "Accredited" : "";
+  }
   const payload = {
     id: generateId(),
     regCode: generateRegCode16(),
@@ -819,8 +832,8 @@ function submitGridRegistration(metricsAll, selectedIds, details = {}) {
     repName: String(details?.repName || ""),
     repDesignation: String(details?.repDesignation || ""),
     consent: !!details?.consent,
-    accreditations: Array.isArray(details?.accreditations) ? details.accreditations : [],
-    qualityBadge: Array.isArray(details?.accreditations) && details.accreditations.length ? 'Accredited' : '',
+    accreditations: accs,
+    qualityBadge: deriveQualityBadge(accs),
     selectedMetrics: selected,
     score,
     scorePercent: cls.percent,
