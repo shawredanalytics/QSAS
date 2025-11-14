@@ -301,6 +301,7 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 .certificate-rows { display: grid; gap: 8px; }
 .certificate-row { display: grid; grid-template-columns: 180px 1fr; align-items: center; }
 .certificate-row .label { color: var(--muted); }
+.certificate-row span:last-child { word-break: break-word; overflow-wrap: anywhere; }
 .certificate-score { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
 .certificate-score .score-value { font-size: 2.25rem; font-weight: 700; color: var(--primary); }
 .certificate-score .score-extra { display: grid; gap: 6px; }

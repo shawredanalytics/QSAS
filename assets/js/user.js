@@ -765,7 +765,7 @@
     doc.setTextColor(0,0,0);
 
     const writeLine = (text, opts = {}) => {
-      const maxWidth = 180; // mm
+      const maxWidth = 170; // mm, narrower to avoid border overflow
       const split = doc.splitTextToSize(text, maxWidth);
       split.forEach((ln) => {
         if (y > 280) { doc.addPage(); y = 20; }
