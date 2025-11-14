@@ -733,7 +733,9 @@
     // Hide organization, representative, designation, and user note in PDF
     // Score/classification removed from report
     lines.push({ t: `Submitted At: ${assessment.submittedAt || "-"}` });
-    lines.push({ t: `Verified At: ${assessment.verifiedAt || "-"}` });
+    if (verified && assessment.verifiedAt) {
+      lines.push({ t: `Verified At: ${assessment.verifiedAt}` });
+    }
     const code = assessment.certificateCode || generateCertificateCode();
     const genAt = assessment.certificateGeneratedAt || new Date().toISOString();
     lines.push({ t: `Certificate Code: ${code}` });
@@ -782,7 +784,9 @@
     // Hidden: Organization, Representative Name, Designation, User Note
     // Score/classification removed from certificate text
     writeLine(`Submitted At: ${assessment.submittedAt || "-"}`);
-    writeLine(`Verified At: ${assessment.verifiedAt || "-"}`);
+    if (verified && assessment.verifiedAt) {
+      writeLine(`Verified At: ${assessment.verifiedAt}`);
+    }
     const code2 = assessment.certificateCode || generateCertificateCode();
     const genAt2 = assessment.certificateGeneratedAt || new Date().toISOString();
     writeLine(`Certificate Code: ${code2}`);
