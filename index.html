@@ -417,7 +417,7 @@
           const sub = document.createElement('div');
           sub.className = 'item-sub';
           const reg = r.regCode ? ` • ID: ${r.regCode}` : '';
-          sub.textContent = `${r.orgType || 'Healthcare'} • Classification: ${r.classification || '-'}${reg}`;
+          sub.textContent = `${r.orgType || 'Healthcare'}${reg}`;
           const actions = document.createElement('div');
           actions.className = 'actions';
           const a = document.createElement('a');

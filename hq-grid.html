@@ -148,8 +148,8 @@
               top.textContent = r.orgName || 'Organization';
               const sub = document.createElement('div');
               sub.className = 'item-sub';
-              const idLine = r.regCode ? ` • ID: ${r.regCode}` : '';
-              sub.textContent = `Classification: ${r.classification || '-'}` + idLine;
+              const idLine = r.regCode ? `ID: ${r.regCode}` : '';
+              sub.textContent = [idLine].filter(Boolean).join('');
               const actions = document.createElement('div');
               actions.className = 'item-actions';
               const connect = document.createElement('a');
