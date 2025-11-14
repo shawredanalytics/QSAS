@@ -56,6 +56,15 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 }
 .card:last-child { margin-bottom: 0; }
 
+/* Vibrant highlight card for selected checklist header */
+.highlight-card { 
+  background: linear-gradient(90deg, #eef3ff 0%, #e9fef5 100%);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 26px rgba(71,116,226,0.12);
+}
+.highlight-card .item-title { font-weight: 700; color: #1f2937; }
+.highlight-card .item-sub { color: #334155; }
+
 .card.accent-blue { border-top: 4px solid #4774E2; }
 .card.accent-green { border-top: 4px solid #2EB980; }
 .card.accent-amber { border-top: 4px solid #F59E0B; }
