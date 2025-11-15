@@ -472,18 +472,18 @@
       approveBtn.className = "btn btn-primary";
       approveBtn.textContent = "Approve";
       approveBtn.disabled = r.status === "approved";
-      approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); renderGridRegistrations(); };
+      approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); syncGridToGitHub(); };
 
       const rejectBtn = document.createElement("button");
       rejectBtn.className = "btn btn-danger";
       rejectBtn.textContent = "Reject";
       rejectBtn.disabled = r.status === "rejected";
-      rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); renderGridRegistrations(); };
+      rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); syncGridToGitHub(); };
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn btn-danger";
       deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); renderGridRegistrations(); } };
+      deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); syncGridToGitHub(); } };
 
       const syncBtn = document.createElement("button");
       syncBtn.className = "btn";
@@ -563,3 +563,13 @@
   // Metrics search
   const metricsSearchInput = document.getElementById("metricsSearch");
   metricsSearchInput?.addEventListener("input", () => { renderMetrics(); });
+    function syncGridToGitHub() {
+      try {
+        const regs = getGridRegistrations() || [];
+        const b64 = btoa(JSON.stringify(regs));
+        const topWin = window.top || window.parent || window;
+        const base = topWin.location.origin;
+        const url = base + '/?section=Admin&sync=grid&payload=' + encodeURIComponent(b64);
+        topWin.location.href = url;
+      } catch(e) { alert('Sync failed'); }
+    }
