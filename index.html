@@ -446,14 +446,18 @@
             const h = document.createElement('h3'); h.textContent = 'Selected Guidelines';
             const ul = document.createElement('ul'); ul.className = 'list';
             (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).forEach(m => { const li = document.createElement('li'); li.textContent = `- ${m.name}`; ul.appendChild(li); });
+            let h2 = null, sugUl = null;
             if (Array.isArray(r.suggestions) && r.suggestions.length) {
-              const h2 = document.createElement('h3'); h2.textContent = 'Suggested Improvements'; card.append(h2);
-              const sugUl = document.createElement('ul'); sugUl.className = 'list'; r.suggestions.forEach(s => { const li = document.createElement('li'); li.textContent = `- ${s}`; sugUl.appendChild(li); }); card.appendChild(sugUl);
+              h2 = document.createElement('h3'); h2.textContent = 'Suggested Improvements';
+              sugUl = document.createElement('ul'); sugUl.className = 'list'; r.suggestions.forEach(s => { const li = document.createElement('li'); li.textContent = `- ${s}`; sugUl.appendChild(li); });
             }
             const actions = document.createElement('div'); actions.className = 'modal-actions';
             const close = document.createElement('button'); close.className = 'btn'; close.textContent = 'Close'; close.onclick = () => { document.body.removeChild(overlay); };
             actions.appendChild(close);
-            card.append(title, sub, h, ul, actions); overlay.appendChild(card); document.body.appendChild(overlay);
+            card.append(title, sub, h, ul);
+            if (h2 && sugUl) card.append(h2, sugUl);
+            card.append(actions);
+            overlay.appendChild(card); document.body.appendChild(overlay);
           };
           actions.appendChild(a);
           card.append(title, sub, actions);
