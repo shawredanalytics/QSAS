@@ -429,6 +429,13 @@
   }
 
   function renderGridRegistrations() {
+    try {
+      const res = localStorage.getItem('qsas_sync_result');
+      if (res) {
+        localStorage.removeItem('qsas_sync_result');
+        alert(res === 'ok' ? 'GitHub sync OK' : 'Sync failed');
+      }
+    } catch(e) {}
     const listEl = document.getElementById("gridRegsList");
     const emptyEl = document.getElementById("gridRegsEmpty");
     if (!listEl || !emptyEl) return;
@@ -570,6 +577,6 @@
         const topWin = window.top || window.parent || window;
         const base = topWin.location.origin;
         const url = base + '/?section=Admin&sync=grid&payload=' + encodeURIComponent(b64);
-        topWin.location.href = url;
+        topWin.location.assign(url);
       } catch(e) { alert('Sync failed'); }
     }

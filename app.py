@@ -425,20 +425,21 @@ else:  # Admin
             sync = sync[0] if sync else None
         if isinstance(payload_b64, list):
             payload_b64 = payload_b64[0] if payload_b64 else None
+        sync_msg = ""
         if sync == "grid" and payload_b64:
             try:
                 data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
-                _github_put_json("data/grid_registrations.json", data_json, message="QSAS: sync grid registrations")
-                _set_query_section("Admin")
+                ok = _github_put_json("data/grid_registrations.json", data_json, message="QSAS: sync grid registrations")
+                sync_msg = "ok" if ok else "error"
             except Exception:
-                pass
+                sync_msg = "error"
         # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
         gh_regs = []
         try:
             gh_regs = _github_get_json("data/grid_registrations.json", default=[])
         except Exception:
             gh_regs = []
-        gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
+        gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");" + (f"localStorage.setItem('qsas_sync_result','{sync_msg}');" if sync_msg else "") + "}}catch(e){{}}}})();"
         html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap + "\n" + gh_boot)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
 def _github_repo():
