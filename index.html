@@ -428,7 +428,8 @@
           const sub = document.createElement('div');
           sub.className = 'item-sub';
           const reg = r.regCode ? ` • ID: ${r.regCode}` : '';
-          sub.textContent = `${r.orgType || 'Healthcare'}${reg}`;
+          const accLine = Array.isArray(r.accreditations) && r.accreditations.length ? ` • Accreditations: ${r.accreditations.join(', ')}` : '';
+          sub.textContent = `${r.orgType || 'Healthcare'}${reg}${accLine}`;
           const actions = document.createElement('div');
           actions.className = 'actions';
           const a = document.createElement('a');
