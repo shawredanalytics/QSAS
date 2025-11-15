@@ -572,8 +572,10 @@
   metricsSearchInput?.addEventListener("input", () => { renderMetrics(); });
     function syncGridToGitHub() {
       try {
-        const regs = getGridRegistrations() || [];
+        // Send only approved registrations to keep payload small and match public bootstrap usage
+        const regs = (typeof getApprovedGridRegistrations === 'function') ? (getApprovedGridRegistrations() || []) : ((getGridRegistrations() || []).filter(r => r.status === 'approved'));
         const b64 = btoa(JSON.stringify(regs));
+        if (b64.length > 60000) { alert('Sync payload too large; please reduce entries or contact support'); return; }
         const topWin = window.top || window.parent || window;
         const base = topWin.location.origin;
         const url = base + '/?section=Admin&sync=grid&payload=' + encodeURIComponent(b64);
