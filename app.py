@@ -1,6 +1,9 @@
 import streamlit as st
 import base64
 from pathlib import Path
+import json
+import os
+import requests
 
 ROOT = Path(__file__).parent
 
@@ -414,5 +417,71 @@ else:  # Admin
           }}
         }})();
         """.format(u=repr(admin_username), p=repr(admin_password), auto_login=str(bool(admin_auto_login)).lower())
-        html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap)
+        # Handle GitHub sync via query params
+        qp2 = _get_query_params()
+        sync = qp2.get("sync")
+        payload_b64 = qp2.get("payload")
+        if isinstance(sync, list):
+            sync = sync[0] if sync else None
+        if isinstance(payload_b64, list):
+            payload_b64 = payload_b64[0] if payload_b64 else None
+        if sync == "grid" and payload_b64:
+            try:
+                data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
+                _github_put_json("data/grid_registrations.json", data_json, message="QSAS: sync grid registrations")
+                _set_query_section("Admin")
+            except Exception:
+                pass
+        # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
+        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+        gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
+        html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap + "\n" + gh_boot)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
+def _github_repo():
+    return str(st.secrets.get("GITHUB_REPO") or "shawredanalytics/QSAS")
+
+def _github_token():
+    return str(st.secrets.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN") or "")
+
+def _gh_headers():
+    tok = _github_token()
+    h = {"Accept": "application/vnd.github+json"}
+    if tok:
+        h["Authorization"] = f"Bearer {tok}"
+    return h
+
+def _github_get_json(path: str, default=None):
+    try:
+        owner_repo = _github_repo()
+        url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
+        r = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            content_b64 = data.get("content") or ""
+            content = base64.b64decode(content_b64).decode("utf-8")
+            return json.loads(content)
+        return default
+    except Exception:
+        return default
+
+def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid registrations"):
+    owner_repo = _github_repo()
+    url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
+    # Get SHA if file exists
+    sha = None
+    try:
+        r0 = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r0.status_code == 200:
+            sha = r0.json().get("sha")
+    except Exception:
+        pass
+    content = json.dumps(payload, ensure_ascii=False, indent=2)
+    body = {
+        "message": message,
+        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
+        "branch": "main",
+    }
+    if sha:
+        body["sha"] = sha
+    r = requests.put(url, headers=_gh_headers(), json=body, timeout=20)
+    return r.status_code in (200, 201)

@@ -485,7 +485,21 @@
       deleteBtn.textContent = "Delete";
       deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); renderGridRegistrations(); } };
 
-      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn);
+      const syncBtn = document.createElement("button");
+      syncBtn.className = "btn";
+      syncBtn.textContent = "Sync to GitHub";
+      syncBtn.onclick = () => {
+        try {
+          const regs = getGridRegistrations() || [];
+          const b64 = btoa(JSON.stringify(regs));
+          const topWin = window.top || window.parent || window;
+          const base = topWin.location.origin;
+          const url = base + '/?section=Admin&sync=grid&payload=' + encodeURIComponent(b64);
+          topWin.location.href = url;
+        } catch(e) { alert('Sync failed'); }
+      };
+
+      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn, syncBtn);
       li.append(left, actions);
       listEl.appendChild(li);
     });
