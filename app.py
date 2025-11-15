@@ -433,7 +433,11 @@ else:  # Admin
             except Exception:
                 pass
         # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
-        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+        gh_regs = []
+        try:
+            gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+        except Exception:
+            gh_regs = []
         gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
         html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap + "\n" + gh_boot)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
