@@ -7,6 +7,49 @@ import requests
 
 ROOT = Path(__file__).parent
 
+# GitHub Gist fallback helpers defined early to avoid NameError when used below
+def _github_gist_id():
+    try:
+        return str(st.secrets.get("GITHUB_GIST_ID") or os.environ.get("GITHUB_GIST_ID") or "")
+    except Exception:
+        return ""
+
+def _gh_headers():
+    tok = str(st.secrets.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN") or "")
+    h = {"Accept": "application/vnd.github+json"}
+    if tok:
+        h["Authorization"] = f"Bearer {tok}"
+    return h
+
+def _github_get_gist_json(default=None):
+    gid = _github_gist_id()
+    if not gid:
+        return default
+    try:
+        url = f"https://api.github.com/gists/{gid}"
+        r = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            files = data.get("files") or {}
+            file = files.get("grid_registrations.json") or next(iter(files.values()), None)
+            if file and file.get("content"):
+                return json.loads(file["content"])
+        return default
+    except Exception:
+        return default
+
+def _github_put_gist_json(payload: dict, filename: str = "grid_registrations.json"):
+    gid = _github_gist_id()
+    if not gid:
+        return False, "no_gist"
+    try:
+        url = f"https://api.github.com/gists/{gid}"
+        body = {"files": {filename: {"content": json.dumps(payload, ensure_ascii=False, indent=2)}}}
+        r = requests.patch(url, headers=_gh_headers(), json=body, timeout=20)
+        return (r.status_code in (200, 201)), r.status_code
+    except Exception:
+        return False, "exception"
+
 def read_text(rel_path: str) -> str:
     p = ROOT / rel_path
     try:
@@ -324,8 +367,25 @@ def build_home_hero_html():
     return html
 
 if section == "Home":
-    # Embed the updated Home page from index.html so UI changes are visible.
-    html_index = build_embedded_page("index.html")
+    # Embed Home and bootstrap registrations so verified cards persist across reloads
+    gh_regs = []
+    try:
+        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+        if not gh_regs:
+            owner_repo = _github_repo()
+            branch = "main"
+            try:
+                branch = _github_default_branch()
+            except Exception:
+                pass
+            url = f"https://raw.githubusercontent.com/{owner_repo}/{branch}/data/grid_registrations.json"
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200:
+                gh_regs = json.loads(r.text)
+    except Exception:
+        gh_regs = []
+    gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
+    html_index = build_embedded_page("index.html", bootstrap_js=gh_boot)
     st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
@@ -356,8 +416,25 @@ elif section == "User Assessment":
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 elif section == "Healthcare Quality Grid":
-    # Embed the new Healthcare Quality Grid page
-    html_grid = build_embedded_page("hq-grid.html")
+    # Embed Grid and bootstrap registrations
+    gh_regs = []
+    try:
+        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+        if not gh_regs:
+            owner_repo = _github_repo()
+            branch = "main"
+            try:
+                branch = _github_default_branch()
+            except Exception:
+                pass
+            url = f"https://raw.githubusercontent.com/{owner_repo}/{branch}/data/grid_registrations.json"
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200:
+                gh_regs = json.loads(r.text)
+    except Exception:
+        gh_regs = []
+    gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
+    html_grid = build_embedded_page("hq-grid.html", bootstrap_js=gh_boot)
     st.components.v1.html(html_grid, height=2200, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
     # Embed the dedicated registration page (no internal iframe scroll)
@@ -384,6 +461,21 @@ elif section == "Gap Assessment":
     """ % (repr(plan))
     html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
+elif section == "Certificate":
+    qp = _get_query_params()
+    payload = qp.get("payload")
+    if isinstance(payload, list):
+        payload = payload[0] if payload else None
+    js_bootstrap = """
+    (function(){
+      try {
+        var p = %s;
+        if (p) localStorage.setItem('qsas_cert_payload', String(p));
+      } catch(e) {}
+    })();
+    """ % (repr(payload))
+    html_cert = build_embedded_page("certificate.html", bootstrap_js=js_bootstrap)
+    st.components.v1.html(html_cert, height=1800, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
@@ -430,15 +522,32 @@ else:  # Admin
             try:
                 data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
                 ok = _github_put_json("data/grid_registrations.json", data_json, message="QSAS: sync grid registrations")
-                sync_msg = "ok" if ok else "error"
+                if not ok:
+                    ok2, code2 = _github_put_gist_json(data_json, filename="grid_registrations.json")
+                    sync_msg = "ok" if ok2 else f"error:{code2}"
+                else:
+                    sync_msg = "ok"
+            except Exception:
+                sync_msg = "error"
+        elif sync == "certs" and payload_b64:
+            try:
+                data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
+                ok = _github_put_json("data/cert_issuances.json", data_json, message="QSAS: sync cert issuances")
+                if not ok:
+                    ok2, code2 = _github_put_gist_json(data_json, filename="cert_issuances.json")
+                    sync_msg = "ok" if ok2 else f"error:{code2}"
+                else:
+                    sync_msg = "ok"
             except Exception:
                 sync_msg = "error"
         # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
         gh_regs = []
         try:
             gh_regs = _github_get_json("data/grid_registrations.json", default=[])
+            if not gh_regs:
+                gh_regs = _github_get_gist_json(default=[])
         except Exception:
-            gh_regs = []
+            gh_regs = _github_get_gist_json(default=[])
         gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");" + (f"localStorage.setItem('qsas_sync_result','{sync_msg}');" if sync_msg else "") + "}}catch(e){{}}}})();"
         html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap + "\n" + gh_boot)
         st.components.v1.html(html_admin, height=2200, scrolling=True)
@@ -469,6 +578,57 @@ def _github_get_json(path: str, default=None):
     except Exception:
         return default
 
+def _github_default_branch():
+    try:
+        owner_repo = _github_repo()
+        url = f"https://api.github.com/repos/{owner_repo}"
+        r = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r.status_code == 200:
+            return r.json().get("default_branch") or "main"
+    except Exception:
+        pass
+    return "main"
+
+def _github_gist_id():
+    try:
+        return str(st.secrets.get("GITHUB_GIST_ID") or os.environ.get("GITHUB_GIST_ID") or "")
+    except Exception:
+        return ""
+
+def _github_get_gist_json(default=None):
+    gid = _github_gist_id()
+    if not gid:
+        return default
+    try:
+        url = f"https://api.github.com/gists/{gid}"
+        r = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            files = data.get("files") or {}
+            # Prefer a file named grid_registrations.json
+            file = files.get("grid_registrations.json") or next(iter(files.values()), None)
+            if file and file.get("content"):
+                return json.loads(file["content"])
+        return default
+    except Exception:
+        return default
+
+def _github_put_gist_json(payload: dict):
+    gid = _github_gist_id()
+    if not gid:
+        return False, "no_gist"
+    try:
+        url = f"https://api.github.com/gists/{gid}"
+        body = {
+            "files": {
+                "grid_registrations.json": {"content": json.dumps(payload, ensure_ascii=False, indent=2)}
+            }
+        }
+        r = requests.patch(url, headers=_gh_headers(), json=body, timeout=20)
+        return (r.status_code in (200, 201)), r.status_code
+    except Exception:
+        return False, "exception"
+
 def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid registrations"):
     owner_repo = _github_repo()
     url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
@@ -484,7 +644,7 @@ def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid r
     body = {
         "message": message,
         "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
-        "branch": "main",
+        "branch": _github_default_branch(),
     }
     if sha:
         body["sha"] = sha

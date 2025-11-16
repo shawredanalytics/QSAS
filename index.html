@@ -461,6 +461,11 @@
             overlay.appendChild(card); document.body.appendChild(overlay);
           };
           actions.appendChild(a);
+          if (r.status === 'approved') {
+            const cert = document.createElement('a'); cert.href = '#'; cert.className = 'btn'; cert.textContent = 'Download Certificate';
+            cert.onclick = (e) => { e.preventDefault(); const s = JSON.stringify(r); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); const payload = btoa(bin); try { localStorage.setItem('qsas_cert_payload', payload); } catch(e) {} const topWin = window.top || window.parent || window; const base = topWin.location.origin; const url = base + '/?section=Certificate'; try { const w = topWin.open(url, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(err) { window.open(url, '_blank'); } };
+            actions.appendChild(cert);
+          }
           card.append(title, sub, actions);
           mount.appendChild(card);
         });

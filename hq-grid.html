@@ -116,6 +116,48 @@
           return 'Other Healthcare';
         }
 
+        function renderCertLookup() {
+          const host = document.querySelector('main.container.wide') || document.body;
+          if (!host || document.getElementById('certLookupCard')) return;
+          const card = document.createElement('section'); card.className = 'card info'; card.id = 'certLookupCard';
+          const h = document.createElement('h3'); h.textContent = 'Download Your Approved Certificate';
+          const form = document.createElement('div'); form.className = 'form-grid';
+          const label = document.createElement('label'); label.textContent = 'Email ID';
+          const input = document.createElement('input'); input.type = 'email'; input.id = 'certLookupEmail'; input.placeholder = 'you@example.com'; input.required = true;
+          label.appendChild(input);
+          const actions = document.createElement('div'); actions.className = 'actions';
+          const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Find Certificate';
+          const clearBtn = document.createElement('button'); clearBtn.className = 'btn'; clearBtn.textContent = 'Clear';
+          const msg = document.createElement('div'); msg.className = 'hint'; msg.id = 'certLookupMsg';
+          function encodeB64Json(obj){ try { const s = JSON.stringify(obj); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin); } catch(e){ try { return btoa(JSON.stringify(obj)); } catch(_) { return ''; } } }
+          btn.onclick = () => {
+            const email = (input.value || '').trim().toLowerCase(); if (!email) { msg.textContent = 'Enter a valid email.'; return; }
+            let regs = []; try { regs = (typeof getApprovedGridRegistrations === 'function') ? (getApprovedGridRegistrations() || []) : ((getGridRegistrations() || []).filter(r => r.status === 'approved')); } catch(e) { regs = []; }
+            const found = regs.find(r => String(r.email || '').toLowerCase() === email);
+            if (!found) { msg.textContent = 'No approved registration found for this email.'; return; }
+            msg.textContent = 'Approved registration found.';
+            try { addCertIssuance(found); } catch(e) {}
+            try {
+              const list = (typeof getCertIssuances === 'function') ? (getCertIssuances() || []) : [];
+              const b64 = encodeB64Json(list);
+              const topWin = window.top || window.parent || window; const base = topWin.location.origin;
+              localStorage.setItem('qsas_post_sync_redirect','Healthcare Quality Grid');
+              const syncUrl = base + '/?section=Admin&sync=certs&payload=' + encodeURIComponent(b64);
+              topWin.location.assign(syncUrl);
+            } catch(e) {
+              const payload = encodeB64Json(found);
+              const topWin = window.top || window.parent || window; const base = topWin.location.origin;
+              const certUrl = base + '/?section=Certificate&payload=' + encodeURIComponent(payload);
+              topWin.location.assign(certUrl);
+            }
+          };
+          clearBtn.onclick = () => { input.value=''; msg.textContent=''; };
+          actions.append(btn, clearBtn);
+          form.append(label, actions, msg);
+          card.append(h, form);
+          host.insertBefore(card, host.firstChild);
+        }
+
         function renderIndustryGrid() {
           const mount = document.getElementById('gridIndustryMount');
           const empty = document.getElementById('gridIndustryEmpty');
@@ -146,10 +188,24 @@
               const top = document.createElement('div');
               top.className = 'item-title';
               top.textContent = r.orgName || 'Organization';
+              (function(){
+                const accs = Array.isArray(r.accreditations) ? r.accreditations.join(' | ') : '';
+                const s = accs.toLowerCase();
+                let badgeText = '';
+                if (s.includes('nabl accreditation')) badgeText = 'NABL Accredited';
+                else if (s.includes('nabl entry')) badgeText = 'NABL Entry Level';
+                else if (s.includes('nabh accreditation')) badgeText = 'NABH Accredited';
+                else if (s.includes('nabh entry')) badgeText = 'NABH Entry Level';
+                else if (s.includes('jci')) badgeText = 'JCI Accredited';
+                else if (s.includes('iso')) badgeText = 'ISO Accredited';
+                else if (accs) badgeText = 'Accredited';
+                if (badgeText) { const pill = document.createElement('span'); pill.className = 'pill'; pill.style.marginLeft = '8px'; pill.textContent = badgeText; top.appendChild(pill); }
+              })();
               const sub = document.createElement('div');
               sub.className = 'item-sub';
               const idLine = r.regCode ? `ID: ${r.regCode}` : '';
-              sub.textContent = [idLine].filter(Boolean).join('');
+              const accLine = Array.isArray(r.accreditations) && r.accreditations.length ? ` • Accreditations: ${r.accreditations.join(', ')}` : '';
+              sub.textContent = [idLine].filter(Boolean).join('') + accLine;
               const actions = document.createElement('div');
               actions.className = 'item-actions';
               const connect = document.createElement('a');
@@ -187,6 +243,11 @@
               card.append(actions);
               overlay.appendChild(card); document.body.appendChild(overlay);
               };
+              if (r.status === 'approved') {
+                const cert = document.createElement('button'); cert.className = 'btn'; cert.textContent = 'Download Certificate';
+                cert.onclick = () => { const s = JSON.stringify(r); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); const payload = btoa(bin); try { localStorage.setItem('qsas_cert_payload', payload); } catch(e) {} const topWin = window.top || window.parent || window; const base = topWin.location.origin; const url = base + '/?section=Certificate'; topWin.location.assign(url); };
+                actions.append(cert);
+              }
               actions.append(connect, details);
               li.append(top, sub, actions);
               list.appendChild(li);
@@ -201,6 +262,7 @@
         // Download report and reset controls removed
 
         // Re-render checklists removed; only render marketplace grid
+        renderCertLookup();
         renderIndustryGrid();
       })();
     </script>

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "bjnr4wjh",
+    "regCode": "643F6PWC8G47QK9U",
+    "email": "quality.rkslab@gmail.com",
+    "orgName": "R. K. SCAN CENTRE AND DIAGNOSTICS (A UNIT OF R. K. DIAGNOSTIC SERVICES PVT. LTD.)",
+    "orgType": "Diagnostic Laboratory",
+    "orgCountry": "India",
+    "orgState": "Andhra Pradesh",
+    "orgDistrict": "",
+    "orgCity": "Guntur",
+    "repName": "Dr. Ramana Kumar",
+    "repDesignation": "Laboratory Director",
+    "consent": true,
+    "accreditations": [
+      "ISO Accreditation (Healthcare relevant)",
+      "NABL Accreditation"
+    ],
+    "qualityBadge": "NABL Accredited",
+    "selectedMetrics": [
+      {
+        "id": "q_lab_1",
+        "name": "Internal QC logs reviewed and corrective actions tracked",
+        "points": 10
+      },
+      {
+        "id": "s_lab_1",
+        "name": "Specimen chain‑of‑custody documented end‑to‑end",
+        "points": 10
+      },
+      {
+        "id": "c_lab_1",
+        "name": "Lab accreditation/recognition (e.g., NABL) roadmap maintained",
+        "points": 10
+      }
+    ],
+    "score": 30,
+    "scorePercent": 30,
+    "classification": "Early Quality Improvement",
+    "suggestions": [
+      "Establish a Quality Improvement committee and routine huddles",
+      "Adopt baseline documentation including policies, pathways, and checklists",
+      "Start monthly audits on patient safety and infection control",
+      "Establish and document: External proficiency testing participation results analyzed — define SOPs, train staff, and audit routinely",
+      "Establish and document: Calibration and maintenance of analyzers documented — define SOPs, train staff, and audit routinely",
+      "Establish and document: Result validation and critical value reporting SOPs — define SOPs, train staff, and audit routinely",
+      "Establish and document: Biohazard handling SOPs and PPE adherence monitored — define SOPs, train staff, and audit routinely",
+      "Establish and document: Sharps safety and exposure incident management — define SOPs, train staff, and audit routinely",
+      "Establish and document: Cold chain transport and storage logs maintained — define SOPs, train staff, and audit routinely",
+      "Establish and document: Reference ranges, LIS integrity, and access controls — define SOPs, train staff, and audit routinely"
+    ],
+    "status": "approved",
+    "submittedAt": "2025-11-15T21:56:53.865Z",
+    "verifiedAt": "2025-11-15T21:57:27.371Z",
+    "adminNote": ""
+  }
+]

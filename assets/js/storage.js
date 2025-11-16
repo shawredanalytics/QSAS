@@ -873,3 +873,31 @@ function deleteGridRegistrationById(id) {
   saveGridRegistrations(next);
   return true;
 }
+function getCertIssuances() {
+  try {
+    const s = localStorage.getItem('qsas_cert_issuances');
+    return s ? JSON.parse(s) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCertIssuances(list) {
+  try {
+    localStorage.setItem('qsas_cert_issuances', JSON.stringify(Array.isArray(list) ? list : []));
+    return true;
+  } catch (e) { return false; }
+}
+
+function addCertIssuance(rec) {
+  const list = getCertIssuances();
+  list.push({
+    email: String(rec?.email || ''),
+    regCode: String(rec?.regCode || ''),
+    orgName: String(rec?.orgName || ''),
+    orgType: String(rec?.orgType || ''),
+    issuedAt: new Date().toISOString(),
+  });
+  saveCertIssuances(list);
+  return true;
+}

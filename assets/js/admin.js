@@ -429,11 +429,35 @@
   }
 
   function renderGridRegistrations() {
+    const host = document.getElementById("gridRegistrationsHost") || document.body;
+    if (!document.getElementById("backupActions")) {
+      const bar = document.createElement("div");
+      bar.id = "backupActions";
+      bar.style.display = "flex";
+      bar.style.gap = "8px";
+      bar.style.margin = "8px 0";
+      const expBtn = document.createElement("button"); expBtn.className = "btn"; expBtn.textContent = "Export Grid Data";
+      const impBtn = document.createElement("button"); impBtn.className = "btn"; impBtn.textContent = "Import Grid Data";
+      const file = document.createElement("input"); file.type = "file"; file.accept = "application/json"; file.style.display = "none";
+      function downloadJSON(name, obj){ const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); }
+      expBtn.onclick = () => { const regs = getGridRegistrations() || []; downloadJSON("qsas_grid_registrations_backup.json", regs); };
+      impBtn.onclick = () => file.click();
+      file.onchange = (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(reader.result || "[]"); if (Array.isArray(data)) { saveGridRegistrations(data); alert("Backup restored"); } else { alert("Invalid file"); } } catch { alert("Invalid file"); } renderGridRegistrations(); }; reader.readAsText(f); };
+      bar.append(expBtn, impBtn, file);
+      host.parentElement && host.parentElement.insertBefore(bar, host);
+    }
     try {
       const res = localStorage.getItem('qsas_sync_result');
       if (res) {
         localStorage.removeItem('qsas_sync_result');
-        alert(res === 'ok' ? 'GitHub sync OK' : 'Sync failed');
+        if (res === 'ok') alert('GitHub sync OK'); else alert('Sync failed ' + res);
+        const redir = localStorage.getItem('qsas_post_sync_redirect');
+        if (redir) {
+          localStorage.removeItem('qsas_post_sync_redirect');
+          const topWin = window.top || window.parent || window;
+          const base = topWin.location.origin;
+          topWin.location.assign(base + '/?section=' + encodeURIComponent(redir));
+        }
       }
     } catch(e) {}
     const listEl = document.getElementById("gridRegsList");
@@ -479,34 +503,21 @@
       approveBtn.className = "btn btn-primary";
       approveBtn.textContent = "Approve";
       approveBtn.disabled = r.status === "approved";
-      approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); syncGridToGitHub(); };
+      approveBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "approved"); syncGridToGitHub(); const regs = getGridRegistrations() || []; const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-"); const name = "qsas_grid_registrations_backup_"+stamp+".json"; (function(o){ const blob = new Blob([JSON.stringify(o, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); })(regs); };
 
       const rejectBtn = document.createElement("button");
       rejectBtn.className = "btn btn-danger";
       rejectBtn.textContent = "Reject";
       rejectBtn.disabled = r.status === "rejected";
-      rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); syncGridToGitHub(); };
+      rejectBtn.onclick = () => { updateGridRegistrationStatusById(r.id, "rejected"); syncGridToGitHub(); const regs = getGridRegistrations() || []; const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-"); const name = "qsas_grid_registrations_backup_"+stamp+".json"; (function(o){ const blob = new Blob([JSON.stringify(o, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); })(regs); };
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn btn-danger";
       deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); syncGridToGitHub(); } };
+      deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); syncGridToGitHub(); const regs = getGridRegistrations() || []; const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-"); const name = "qsas_grid_registrations_backup_"+stamp+".json"; (function(o){ const blob = new Blob([JSON.stringify(o, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); })(regs); } };
 
-      const syncBtn = document.createElement("button");
-      syncBtn.className = "btn";
-      syncBtn.textContent = "Sync to GitHub";
-      syncBtn.onclick = () => {
-        try {
-          const regs = getGridRegistrations() || [];
-          const b64 = btoa(JSON.stringify(regs));
-          const topWin = window.top || window.parent || window;
-          const base = topWin.location.origin;
-          const url = base + '/?section=Admin&sync=grid&payload=' + encodeURIComponent(b64);
-          topWin.location.href = url;
-        } catch(e) { alert('Sync failed'); }
-      };
 
-      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn, syncBtn);
+      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn, certBtn);
       li.append(left, actions);
       listEl.appendChild(li);
     });
@@ -582,3 +593,16 @@
         topWin.location.assign(url);
       } catch(e) { alert('Sync failed'); }
     }
+      const certBtn = document.createElement("button");
+      certBtn.className = "btn";
+      certBtn.textContent = "Certificate";
+      certBtn.disabled = r.status !== "approved";
+      certBtn.onclick = () => {
+        const topWin = window.top || window.parent || window;
+        const base = topWin.location.origin;
+        const payload = encodeB64Json(r);
+        try { localStorage.setItem('qsas_cert_payload', payload); } catch(e) {}
+        const url = base + '/?section=Certificate';
+        try { const w = topWin.open(url, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(err) { window.open(url, '_blank'); }
+      };
+    function encodeB64Json(obj){ try { const s = JSON.stringify(obj); const utf8 = new TextEncoder().encode(s); let bin = ''; utf8.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); } catch(e){ try { return btoa(JSON.stringify(obj)); } catch(_) { return ''; } } }
