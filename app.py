@@ -526,6 +526,10 @@ else:  # Admin
                     ok2, code2 = _github_put_gist_json(data_json, filename="grid_registrations.json")
                     sync_msg = "ok" if ok2 else f"error:{code2}"
                 else:
+                    try:
+                        _github_put_json("data/qsas_grid_registrations_backup.json", data_json, message="QSAS: update registrations backup")
+                    except Exception:
+                        pass
                     sync_msg = "ok"
             except Exception:
                 sync_msg = "error"
