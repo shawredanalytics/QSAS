@@ -33,7 +33,8 @@
         <div class="score-row">
           <div class="actions">
             <button id="resetBtn" class="btn">Reset Selection</button>
-            <a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Contact Advisory Team</a>
+            <button id="contactAdvisoryBtn" class="btn btn-primary">Contact Advisory Team</button>
+            <button id="whatsappBtn" class="btn">WhatsApp Advisory Team 🟢</button>
           </div>
         </div>
         <div class="card certificate">
@@ -184,6 +185,25 @@
         }
 
         resetBtn.addEventListener('click', () => { selected.clear(); renderList(); update(); });
+
+        function openWhatsApp(planTitle){
+          const phone = '916301237212';
+          const msg = `Hello QuXAT Advisory Team, I need assistance for ${planTitle}. Selected items: ${selCount.textContent}.`;
+          alert('We will open WhatsApp to contact +91 6301237212. If WhatsApp is not installed, the web WhatsApp page will open.');
+          const protoUrl = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(msg);
+          const webUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+          try {
+            const w = window.open(protoUrl, '_blank');
+            setTimeout(() => { try { if (!w || w.closed) window.open(webUrl, '_blank'); } catch(e){ window.open(webUrl, '_blank'); } }, 800);
+          } catch(e){ window.open(webUrl, '_blank'); }
+        }
+
+        document.getElementById('whatsappBtn').addEventListener('click', () => openWhatsApp(plan.title));
+        document.getElementById('contactAdvisoryBtn').addEventListener('click', () => {
+          const subject = 'Advisory Support - ' + plan.title;
+          const href = 'mailto:quxat.team@gmail.com?subject=' + encodeURIComponent(subject);
+          try { const w = window.open(href, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(e){ window.location.href = href; }
+        });
         renderList(); update();
       })();
     </script>

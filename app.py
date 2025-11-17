@@ -128,8 +128,8 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
   <body>
     {body}
     <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
-    <script>{page_js}</script>
     {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
+    <script>{page_js}</script>
   </body>
 </html>
 """
@@ -454,6 +454,8 @@ elif section == "Gap Assessment":
     js_bootstrap = """
     (function(){
       try {
+        // Clear any previous plan to avoid stale reads
+        try { localStorage.removeItem('qsas_gap_plan'); } catch(e) {}
         var plan = %s;
         if (plan) localStorage.setItem('qsas_gap_plan', String(plan));
       } catch(e) {}
