@@ -23,7 +23,7 @@
         <h1 class="hero-title">QuXAT Advisory Services</h1>
         <p class="hero-subtitle">Expert guidance to achieve and sustain healthcare quality accreditations. Choose an advisory plan tailored to your organization’s goals.</p>
         <div class="cta-row">
-          <a href="mailto:quxat.team@gmail.com" class="btn btn-primary">Contact Advisory Team</a>
+          <button id="whatsappAdvisoryBtn" class="btn btn-primary">WhatsApp Advisory Team 🟢</button>
         </div>
       </div>
     </section>
@@ -112,6 +112,16 @@
     </footer>
     <script>
       (function(){
+        function openWhatsApp(){
+          const phone = '916301237212';
+          const msg = 'Hello QuXAT Advisory Team, I would like to discuss advisory services.';
+          alert('We will open WhatsApp to contact +91 6301237212. If WhatsApp is not installed, the web WhatsApp page will open.');
+          const protoUrl = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(msg);
+          const webUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+          try { const w = window.open(protoUrl, '_blank'); setTimeout(() => { try { if (!w || w.closed) window.open(webUrl, '_blank'); } catch(e){ window.open(webUrl, '_blank'); } }, 800); } catch(e){ window.open(webUrl, '_blank'); }
+        }
+
+        try { document.getElementById('whatsappAdvisoryBtn').addEventListener('click', openWhatsApp); } catch(e) {}
         document.addEventListener('click', function(e){
           const a = e.target.closest('a[data-section]'); if (!a) return;
           e.preventDefault();

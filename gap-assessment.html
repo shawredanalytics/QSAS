@@ -33,7 +33,6 @@
         <div class="score-row">
           <div class="actions">
             <button id="resetBtn" class="btn">Reset Selection</button>
-            <button id="contactAdvisoryBtn" class="btn btn-primary">Contact Advisory Team</button>
             <button id="whatsappBtn" class="btn">WhatsApp Advisory Team 🟢</button>
           </div>
         </div>
@@ -199,11 +198,6 @@
         }
 
         document.getElementById('whatsappBtn').addEventListener('click', () => openWhatsApp(plan.title));
-        document.getElementById('contactAdvisoryBtn').addEventListener('click', () => {
-          const subject = 'Advisory Support - ' + plan.title;
-          const href = 'mailto:quxat.team@gmail.com?subject=' + encodeURIComponent(subject);
-          try { const w = window.open(href, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(e){ window.location.href = href; }
-        });
         renderList(); update();
       })();
     </script>
