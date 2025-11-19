@@ -221,8 +221,6 @@ def render_sidebar_once():
         st.subheader("Navigation")
         # Primary navigation at the top
         go_home = st.button("QSAS Portal", use_container_width=True)
-        go_hq_grid = st.button("Healthcare Quality Grid", use_container_width=True)
-        go_hq_register = st.button("Register for Healthcare Quality Grid", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
@@ -242,14 +240,6 @@ def render_sidebar_once():
         st.session_state["section"] = "Admin"
         _set_query_section("Admin")
         st.rerun()
-    if go_hq_register:
-        st.session_state["section"] = "Register for the Healthcare Quality Grid"
-        _set_query_section("Register for the Healthcare Quality Grid")
-        st.rerun()
-    if go_hq_grid:
-        st.session_state["section"] = "Healthcare Quality Grid"
-        _set_query_section("Healthcare Quality Grid")
-        st.rerun()
     if go_advisory:
         st.session_state["section"] = "QuXAT Advisory Services"
         _set_query_section("QuXAT Advisory Services")
@@ -258,6 +248,9 @@ def render_sidebar_once():
 _sync_section_from_query()
 render_sidebar_once()
 section = st.session_state.get("section", "Home")
+# Redirect removed pages to Home
+if section in ("Healthcare Quality Grid", "Register for the Healthcare Quality Grid"):
+    section = "Home"
 mode = "Inline assets (Cloud)"
 admin_username = st.session_state.get("admin_username", "")
 admin_password = st.session_state.get("admin_password", "")
@@ -416,37 +409,17 @@ elif section == "User Assessment":
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
 elif section == "Healthcare Quality Grid":
-    # Embed Grid and bootstrap registrations
-    gh_regs = []
-    try:
-        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
-        if not gh_regs:
-            owner_repo = _github_repo()
-            branch = "main"
-            try:
-                branch = _github_default_branch()
-            except Exception:
-                pass
-            url = f"https://raw.githubusercontent.com/{owner_repo}/{branch}/data/grid_registrations.json"
-            r = requests.get(url, timeout=10)
-            if r.status_code == 200:
-                gh_regs = json.loads(r.text)
-    except Exception:
-        gh_regs = []
-    # Load NABL labs from local Excel and inject alongside registrations
-    nabl_labs = _load_nabl_labs()
-    gh_boot = (
-        "(function(){try{"
-        + "localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");"
-        + "localStorage.setItem('qsas_nabl_labs'," + json.dumps(json.dumps(nabl_labs)) + ");"
-        + "}catch(e){}})();"
-    )
-    html_grid = build_embedded_page("hq-grid.html", bootstrap_js=gh_boot)
-    st.components.v1.html(html_grid, height=2200, scrolling=True)
+    # Page removed — redirect to Home
+    _set_query_section("Home")
+    st.session_state["section"] = "Home"
+    html_index = build_embedded_page("index.html")
+    st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "Register for the Healthcare Quality Grid":
-    # Embed the dedicated registration page (no internal iframe scroll)
-    html_reg = build_embedded_page("hq-register.html")
-    st.components.v1.html(html_reg, height=4200, scrolling=False)
+    # Page removed — redirect to Home
+    _set_query_section("Home")
+    st.session_state["section"] = "Home"
+    html_index = build_embedded_page("index.html")
+    st.components.v1.html(html_index, height=4200, scrolling=False)
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)
