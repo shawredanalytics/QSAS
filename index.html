@@ -100,8 +100,6 @@
         <h3>Quick Actions</h3>
         <div class="actions">
           <a href="#" class="btn btn-primary" data-section="User Assessment">Start Self Assessment</a>
-          <a href="#" class="btn" data-section="Healthcare Quality Grid">Open Healthcare Quality Grid</a>
-          <a href="#" class="btn" data-section="Register for the Healthcare Quality Grid">Register for Healthcare Quality Grid</a>
           <a href="#" class="btn" data-section="Admin">QSAS Admin Portal</a>
         </div>
       </section>
@@ -393,6 +391,7 @@
         // Render approved Healthcare Quality Grid organizations
         const mount = document.getElementById('hqGridApproved');
         const empty = document.getElementById('hqGridEmpty');
+        if (!mount || !empty) return;
         let regs = [];
         try {
           regs = (typeof getApprovedGridRegistrations === 'function')
