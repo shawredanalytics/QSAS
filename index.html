@@ -136,13 +136,6 @@
         <div id="kpiGrid" class="kpi-grid"></div>
       </section>
 
-      <section class="card accent-slate">
-        <h3>Healthcare Quality Grid — Verified Organizations</h3>
-        <p class="hint">Organizations verified by Admin and compliant with the Healthcare Quality Grid are listed here.</p>
-        <div id="hqGridEmpty" class="empty" hidden>No verified organizations yet.</div>
-        <div id="hqGridApproved" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
-      </section>
-
       
 
       <section class="card">
@@ -357,18 +350,8 @@
             if (!kpiGrid) return;
             try {
               const published = lists.length;
-              const catSet = new Set(lists.map(c => deriveCategory(c.category)).filter(Boolean));
-              const industries = catSet.size;
-              let approved = 0;
-              try {
-                approved = (typeof getApprovedGridRegistrations === 'function')
-                  ? (getApprovedGridRegistrations() || []).length
-                  : (getGridRegistrations() || []).filter(r => r.status === 'approved').length;
-              } catch(e) { approved = 0; }
               const def = [
                 { t: 'Published Checklists', v: String(published), s: 'Available for self assessment' },
-                { t: 'Industries', v: String(industries || 0), s: 'Categories covered' },
-                { t: 'Verified Organizations', v: String(approved || 0), s: 'Listed on Healthcare Quality Grid' },
               ];
               kpiGrid.innerHTML = '';
               def.forEach(k => {
@@ -387,88 +370,7 @@
           renderCards();
           renderKpis();
         })();
-      (function(){
-        // Render approved Healthcare Quality Grid organizations
-        const mount = document.getElementById('hqGridApproved');
-        const empty = document.getElementById('hqGridEmpty');
-        if (!mount || !empty) return;
-        let regs = [];
-        try {
-          regs = (typeof getApprovedGridRegistrations === 'function')
-            ? getApprovedGridRegistrations()
-            : (getGridRegistrations() || []).filter(r => r.status === 'approved');
-        } catch(e) { regs = []; }
-        if (!regs.length) { empty.hidden = false; return; }
-        empty.hidden = true;
-        regs.forEach(r => {
-          const card = document.createElement('div');
-          card.className = 'card info';
-          const title = document.createElement('div');
-          title.className = 'item-title';
-          title.textContent = r.orgName || 'Organization';
-          const badgeText = (function(){
-            const accs = Array.isArray(r.accreditations) ? r.accreditations.join(' | ') : '';
-            const s = accs.toLowerCase();
-            if (s.includes('nabl accreditation')) return 'NABL Accredited';
-            if (s.includes('nabl entry')) return 'NABL Entry Level';
-            if (s.includes('nabh accreditation')) return 'NABH Accredited';
-            if (s.includes('nabh entry')) return 'NABH Entry Level';
-            if (s.includes('jci')) return 'JCI Accredited';
-            if (s.includes('iso')) return 'ISO Accredited';
-            return r.qualityBadge || '';
-          })();
-          if (badgeText && badgeText.length) {
-            const badgeEl = document.createElement('span');
-            badgeEl.className = 'pill';
-            badgeEl.style.marginLeft = '8px';
-            badgeEl.textContent = badgeText;
-            title.appendChild(badgeEl);
-          }
-          const sub = document.createElement('div');
-          sub.className = 'item-sub';
-          const reg = r.regCode ? ` • ID: ${r.regCode}` : '';
-          const accLine = Array.isArray(r.accreditations) && r.accreditations.length ? ` • Accreditations: ${r.accreditations.join(', ')}` : '';
-          sub.textContent = `${r.orgType || 'Healthcare'}${reg}${accLine}`;
-          const actions = document.createElement('div');
-          actions.className = 'actions';
-          const a = document.createElement('a');
-          a.href = '#'; a.className = 'btn';
-          a.textContent = 'View Grid Details';
-          a.onclick = (e) => { e.preventDefault();
-            const overlay = document.createElement('div'); overlay.className = 'modal-overlay';
-            const card = document.createElement('div'); card.className = 'modal-card';
-            const title = document.createElement('div'); title.className = 'modal-title'; title.textContent = `${r.orgName || 'Organization'} • ${r.orgType || 'Healthcare'}`;
-            const sub = document.createElement('div'); sub.className = 'modal-sub';
-            const acc = Array.isArray(r.accreditations) && r.accreditations.length ? `Accreditations: ${r.accreditations.join(', ')}` : '';
-            const locs = [r.orgCountry,r.orgState,r.orgDistrict,r.orgCity].filter(Boolean).join(', ');
-            const idLine = r.regCode ? `ID: ${r.regCode}` : '';
-            sub.textContent = [idLine, locs ? `Location: ${locs}` : '', r.email ? `Email: ${r.email}` : '', acc].filter(Boolean).join(' • ');
-            const h = document.createElement('h3'); h.textContent = 'Selected Guidelines';
-            const ul = document.createElement('ul'); ul.className = 'list';
-            (Array.isArray(r.selectedMetrics) ? r.selectedMetrics : []).forEach(m => { const li = document.createElement('li'); li.textContent = `- ${m.name}`; ul.appendChild(li); });
-            let h2 = null, sugUl = null;
-            if (Array.isArray(r.suggestions) && r.suggestions.length) {
-              h2 = document.createElement('h3'); h2.textContent = 'Suggested Improvements';
-              sugUl = document.createElement('ul'); sugUl.className = 'list'; r.suggestions.forEach(s => { const li = document.createElement('li'); li.textContent = `- ${s}`; sugUl.appendChild(li); });
-            }
-            const actions = document.createElement('div'); actions.className = 'modal-actions';
-            const close = document.createElement('button'); close.className = 'btn'; close.textContent = 'Close'; close.onclick = () => { document.body.removeChild(overlay); };
-            actions.appendChild(close);
-            card.append(title, sub, h, ul);
-            if (h2 && sugUl) card.append(h2, sugUl);
-            card.append(actions);
-            overlay.appendChild(card); document.body.appendChild(overlay);
-          };
-          actions.appendChild(a);
-          if (r.status === 'approved') {
-            const cert = document.createElement('a'); cert.href = '#'; cert.className = 'btn'; cert.textContent = 'Download Certificate';
-            cert.onclick = (e) => { e.preventDefault(); const s = JSON.stringify(r); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); const payload = btoa(bin); try { localStorage.setItem('qsas_cert_payload', payload); } catch(e) {} const topWin = window.top || window.parent || window; const base = topWin.location.origin; const url = base + '/?section=Certificate'; try { const w = topWin.open(url, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(err) { window.open(url, '_blank'); } };
-            actions.appendChild(cert);
-          }
-          card.append(title, sub, actions);
-          mount.appendChild(card);
-        });
-      })();
+      
     </script>
   </body>
   </html>
