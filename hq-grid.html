@@ -84,6 +84,25 @@
       </section>
 
       <section class="card">
+        <h3>Search Quality‑Centric Organizations</h3>
+        <div class="card info" id="gridSearchCard">
+          <div class="form-grid two">
+            <label>Country<input type="text" id="srchCountry" placeholder="e.g., India" /></label>
+            <label>State<input type="text" id="srchState" placeholder="e.g., Andhra Pradesh" /></label>
+            <label>District<input type="text" id="srchDistrict" placeholder="e.g., Guntur" /></label>
+            <label>Town / Village<input type="text" id="srchCity" placeholder="e.g., Guntur" /></label>
+            <label>Organization<input type="text" id="srchOrg" placeholder="Name contains…" /></label>
+          </div>
+          <div class="actions" style="margin-top:8px; gap:8px;">
+            <button id="srchApply" class="btn btn-primary">Search</button>
+            <button id="srchReset" class="btn">Reset</button>
+          </div>
+          <div id="srchMsg" class="hint"></div>
+        </div>
+        <div id="searchResultsMount" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;"></div>
+      </section>
+
+      <section class="card">
         <h3>Quality Grid Marketplace — Industries & Registered Organizations</h3>
         <p class="hint">QuXAT Healthcare Quality Grid is a market place where all stakeholder of quality healthcare delivery can connect and network with similar quality centric ideals to build business relationships. Quality grid should be the platform where organization that have proven quality credentials can reach to similar organizations through the quality grid portal. The various industries registered with the quality grid are mentioned on the quality grid homepage under respective industry heads.</p>
         <div id="gridIndustryEmpty" class="empty" hidden>No verified registrations yet.</div>
@@ -220,8 +239,42 @@
         // Download report and reset controls removed
 
         // Re-render checklists removed; only render marketplace grid
-        renderIndustryGrid();
+        
       })();
     </script>
   </body>
 </html>
+        function encodeB64Json(obj){ try { const s = JSON.stringify(obj); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin); } catch(e){ try { return btoa(JSON.stringify(obj)); } catch(_) { return ''; } } }
+
+        function renderSearchDirectory() {
+          const mount = document.getElementById('searchResultsMount');
+          const msgEl = document.getElementById('srchMsg');
+          const cEl = document.getElementById('srchCountry');
+          const sEl = document.getElementById('srchState');
+          const dEl = document.getElementById('srchDistrict');
+          const ctEl = document.getElementById('srchCity');
+          const oEl = document.getElementById('srchOrg');
+          const apply = document.getElementById('srchApply');
+          const reset = document.getElementById('srchReset');
+          function getApproved(){ try { return (typeof getApprovedGridRegistrations === 'function') ? (getApprovedGridRegistrations() || []) : ((getGridRegistrations() || []).filter(r => r.status === 'approved')); } catch(e){ return []; } }
+          function getNablLabs(){ try { const s = localStorage.getItem('qsas_nabl_labs'); return s ? JSON.parse(s) : []; } catch(e){ return []; } }
+          function matches(r){
+            function eq(a,b){ return !b || String(a||'').toLowerCase() === String(b||'').toLowerCase(); }
+            function like(a,b){ return !b || String(a||'').toLowerCase().includes(String(b||'').toLowerCase()); }
+            return eq(r.orgCountry, cEl.value) && eq(r.orgState, sEl.value) && eq(r.orgDistrict, dEl.value) && eq(r.orgCity, ctEl.value) && like(r.orgName, oEl.value);
+          }
+          function card(r){
+            const li = document.createElement('div'); li.className = 'card info';
+            const top = document.createElement('div'); top.className = 'item-title'; top.textContent = r.orgName || 'Organization';
+            const sub = document.createElement('div'); sub.className = 'item-sub'; sub.textContent = `${r.orgType || 'Healthcare'} • ${[r.orgCountry,r.orgState,r.orgDistrict,r.orgCity].filter(Boolean).join(', ')} • ID: ${r.regCode || '-'}`;
+            const actions = document.createElement('div'); actions.className = 'actions';
+            const connect = document.createElement('button'); connect.className = 'btn'; connect.textContent = 'Connect'; connect.onclick = () => { const email = r.email || ''; const href = email ? ('mailto:' + email + '?subject=' + encodeURIComponent('QuXAT Grid — Connect')) : '#'; if (email) { window.location.href = href; } else { alert('Email not available'); } };
+            const details = document.createElement('button'); details.className = 'btn'; details.textContent = 'View Achievements'; details.onclick = () => { const overlay = document.createElement('div'); overlay.className = 'modal-overlay'; const card = document.createElement('div'); card.className = 'modal-card'; const title = document.createElement('div'); title.className = 'modal-title'; title.textContent = `${r.orgName || 'Organization'} • ${normalizeIndustry(r.orgType)}`; const sub = document.createElement('div'); sub.className = 'modal-sub'; const locs = [r.orgCountry,r.orgState,r.orgDistrict,r.orgCity].filter(Boolean).join(', '); const acc = Array.isArray(r.accreditations)&&r.accreditations.length?`Accreditations: ${r.accreditations.join(', ')}`:''; sub.textContent = [locs?`Location: ${locs}`:'', r.email?`Email: ${r.email}`:'', acc].filter(Boolean).join(' • '); const h=document.createElement('h3'); h.textContent='Selected Guidelines'; const ul=document.createElement('ul'); ul.className='list'; (Array.isArray(r.selectedMetrics)?r.selectedMetrics:[]).forEach(m=>{ const li=document.createElement('li'); li.textContent='- '+m.name; ul.appendChild(li); }); const actions=document.createElement('div'); actions.className='modal-actions'; const close=document.createElement('button'); close.className='btn'; close.textContent='Close'; close.onclick=()=>{ document.body.removeChild(overlay); }; actions.appendChild(close); card.append(title,sub,h,ul,actions); overlay.appendChild(card); document.body.appendChild(overlay); };
+            actions.append(connect, details);
+            if (r.status === 'approved') { const cert=document.createElement('button'); cert.className='btn'; cert.textContent='Download Certificate'; cert.onclick=()=>{ try { localStorage.setItem('qsas_cert_payload', encodeB64Json(r)); } catch(e) {} const topWin = window.top || window.parent || window; const base = topWin.location.origin; const url = base + '/?section=Certificate'; try { const w = topWin.open(url, '_blank'); if (w && w.focus) w.focus(); } catch(err){ window.open(url,'_blank'); } }; actions.appendChild(cert); }
+            li.append(top, sub, actions);
+            return li;
+          }
+          function applyFilter(){ const combined = getApproved().concat(getNablLabs()); const regs = combined.filter(matches); mount.innerHTML=''; msgEl.textContent = regs.length ? `Showing ${regs.length} result(s)` : 'No matches found.'; regs.forEach(r => mount.appendChild(card(r))); }
+          apply.onclick = applyFilter; reset.onclick = () => { cEl.value=''; sEl.value=''; dEl.value=''; ctEl.value=''; oEl.value=''; msgEl.textContent=''; mount.innerHTML=''; };
+        }

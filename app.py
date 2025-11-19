@@ -433,7 +433,14 @@ elif section == "Healthcare Quality Grid":
                 gh_regs = json.loads(r.text)
     except Exception:
         gh_regs = []
-    gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
+    # Load NABL labs from local Excel and inject alongside registrations
+    nabl_labs = _load_nabl_labs()
+    gh_boot = (
+        "(function(){try{"
+        + "localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");"
+        + "localStorage.setItem('qsas_nabl_labs'," + json.dumps(json.dumps(nabl_labs)) + ");"
+        + "}catch(e){}})();"
+    )
     html_grid = build_embedded_page("hq-grid.html", bootstrap_js=gh_boot)
     st.components.v1.html(html_grid, height=2200, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
@@ -656,3 +663,82 @@ def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid r
         body["sha"] = sha
     r = requests.put(url, headers=_gh_headers(), json=body, timeout=20)
     return r.status_code in (200, 201)
+def _load_nabl_labs():
+    try:
+        xlsx_path = ROOT / "data" / "NABL Accredited Labs 2025.xlsx"
+        if not xlsx_path.exists():
+            return []
+        # Try pandas first
+        try:
+            import pandas as pd  # type: ignore
+            df = pd.read_excel(str(xlsx_path))
+            records = []
+            for _, row in df.iterrows():
+                def pick(*names):
+                    for n in names:
+                        if n in df.columns and pd.notna(row[n]):
+                            return str(row[n])
+                    return ""
+                name = pick("Laboratory Name", "Lab Name", "Organization", "Name")
+                state = pick("State", "STATE")
+                district = pick("District", "DISTRICT")
+                city = pick("City", "Town", "CITY")
+                country = pick("Country") or "India"
+                email = pick("Email", "EMAIL")
+                reg_code = pick("Lab Code", "Code", "Accession No")
+                records.append({
+                    "orgName": name,
+                    "orgType": "Diagnostic Laboratory",
+                    "orgCountry": country,
+                    "orgState": state,
+                    "orgDistrict": district,
+                    "orgCity": city,
+                    "email": email,
+                    "regCode": reg_code or "NABL-LAB",
+                    "accreditations": ["NABL Accreditation"],
+                    "status": "approved",
+                    "selectedMetrics": [],
+                })
+            return records
+        except Exception:
+            pass
+        # Fallback to openpyxl
+        try:
+            from openpyxl import load_workbook  # type: ignore
+            wb = load_workbook(filename=str(xlsx_path), read_only=True)
+            ws = wb.active
+            headers = [str(c.value).strip() if c.value is not None else "" for c in next(ws.iter_rows(min_row=1, max_row=1))]
+            def get(row, *names):
+                for n in names:
+                    if n in headers:
+                        idx = headers.index(n)
+                        val = row[idx].value
+                        return str(val) if val is not None else ""
+                return ""
+            records = []
+            for row in ws.iter_rows(min_row=2):
+                name = get(row, "Laboratory Name", "Lab Name", "Organization", "Name")
+                state = get(row, "State", "STATE")
+                district = get(row, "District", "DISTRICT")
+                city = get(row, "City", "Town", "CITY")
+                country = get(row, "Country") or "India"
+                email = get(row, "Email", "EMAIL")
+                reg_code = get(row, "Lab Code", "Code", "Accession No")
+                records.append({
+                    "orgName": name,
+                    "orgType": "Diagnostic Laboratory",
+                    "orgCountry": country,
+                    "orgState": state,
+                    "orgDistrict": district,
+                    "orgCity": city,
+                    "email": email,
+                    "regCode": reg_code or "NABL-LAB",
+                    "accreditations": ["NABL Accreditation"],
+                    "status": "approved",
+                    "selectedMetrics": [],
+                })
+            return records
+        except Exception:
+            return []
+    except Exception:
+        return []
