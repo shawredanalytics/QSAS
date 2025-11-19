@@ -524,7 +524,7 @@
   }
 
   // Refresh submissions list when window gains focus
-  window.addEventListener("focus", () => { renderSubmissions(); renderGridRegistrations(); });
+  window.addEventListener("focus", () => { renderSubmissions(); });
 
   // Checklist selection controls
   checklistSelect?.addEventListener("change", () => {
