@@ -116,48 +116,6 @@
           return 'Other Healthcare';
         }
 
-        function renderCertLookup() {
-          const host = document.querySelector('main.container.wide') || document.body;
-          if (!host || document.getElementById('certLookupCard')) return;
-          const card = document.createElement('section'); card.className = 'card info'; card.id = 'certLookupCard';
-          const h = document.createElement('h3'); h.textContent = 'Download Your Approved Certificate';
-          const form = document.createElement('div'); form.className = 'form-grid';
-          const label = document.createElement('label'); label.textContent = 'Email ID';
-          const input = document.createElement('input'); input.type = 'email'; input.id = 'certLookupEmail'; input.placeholder = 'you@example.com'; input.required = true;
-          label.appendChild(input);
-          const actions = document.createElement('div'); actions.className = 'actions';
-          const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Find Certificate';
-          const clearBtn = document.createElement('button'); clearBtn.className = 'btn'; clearBtn.textContent = 'Clear';
-          const msg = document.createElement('div'); msg.className = 'hint'; msg.id = 'certLookupMsg';
-          function encodeB64Json(obj){ try { const s = JSON.stringify(obj); const utf8 = new TextEncoder().encode(s); let bin=''; utf8.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin); } catch(e){ try { return btoa(JSON.stringify(obj)); } catch(_) { return ''; } } }
-          btn.onclick = () => {
-            const email = (input.value || '').trim().toLowerCase(); if (!email) { msg.textContent = 'Enter a valid email.'; return; }
-            let regs = []; try { regs = (typeof getApprovedGridRegistrations === 'function') ? (getApprovedGridRegistrations() || []) : ((getGridRegistrations() || []).filter(r => r.status === 'approved')); } catch(e) { regs = []; }
-            const found = regs.find(r => String(r.email || '').toLowerCase() === email);
-            if (!found) { msg.textContent = 'No approved registration found for this email.'; return; }
-            msg.textContent = 'Approved registration found.';
-            try { addCertIssuance(found); } catch(e) {}
-            try {
-              const list = (typeof getCertIssuances === 'function') ? (getCertIssuances() || []) : [];
-              const b64 = encodeB64Json(list);
-              const topWin = window.top || window.parent || window; const base = topWin.location.origin;
-              localStorage.setItem('qsas_post_sync_redirect','Healthcare Quality Grid');
-              const syncUrl = base + '/?section=Admin&sync=certs&payload=' + encodeURIComponent(b64);
-              topWin.location.assign(syncUrl);
-            } catch(e) {
-              const payload = encodeB64Json(found);
-              const topWin = window.top || window.parent || window; const base = topWin.location.origin;
-              const certUrl = base + '/?section=Certificate&payload=' + encodeURIComponent(payload);
-              topWin.location.assign(certUrl);
-            }
-          };
-          clearBtn.onclick = () => { input.value=''; msg.textContent=''; };
-          actions.append(btn, clearBtn);
-          form.append(label, actions, msg);
-          card.append(h, form);
-          host.insertBefore(card, host.firstChild);
-        }
-
         function renderIndustryGrid() {
           const mount = document.getElementById('gridIndustryMount');
           const empty = document.getElementById('gridIndustryEmpty');
@@ -262,7 +220,6 @@
         // Download report and reset controls removed
 
         // Re-render checklists removed; only render marketplace grid
-        renderCertLookup();
         renderIndustryGrid();
       })();
     </script>
