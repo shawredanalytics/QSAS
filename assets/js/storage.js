@@ -772,132 +772,23 @@ function generateReportText(assessment, verified) {
 // Healthcare Quality Grid API
 // -----------------------------
 function getGridRegistrations() {
-  ensureDefaults();
-  try {
-    const raw = localStorage.getItem(QSAS_KEYS.gridRegistrations) || "[]";
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
+  return [];
 }
 
-function saveGridRegistrations(list) {
-  localStorage.setItem(QSAS_KEYS.gridRegistrations, JSON.stringify(Array.isArray(list) ? list : []));
-}
+function saveGridRegistrations(list) { return true; }
 
 // metricsAll: array of { id, name, points }
 // selectedIds: array of ids
 // details: { orgName, orgType, repName, repDesignation, email, achievements, consent }
-function submitGridRegistration(metricsAll, selectedIds, details = {}) {
-  const all = Array.isArray(metricsAll) ? metricsAll : [];
-  const ids = Array.isArray(selectedIds) ? selectedIds : [];
-  const perMetric = all.length ? (QSAS_MAX_SCORE / all.length) : 0;
-  const selected = all.filter(m => ids.includes(m.id)).map(m => ({ id: m.id, name: m.name, points: perMetric }));
-  const score = Math.round(selected.length * perMetric);
-  const cls = classifyScore(score, QSAS_MAX_SCORE, { metrics: all, selectedIds: ids });
-  const now = new Date().toISOString();
-  function generateRegCode16() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    function make() { let out = ''; for (let i = 0; i < 16; i++) out += chars[Math.floor(Math.random() * chars.length)]; return out; }
-    let code = make();
-    try {
-      const existing = (getGridRegistrations() || []).map(r => String(r.regCode || ''));
-      const set = new Set(existing);
-      while (set.has(code)) code = make();
-    } catch(e) {}
-    return code;
-  }
-  const accs = Array.isArray(details?.accreditations) ? details.accreditations : [];
-  function deriveQualityBadge(list) {
-    try {
-      const s = (Array.isArray(list) ? list.join(" | ") : "").toLowerCase();
-      if (s.includes("nabl accreditation")) return "NABL Accredited";
-      if (s.includes("nabl entry")) return "NABL Entry Level";
-      if (s.includes("nabh accreditation")) return "NABH Accredited";
-      if (s.includes("nabh entry")) return "NABH Entry Level";
-      if (s.includes("jci")) return "JCI Accredited";
-      if (s.includes("iso")) return "ISO Accredited";
-    } catch {}
-    return accs && accs.length ? "Accredited" : "";
-  }
-  const payload = {
-    id: generateId(),
-    regCode: generateRegCode16(),
-    email: String(details?.email || ""),
-    orgName: String(details?.orgName || ""),
-    orgType: String(details?.orgType || ""),
-    orgCountry: String(details?.orgCountry || ""),
-    orgState: String(details?.orgState || ""),
-    orgDistrict: String(details?.orgDistrict || ""),
-    orgCity: String(details?.orgCity || ""),
-    repName: String(details?.repName || ""),
-    repDesignation: String(details?.repDesignation || ""),
-    consent: !!details?.consent,
-    accreditations: accs,
-    qualityBadge: deriveQualityBadge(accs),
-    selectedMetrics: selected,
-    score,
-    scorePercent: cls.percent,
-    classification: cls.label,
-    suggestions: cls.suggestions,
-    status: "pending",
-    submittedAt: now,
-    verifiedAt: null,
-    adminNote: "",
-  };
-  const regs = getGridRegistrations();
-  // replace existing by email if present
-  const idx = regs.findIndex(r => (r.email || "").toLowerCase() === String(payload.email).toLowerCase());
-  if (idx !== -1) regs[idx] = payload; else regs.push(payload);
-  saveGridRegistrations(regs);
-  return payload;
-}
+function submitGridRegistration(metricsAll, selectedIds, details = {}) { return {}; }
 
-function updateGridRegistrationStatusById(id, status, adminNote = "") {
-  const regs = getGridRegistrations();
-  const idx = regs.findIndex(r => r.id === id);
-  if (idx === -1) return false;
-  regs[idx].status = status;
-  regs[idx].adminNote = String(adminNote || "");
-  if (status === "approved") regs[idx].verifiedAt = new Date().toISOString();
-  saveGridRegistrations(regs);
-  return true;
-}
+function updateGridRegistrationStatusById(id, status, adminNote = "") { return false; }
 
-function getApprovedGridRegistrations() {
-  return getGridRegistrations().filter(r => r.status === "approved");
-}
+function getApprovedGridRegistrations() { return []; }
 
-function deleteGridRegistrationById(id) {
-  const regs = getGridRegistrations();
-  const next = regs.filter(r => r.id !== id);
-  saveGridRegistrations(next);
-  return true;
-}
-function getCertIssuances() {
-  try {
-    const s = localStorage.getItem('qsas_cert_issuances');
-    return s ? JSON.parse(s) : [];
-  } catch (e) {
-    return [];
-  }
-}
+function deleteGridRegistrationById(id) { return false; }
+function getCertIssuances() { return []; }
 
-function saveCertIssuances(list) {
-  try {
-    localStorage.setItem('qsas_cert_issuances', JSON.stringify(Array.isArray(list) ? list : []));
-    return true;
-  } catch (e) { return false; }
-}
+function saveCertIssuances(list) { return true; }
 
-function addCertIssuance(rec) {
-  const list = getCertIssuances();
-  list.push({
-    email: String(rec?.email || ''),
-    regCode: String(rec?.regCode || ''),
-    orgName: String(rec?.orgName || ''),
-    orgType: String(rec?.orgType || ''),
-    issuedAt: new Date().toISOString(),
-  });
-  saveCertIssuances(list);
-  return true;
-}
+function addCertIssuance(rec) { return false; }
