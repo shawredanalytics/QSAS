@@ -213,25 +213,30 @@
               const m = 40;
               const mw = pw - 2*m;
               let y = m;
-              function write(t){
-                const lines = doc.splitTextToSize(String(t), mw);
-                lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y); y += 16; });
-              }
+              const clean = (s) => String(s || '').replace(/[\u2013\u2014\u2212]/g, '-').replace(/[\u00a0\u200b\u200c\u200d]/g, ' ').replace(/\s+/g, ' ').trim();
+              const write = (t, opts) => {
+                const txt = clean(t);
+                const lines = doc.splitTextToSize(txt, mw);
+                const lh = Number(opts?.lh || 16);
+                lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y, { maxWidth: mw }); y += lh; });
+              };
               doc.setFont('helvetica','bold'); doc.setFontSize(18);
-              write(title); y += 4;
+              write(title, { lh: 20 });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               write('Plan: ' + String(d.plan || ''));
               write('Selected Items: ' + String(d.ids.length));
               write('Score: ' + String(d.score) + ' / 100');
               write('Classification: ' + String(d.cls.label || '—') + ' (' + String(d.cls.percent || 0) + '%)');
-              y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Selected:');
+              doc.setFont('helvetica','bold'); doc.setFontSize(14);
+              write('Selected:', { lh: 18 });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               const items = (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24);
-              items.forEach(it => write('- ' + String(it)));
-              y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Suggested Improvements:');
+              items.forEach(it => write('• ' + String(it)));
+              doc.setFont('helvetica','bold'); doc.setFontSize(14);
+              write('Suggested Improvements:', { lh: 18 });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               const sugs = (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,24);
-              sugs.forEach(s => write('- ' + String(s)));
+              sugs.forEach(s => write('• ' + String(s)));
               doc.save('gap_assessment_report.pdf');
               return;
             }
