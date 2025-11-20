@@ -33,6 +33,7 @@
         <div class="score-row">
           <div class="actions">
             <button id="resetBtn" class="btn btn-warning">Reset Selection</button>
+            <button id="downloadReportBtn" class="btn btn-slate">Download Gap Assessment Report</button>
             <button id="whatsappBtn" class="btn btn-success">Contact Advisory Team</button>
           </div>
         </div>
@@ -183,6 +184,7 @@
             sugBox.hidden = false; sugList.innerHTML = '';
             cls.suggestions.slice(0,8).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
           } else { sugBox.hidden = true; sugList.innerHTML = ''; }
+          try { window.__gapLatest = { plan: plan.title, ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name) }; } catch(e) {}
         }
 
         resetBtn.addEventListener('click', () => { selected.clear(); renderList(); update(); });
@@ -199,6 +201,36 @@
           } catch(e){ window.open(webUrl, '_blank'); }
         }
 
+        function downloadReport(){
+          const d = window.__gapLatest || { plan: plan.title, ids: [], score: 0, cls: { label:'', percent:0, suggestions:[] }, selectedItems: [] };
+          const title = 'Gap Assessment Report';
+          try {
+            const { jsPDF } = window.jspdf || {};
+            if (jsPDF) {
+              const doc = new jsPDF({ unit:'pt', format:'a4' });
+              doc.setFont('helvetica','bold'); doc.setFontSize(18);
+              doc.text(title, 40, 50);
+              doc.setFontSize(12); doc.setFont('helvetica','normal');
+              doc.text('Plan: ' + String(d.plan || ''), 40, 80);
+              doc.text('Selected Items: ' + String(d.ids.length), 40, 100);
+              doc.text('Score: ' + String(d.score) + ' / 100', 40, 120);
+              doc.text('Classification: ' + String(d.cls.label || '—') + ' (' + String(d.cls.percent || 0) + '%)', 40, 140);
+              doc.text('Selected:', 40, 170);
+              const items = (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,12);
+              let y = 190; items.forEach(it => { doc.text('- ' + String(it), 60, y); y += 16; });
+              doc.text('Suggested Improvements:', 40, y + 10);
+              y += 30; (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,8).forEach(s => { doc.text('- ' + String(s), 60, y); y += 16; });
+              doc.save('gap_assessment_report.pdf');
+              return;
+            }
+          } catch(e) {}
+          try {
+            const lines = [title,'Plan: ' + String(d.plan||''),'Selected Items: ' + String(d.ids.length),'Score: ' + String(d.score),'Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)','Selected:'].concat((Array.isArray(d.selectedItems)?d.selectedItems:[]).map(x=>'- '+x)).concat(['Suggested Improvements:']).concat((Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).map(x=>'- '+x));
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'gap_assessment_report.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+          } catch(e) {}
+        }
+        document.getElementById('downloadReportBtn').addEventListener('click', downloadReport);
         document.getElementById('whatsappBtn').addEventListener('click', () => openWhatsApp(plan.title));
         renderList(); update();
       })();
