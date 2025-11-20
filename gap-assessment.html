@@ -208,18 +208,30 @@
             const { jsPDF } = window.jspdf || {};
             if (jsPDF) {
               const doc = new jsPDF({ unit:'pt', format:'a4' });
+              const pw = doc.internal.pageSize.getWidth();
+              const ph = doc.internal.pageSize.getHeight();
+              const m = 40;
+              const mw = pw - 2*m;
+              let y = m;
+              function write(t){
+                const lines = doc.splitTextToSize(String(t), mw);
+                lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y); y += 16; });
+              }
               doc.setFont('helvetica','bold'); doc.setFontSize(18);
-              doc.text(title, 40, 50);
-              doc.setFontSize(12); doc.setFont('helvetica','normal');
-              doc.text('Plan: ' + String(d.plan || ''), 40, 80);
-              doc.text('Selected Items: ' + String(d.ids.length), 40, 100);
-              doc.text('Score: ' + String(d.score) + ' / 100', 40, 120);
-              doc.text('Classification: ' + String(d.cls.label || '—') + ' (' + String(d.cls.percent || 0) + '%)', 40, 140);
-              doc.text('Selected:', 40, 170);
-              const items = (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,12);
-              let y = 190; items.forEach(it => { doc.text('- ' + String(it), 60, y); y += 16; });
-              doc.text('Suggested Improvements:', 40, y + 10);
-              y += 30; (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,8).forEach(s => { doc.text('- ' + String(s), 60, y); y += 16; });
+              write(title); y += 4;
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              write('Plan: ' + String(d.plan || ''));
+              write('Selected Items: ' + String(d.ids.length));
+              write('Score: ' + String(d.score) + ' / 100');
+              write('Classification: ' + String(d.cls.label || '—') + ' (' + String(d.cls.percent || 0) + '%)');
+              y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Selected:');
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              const items = (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24);
+              items.forEach(it => write('- ' + String(it)));
+              y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Suggested Improvements:');
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              const sugs = (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,24);
+              sugs.forEach(s => write('- ' + String(s)));
               doc.save('gap_assessment_report.pdf');
               return;
             }
