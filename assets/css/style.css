@@ -162,6 +162,14 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .btn-primary { background: var(--primary); border-color: #355fd1; color: #ffffff; }
 .btn-primary:hover { background: #355fd1; }
 .btn-danger { background: var(--danger); border-color: #d23a48; color: #ffffff; }
+/* New color-coded button variants */
+:root { --success: #2EB980; --warning: #F59E0B; --slate: #334155; }
+.btn-success { background: var(--success); border-color: #1FA06D; color: #ffffff; }
+.btn-success:hover { background: #1FA06D; }
+.btn-warning { background: var(--warning); border-color: #D97706; color: #ffffff; }
+.btn-warning:hover { background: #D97706; }
+.btn-slate { background: var(--slate); border-color: #1F2937; color: #ffffff; }
+.btn-slate:hover { background: #1F2937; }
 
 .file-btn { position: relative; overflow: hidden; }
 .file-btn input[type=file] {
