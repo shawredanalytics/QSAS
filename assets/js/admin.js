@@ -49,137 +49,6 @@
     return "";
   }
 
-  async function loadImageDataURL(src) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        try {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL("image/png"));
-        } catch (e) { reject(e); }
-      };
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
-  function generateCertificateCode() {
-    const prefix = "QUXATSCC"; // 8 chars
-    const ts = Date.now();
-    let tail = ts.toString(36).toUpperCase(); // alphanumeric
-    if (tail.length < 8) tail = tail.padStart(8, "0");
-    if (tail.length > 8) tail = tail.slice(-8);
-    return prefix + tail; // total length 16
-  }
-
-  async function downloadVerifiedCertificate(s) {
-    const jspdfNS = window.jspdf;
-    if (!jspdfNS || !jspdfNS.jsPDF) {
-      return alert("PDF library not loaded. Please ensure internet connectivity.");
-    }
-    // Generate and persist certificate code metadata
-    const certCode = generateCertificateCode();
-    const generatedAt = new Date().toISOString();
-    try {
-      const assessments = getAssessments();
-      const idx = assessments.findIndex(a => a.id === s.id);
-      if (idx !== -1) {
-        assessments[idx].certificateCode = certCode;
-        assessments[idx].certificateGeneratedAt = generatedAt;
-        saveAssessments(assessments);
-      }
-    } catch (e) {
-      console.warn("Failed to persist certificate metadata:", e);
-    }
-    const doc = new jspdfNS.jsPDF({ unit: "mm", format: "a4" });
-    // Logo
-    const logoSrc = document.getElementById("brandLogo")?.getAttribute("src") ||
-      (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/QuXAT Logo Facebook.png"] || window.QSAS_ASSETS["assets/QuXAT%20Logo%20Facebook.png"])) ||
-      "assets/QuXAT%20Logo%20Facebook.png";
-    let logoDataURL = null;
-    try { logoDataURL = await loadImageDataURL(logoSrc); } catch {}
-    // Verified round seal image
-    const sealSrc = (window.QSAS_ASSETS && window.QSAS_ASSETS["assets/QuXAT_Round_Seal.png"]) || "assets/QuXAT_Round_Seal.png";
-    let sealDataURL = null;
-    try { sealDataURL = await loadImageDataURL(sealSrc); } catch {}
-    // Authorized signatory signature image
-    const signSrc = (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/Authorized Signatory.png"] || window.QSAS_ASSETS["assets/Authorized%20Signatory.png"])) || "assets/Authorized%20Signatory.png";
-    let signDataURL = null;
-    try { signDataURL = await loadImageDataURL(signSrc); } catch {}
-    // Decorative border
-    doc.setDrawColor(225,231,245);
-    doc.roundedRect(10, 10, 190, 277, 3, 3, "S");
-    // Header
-    if (logoDataURL) { doc.addImage(logoDataURL, "PNG", 15, 16, 24, 24); }
-    doc.setFontSize(18); doc.text("QuXAT Self Assessment Certificate", 45, 22);
-    doc.setFontSize(12); doc.setTextColor(0,128,0); doc.text("Verified and Approved Certificate", 45, 29);
-    doc.setTextColor(0,0,0);
-    // Body details
-    let y = 42; const left = 15;
-    const row = (label, value) => { doc.setTextColor(107,119,140); doc.text(label, left, y); doc.setTextColor(0,0,0); doc.text(String(value||"-"), left+60, y); y += 8; };
-    row("Participant Email", s.email);
-    row("Organization", s.orgName || "-");
-    row("Organization Type", s.orgType || "-");
-    row("Representative Name", s.repName || "-");
-    row("Designation", s.repDesignation || "-");
-    if (s.userNote) { row("User Note", s.userNote); }
-    row("Checklist", s.checklistName || s.checklistId || "-");
-    row("Submitted At", s.submittedAt ? new Date(s.submittedAt).toLocaleString() : "-");
-    row("Verified At", s.verifiedAt ? new Date(s.verifiedAt).toLocaleString() : "-");
-    row("Certificate Code", certCode);
-    row("Certificate Generated", new Date(generatedAt).toLocaleString());
-    row("QuXAT Self Assessment Score", s.score);
-    row("Score Percent", `${s.scorePercent ?? 0}%`);
-    row("Classification", s.classification || "-");
-    if (s.adminNote) { row("Admin Note", s.adminNote); }
-    y += 2;
-    // Selected metrics
-    doc.setFont(undefined, "bold"); doc.text("Selected Metrics", left, y); doc.setFont(undefined, "normal"); y += 7;
-    (Array.isArray(s.selectedMetrics) ? s.selectedMetrics : []).forEach(m => {
-      const split = doc.splitTextToSize(`• ${m.name} (+${m.points})`, 180);
-      split.forEach(ln => { doc.text(ln, left, y); y += 6; if (y > 270) { doc.addPage(); y = 20; } });
-    });
-    y += 10;
-    // Self-assessment basis statement
-    doc.setTextColor(107,119,140);
-    const stmt = "This certificate is based on the self assessment provided by the organization’s authorized representative.";
-    const stmtLines = doc.splitTextToSize(stmt, 180);
-    stmtLines.forEach(ln => { doc.text(ln, left, y); y += 6; if (y > 270) { doc.addPage(); y = 20; } });
-    doc.setTextColor(0,0,0);
-    // Authorized signatory block (only on verified certificates)
-    doc.setFont(undefined, "bold"); doc.text("Authorization", left, y); doc.setFont(undefined, "normal"); y += 6;
-    doc.text("Authorized Signatory:", left, y); y += 18;
-    // Signature line
-    doc.setDrawColor(180,180,180);
-    doc.line(left + 50, y - 12, left + 120, y - 12);
-    // Signature image overlay (if available)
-    if (signDataURL) {
-      // Fit signature image within the signature line area
-      const sigX = left + 52;
-      const sigY = y - 20; // slightly above line baseline
-      const sigW = 60; // width in mm
-      const sigH = 16; // height in mm
-      doc.addImage(signDataURL, "PNG", sigX, sigY, sigW, sigH);
-    }
-    doc.setTextColor(107,119,140);
-    doc.text("Signature", left + 82, y - 6);
-    doc.setTextColor(0,0,0);
-    // Stamp (round seal image)
-    if (sealDataURL) {
-      // Place the round seal to the right of signature area
-      const sealX = 150;
-      const sealY = y - 28; // sit above baseline
-      const sealW = 28; // mm width
-      const sealH = 28; // mm height
-      doc.addImage(sealDataURL, "PNG", sealX, sealY, sealW, sealH);
-    }
-    // Save
-    doc.save(`QuXAT-Verified-Certificate-${s.email}.pdf`);
-  }
 
   function renderChecklists() {
     const lists = getChecklists();
@@ -413,16 +282,7 @@
       rejectBtn.disabled = s.status === "rejected";
       rejectBtn.onclick = () => { updateAssessmentStatusById(s.id, "rejected"); renderSubmissions(); };
 
-      const certBtn = document.createElement("button");
-      certBtn.className = "btn";
-      certBtn.textContent = "Download Verified Certificate";
-      certBtn.disabled = s.status !== "approved";
-      certBtn.onclick = () => {
-        if (s.status !== "approved") return alert("Please approve the assessment before downloading a verified certificate.");
-        downloadVerifiedCertificate(s);
-      };
-
-      actions.append(viewBtn, approveBtn, rejectBtn, certBtn);
+      actions.append(viewBtn, approveBtn, rejectBtn);
       li.append(left, actions);
       listEl.appendChild(li);
     });
@@ -517,7 +377,7 @@
       deleteBtn.onclick = () => { if (confirm("Delete this registration?")) { deleteGridRegistrationById(r.id); syncGridToGitHub(); const regs = getGridRegistrations() || []; const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-"); const name = "qsas_grid_registrations_backup_"+stamp+".json"; (function(o){ const blob = new Blob([JSON.stringify(o, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); })(regs); } };
 
 
-      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn, certBtn);
+      actions.append(viewBtn, approveBtn, rejectBtn, deleteBtn);
       li.append(left, actions);
       listEl.appendChild(li);
     });
@@ -593,16 +453,3 @@
         topWin.location.assign(url);
       } catch(e) { alert('Sync failed'); }
     }
-      const certBtn = document.createElement("button");
-      certBtn.className = "btn";
-      certBtn.textContent = "Certificate";
-      certBtn.disabled = r.status !== "approved";
-      certBtn.onclick = () => {
-        const topWin = window.top || window.parent || window;
-        const base = topWin.location.origin;
-        const payload = encodeB64Json(r);
-        try { localStorage.setItem('qsas_cert_payload', payload); } catch(e) {}
-        const url = base + '/?section=Certificate';
-        try { const w = topWin.open(url, '_blank'); if (w && typeof w.focus === 'function') w.focus(); } catch(err) { window.open(url, '_blank'); }
-      };
-    function encodeB64Json(obj){ try { const s = JSON.stringify(obj); const utf8 = new TextEncoder().encode(s); let bin = ''; utf8.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); } catch(e){ try { return btoa(JSON.stringify(obj)); } catch(_) { return ''; } } }

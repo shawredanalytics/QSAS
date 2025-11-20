@@ -57,8 +57,6 @@
   const certStatusEl = document.getElementById("certStatus");
   const certOrgEl = document.getElementById("certOrg");
   const certOrgTypeEl = document.getElementById("certOrgType");
-  const downloadCertBtn = document.getElementById("downloadCertificateBtn");
-  const printCertBtn = document.getElementById("printCertificateBtn");
 
   let lastScore = 0;
   let lastPercent = 0;
@@ -136,8 +134,6 @@
       const prev = currentEmail ? getAssessmentByEmail(currentEmail, currentChecklistId || null) : null;
       const approved = !!(prev && prev.status === "approved");
       if (downloadVerifiedBtn) downloadVerifiedBtn.hidden = !approved;
-      if (downloadCertBtn) downloadCertBtn.hidden = !approved;
-      if (printCertBtn) printCertBtn.hidden = !approved;
     } catch (e) {}
   }
 
@@ -577,116 +573,6 @@
     updateActionButtonsVisibility();
   });
 
-  // Print certificate
-  printCertBtn?.addEventListener("click", () => {
-    try {
-      if (certEl?.hidden) {
-        // If the certificate is hidden but the assessment has been approved, load it for printing
-        const prev = currentEmail ? getAssessmentByEmail(currentEmail, currentChecklistId || null) : null;
-        let approvedAssessment = prev && prev.status === "approved" ? prev : null;
-        if (!approvedAssessment && currentEmail) {
-          const arr = getAssessmentsByEmail(currentEmail).filter(a => a.status === "approved");
-          approvedAssessment = arr.sort((a,b) => new Date(b.verifiedAt||0) - new Date(a.verifiedAt||0))[0] || null;
-        }
-        if (approvedAssessment) {
-          // Populate state from the approved assessment so the certificate card renders
-          currentChecklistId = approvedAssessment.checklistId || currentChecklistId || "";
-          try { selections = new Set((approvedAssessment.selectedMetrics || []).map(m => m.id)); } catch {}
-          awaitingChoice = false;
-          render();
-          updateActionButtonsVisibility();
-          if (certEl) certEl.hidden = false;
-        }
-      }
-    } catch(e) {}
-    window.print();
-  });
-
-  // Helper to load image as data URL
-  async function loadImageDataURL(src) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        try {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL("image/png"));
-        } catch (e) { reject(e); }
-      };
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
-  function generateCertificateCode() {
-    const prefix = "QUXATSCC"; // 8 characters
-    const ts = Date.now();
-    let tail = ts.toString(36).toUpperCase();
-    if (tail.length < 8) tail = tail.padStart(8, "0");
-    if (tail.length > 8) tail = tail.slice(-8);
-    return prefix + tail; // total 16 characters
-  }
-
-  // Download certificate PDF
-  downloadCertBtn?.addEventListener("click", async () => {
-    if (!currentEmail) return alert("Please enter your email and start the assessment.");
-    if (!currentChecklistId) return alert("Please choose a checklist to continue.");
-    const jspdfNS = window.jspdf;
-    if (!jspdfNS || !jspdfNS.jsPDF) {
-      return alert("PDF library not loaded. Please ensure internet connectivity.");
-    }
-    const metrics = limitedMetrics(currentChecklistId);
-    const selected = metrics.filter(m => selections.has(m.id));
-    const pm = perMetricPoints(metrics);
-    const lists = getChecklists();
-    const cl = lists.find(c => c.id === currentChecklistId);
-    const logoSrc = (document.getElementById("certificateLogo")?.getAttribute("src")) ||
-      (window.QSAS_ASSETS && (window.QSAS_ASSETS["assets/QuXAT Logo Facebook.png"] || window.QSAS_ASSETS["assets/QuXAT%20Logo%20Facebook.png"])) ||
-      "assets/QuXAT%20Logo%20Facebook.png";
-    let logoDataURL = null;
-    try { logoDataURL = await loadImageDataURL(logoSrc); } catch {}
-    const doc = new jspdfNS.jsPDF({ unit: "mm", format: "a4" });
-    // Decorative background accent
-    doc.setFillColor(71,116,226);
-    doc.setDrawColor(225,231,245);
-    doc.roundedRect(10, 10, 190, 277, 3, 3, "S");
-    // Header
-    if (logoDataURL) { doc.addImage(logoDataURL, "PNG", 15, 16, 24, 24); }
-    doc.setFontSize(18); doc.text("QuXAT Self Assessment Certificate", 45, 22);
-    doc.setFontSize(12); doc.setTextColor(107,119,140); doc.text("Quality Score Card", 45, 29);
-    doc.setTextColor(0,0,0);
-    // Details
-    let y = 42; const left = 15;
-    const row = (label, value) => { doc.setTextColor(107,119,140); doc.text(label, left, y); doc.setTextColor(0,0,0); doc.text(String(value||"—"), left+60, y); y += 8; };
-    row("Participant Email", currentEmail);
-    const missing = "Details Not Provided by Self - Assessment User";
-    row("Organization", currentOrgName || missing);
-    row("Organization Type", currentOrgType || missing);
-    row("Representative Name", currentRepName || missing);
-    row("Designation", currentRepDesignation || missing);
-    row("User Note", currentUserNote || missing);
-    row("Checklist", cl ? ((cl.code ? `[${cl.code}] ` : "") + cl.name) : "—");
-    row("Checklist Description", cl ? (cl.description || "—") : "—");
-    row("Date", new Date().toLocaleString());
-    row("Selected Metrics", selected.length);
-    const prev = getAssessmentByEmail(currentEmail, currentChecklistId);
-    row("Status", prev ? String(prev.status || "pending") : "Not submitted");
-    const certCode = generateCertificateCode();
-    row("Certificate Code", certCode);
-    row("Certificate Generated", new Date().toLocaleString());
-    // Score/classification block removed
-    // Self-assessment statement
-    doc.setTextColor(107,119,140);
-    const stmt = "This certificate is based on the self assessment provided by the organization’s authorized representative.";
-    const splitStmt = doc.splitTextToSize(stmt, 180);
-    splitStmt.forEach(ln => { doc.text(ln, left, y); y += 6; });
-    doc.setTextColor(0,0,0);
-    // Suggestions removed
-    doc.save(`QuXAT-Certificate-${currentEmail}.pdf`);
-  });
 
   submitVerificationBtn.addEventListener("click", () => {
     if (!currentEmail) return alert("Please enter your email and start the assessment.");
@@ -724,7 +610,7 @@
 
     const statusLabel = verified ? "VERIFIED AND APPROVED REPORT" : "UNVERIFIED SELF-ASSESSMENT REPORT";
     const lines = [];
-    lines.push({ t: "QuXAT Self Assessment Certificate", style: "h1" });
+    lines.push({ t: "QuXAT Self Assessment Report", style: "h1" });
     lines.push({ t: statusLabel, style: verified ? "ok" : "warn" });
     lines.push({ t: `Email: ${assessment.email}` });
     if (assessment.checklistName || assessment.checklistId) {
@@ -736,10 +622,7 @@
     if (verified && assessment.verifiedAt) {
       lines.push({ t: `Verified At: ${assessment.verifiedAt}` });
     }
-    const code = assessment.certificateCode || generateCertificateCode();
-    const genAt = assessment.certificateGeneratedAt || new Date().toISOString();
-    lines.push({ t: `Certificate Code: ${code}` });
-    lines.push({ t: `Certificate Generated: ${genAt}` });
+    // Certificate metadata removed
     if (assessment.adminNote) lines.push({ t: `Admin Note: ${assessment.adminNote}` });
     lines.push({ t: "" });
     if (Array.isArray(assessment.suggestions) && assessment.suggestions.length) {
@@ -760,7 +643,7 @@
 
     let y = 20;
     const left = 15;
-    doc.setFontSize(18); doc.text("QuXAT Self Assessment Certificate", left, y); y += 8;
+    doc.setFontSize(18); doc.text("QuXAT Self Assessment Report", left, y); y += 8;
     doc.setFontSize(12);
     doc.setTextColor(verified ? 0 : 200, verified ? 128 : 80, verified ? 0 : 0);
     doc.text(statusLabel, left, y); y += 10;
@@ -787,10 +670,7 @@
     if (verified && assessment.verifiedAt) {
       writeLine(`Verified At: ${assessment.verifiedAt}`);
     }
-    const code2 = assessment.certificateCode || generateCertificateCode();
-    const genAt2 = assessment.certificateGeneratedAt || new Date().toISOString();
-    writeLine(`Certificate Code: ${code2}`);
-    writeLine(`Certificate Generated: ${genAt2}`);
+    // Certificate metadata removed from report
     if (assessment.adminNote) writeLine(`Admin Note: ${assessment.adminNote}`);
     y += 4;
     // Suggested improvements block
@@ -803,7 +683,7 @@
     assessment.selectedMetrics.forEach(m => writeLine(`• ${m.name}`));
     y += 4;
     writeLine("Notes:", { style: "h2" });
-    writeLine("This certificate is based on the self assessment provided by the organization’s authorized representative.");
+    writeLine("This report is based on the self assessment provided by the organization’s authorized representative.");
     if (!verified) {
       writeLine("This report is generated by the user and is unverified.");
       writeLine("It is provided for self-assessment only and not an approval.");

@@ -446,20 +446,10 @@ elif section == "Gap Assessment":
     html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
 elif section == "Certificate":
-    qp = _get_query_params()
-    payload = qp.get("payload")
-    if isinstance(payload, list):
-        payload = payload[0] if payload else None
-    js_bootstrap = """
-    (function(){
-      try {
-        var p = %s;
-        if (p) localStorage.setItem('qsas_cert_payload', String(p));
-      } catch(e) {}
-    })();
-    """ % (repr(payload))
-    html_cert = build_embedded_page("certificate.html", bootstrap_js=js_bootstrap)
-    st.components.v1.html(html_cert, height=1800, scrolling=False)
+    _set_query_section("Home")
+    st.session_state["section"] = "Home"
+    html_index = build_embedded_page("index.html")
+    st.components.v1.html(html_index, height=4200, scrolling=False)
 else:  # Admin
     # Render the embedded Admin page at the very top (no extra Streamlit headers)
     if mode == "Local iframe":
