@@ -213,7 +213,16 @@
               const m = 40;
               const mw = pw - 2*m;
               let y = m;
-              const clean = (s) => String(s || '').replace(/[\u2013\u2014\u2212]/g, '-').replace(/[\u00a0\u200b\u200c\u200d]/g, ' ').replace(/\s+/g, ' ').trim();
+              const clean = (s) => {
+                let t = String(s || '');
+                t = t.replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g, '-'); // all dashes/hyphens
+                t = t.replace(/[“”]/g, '"').replace(/[‘’]/g, "'"); // quotes
+                t = t.replace(/[\u2022\u25CF]/g, '-'); // bullets to dash
+                t = t.replace(/[\u00a0\u2000-\u200b\u200c\u200d\u202f\u205f\u3000]/g, ' '); // spaces to ASCII space
+                t = t.replace(/[^\x20-\x7E]/g, ''); // strip non-ASCII leftovers
+                t = t.replace(/\s+/g, ' ').trim();
+                return t;
+              };
               const write = (t, opts) => {
                 const txt = clean(t);
                 const lines = doc.splitTextToSize(txt, mw);
@@ -231,12 +240,12 @@
               write('Selected:', { lh: 18 });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               const items = (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24);
-              items.forEach(it => write('• ' + String(it)));
+              items.forEach(it => write('- ' + String(it)));
               doc.setFont('helvetica','bold'); doc.setFontSize(14);
               write('Suggested Improvements:', { lh: 18 });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               const sugs = (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,24);
-              sugs.forEach(s => write('• ' + String(s)));
+              sugs.forEach(s => write('- ' + String(s)));
               doc.save('gap_assessment_report.pdf');
               return;
             }
