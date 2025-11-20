@@ -138,7 +138,9 @@
           }
         };
 
-        const planKey = localStorage.getItem('qsas_gap_plan') || 'NABH_FULL';
+        const planKey = (typeof window.QSAS_BOOT_PLAN === 'string' && window.QSAS_BOOT_PLAN)
+          ? window.QSAS_BOOT_PLAN
+          : (localStorage.getItem('qsas_gap_plan') || 'NABH_FULL');
         const plan = GAP_PLANS[planKey] || GAP_PLANS['NABH_FULL'];
         document.getElementById('gapTitle').textContent = 'Gap Assessment — ' + plan.title;
         document.getElementById('planHeader').textContent = plan.title;

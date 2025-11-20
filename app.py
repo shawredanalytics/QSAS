@@ -124,11 +124,11 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     {assets_js}
     <script>{storage_js}</script>
     <script>{branding_js}</script>
+    {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
   </head>
   <body>
     {body}
     <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
-    {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
     <script>{page_js}</script>
   </body>
 </html>
@@ -437,6 +437,8 @@ elif section == "Gap Assessment":
         // Clear any previous plan to avoid stale reads
         try { localStorage.removeItem('qsas_gap_plan'); } catch(e) {}
         var plan = %s;
+        // Expose boot plan for iframe scripts as a direct variable to avoid storage timing issues
+        try { window.QSAS_BOOT_PLAN = plan; } catch(e) {}
         if (plan) localStorage.setItem('qsas_gap_plan', String(plan));
       } catch(e) {}
     })();
