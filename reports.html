@@ -41,12 +41,10 @@
                 <select id="isoMetricSelect"></select>
               </label>
               <label>
-                Period (months)
+                Period
                 <select id="isoPeriodSelect">
-                  <option value="3">3</option>
-                  <option value="6" selected>6</option>
-                  <option value="12">12</option>
-                  <option value="24">24</option>
+                  <option value="6" selected>Last 6 months</option>
+                  <option value="12">Last 12 months</option>
                 </select>
               </label>
               <label>
@@ -99,7 +97,7 @@
               </div>
             </div>
             <div>
-              <h4>Metric Trend (6 months)</h4>
+              <h4>Metric Trend</h4>
               <canvas id="isoMetricChart" width="680" height="280" style="width:100%; border:1px solid #e5e7eb; border-radius:8px;"></canvas>
               <div class="actions" style="margin-top:10px;">
                 <button id="isoRenderBtn" class="btn btn-primary">Generate Graph</button>
