@@ -254,7 +254,8 @@
         function renderIsoRows(){
           const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
           isoBench.textContent = String(metric.benchmark) + '%';
-          const months = lastMonths(Number(document.getElementById('isoPeriodSelect').value || '6'));
+          const period = Number(document.getElementById('isoPeriodSelect').value || '6');
+          const months = lastMonths(period);
           const store = getStore();
           const saved = (store[metric.code] || []);
           isoTbody.innerHTML = '';
