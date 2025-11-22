@@ -32,6 +32,81 @@
 
       <section id="labsPanel" class="card">
         <h3>Diagnostic Laboratories — Reports</h3>
+        <section class="card info">
+          <h3>ISO 15189 Quality Metrics</h3>
+          <div class="grid two">
+            <div>
+              <label>
+                Metric
+                <select id="isoMetricSelect"></select>
+              </label>
+              <label>
+                Period (months)
+                <select id="isoPeriodSelect">
+                  <option value="3">3</option>
+                  <option value="6" selected>6</option>
+                  <option value="12">12</option>
+                  <option value="24">24</option>
+                </select>
+              </label>
+              <label>
+                Period (months)
+                <select id="isoPeriodSelect">
+                  <option value="3">3</option>
+                  <option value="6" selected>6</option>
+                  <option value="12">12</option>
+                  <option value="24">24</option>
+                </select>
+              </label>
+              <div class="grid two">
+                <div>
+                  <div class="item-title">Benchmark</div>
+                  <div id="isoBenchmark" class="item-sub">—</div>
+                </div>
+                <div>
+                  <div id="isoAvgLabel" class="item-title">Average (6 months)</div>
+                  <div id="isoAvg" class="item-sub">—</div>
+                </div>
+              </div>
+              <div class="table-container" style="margin-top:8px;">
+                <table class="qsas-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Month</th>
+                      <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Numerator</th>
+                      <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Denominator</th>
+                      <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Percent</th>
+                    </tr>
+                  </thead>
+                  <tbody id="isoMetricTbody"></tbody>
+                </table>
+              </div>
+              <div class="actions" style="margin-top:10px;">
+                <button id="isoSaveBtn" class="btn">Save Data</button>
+                <button id="isoClearBtn" class="btn btn-danger">Clear</button>
+              </div>
+              <h4 style="margin-top:10px;">Organization Details</h4>
+              <label>
+                Organization Name
+                <input type="text" id="isoOrgName" placeholder="Enter organization name" />
+              </label>
+              <label>
+                Organization Address
+                <textarea id="isoOrgAddr" rows="3" placeholder="Enter address"></textarea>
+              </label>
+              <div class="actions" style="margin-top:10px;">
+                <button id="isoDownloadBtn" class="btn btn-primary">Download Quality Metric Report</button>
+              </div>
+            </div>
+            <div>
+              <h4>Metric Trend (6 months)</h4>
+              <canvas id="isoMetricChart" width="680" height="280" style="width:100%; border:1px solid #e5e7eb; border-radius:8px;"></canvas>
+              <div class="actions" style="margin-top:10px;">
+                <button id="isoRenderBtn" class="btn btn-primary">Generate Graph</button>
+              </div>
+            </div>
+          </div>
+        </section>
         <div id="labsTable" class="table-container"></div>
         <p id="labsEmpty" class="empty" hidden>No lab assessments found.</p>
       </section>
@@ -140,6 +215,108 @@
         tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
         tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
         refresh();
+
+        const ISO_METRICS = [
+          { code:'TAT_COMPLIANCE', name:'Turnaround Time Compliance', benchmark: 90 },
+          { code:'SAMPLE_REJECTION', name:'Sample Rejection Rate', benchmark: 2 },
+          { code:'IQC_FAILURE', name:'Internal QC Failure Rate', benchmark: 5 },
+          { code:'CRITICAL_REPORTING', name:'Critical Value Reporting Timeliness', benchmark: 95 },
+          { code:'DELTA_CHECK', name:'Delta Check Exceptions Resolved', benchmark: 95 },
+          { code:'PT_PASS_RATE', name:'Proficiency Testing Pass Rate', benchmark: 95 },
+          { code:'AMENDED_REPORTS', name:'Amended Reports Rate', benchmark: 1 },
+          { code:'TRANSPORT_TAT', name:'Specimen Transport TAT Compliance', benchmark: 90 },
+          { code:'EQUIP_DOWNTIME', name:'Equipment Downtime (≤ target)', benchmark: 5 },
+          { code:'COMPLAINT_RESOLUTION', name:'Customer Complaints Resolved within TAT', benchmark: 95 },
+          { code:'REPEAT_TESTING', name:'Repeat Testing due to Lab Error', benchmark: 1 },
+          { code:'CALIB_COMPLIANCE', name:'Calibration Schedule Compliance', benchmark: 95 },
+          { code:'EQA_PARTICIPATION', name:'External Quality Assessment Participation Compliance', benchmark: 100 }
+        ];
+        const isoSel = document.getElementById('isoMetricSelect');
+        const isoBench = document.getElementById('isoBenchmark');
+        const isoAvg = document.getElementById('isoAvg');
+        const isoAvgLabel = document.getElementById('isoAvgLabel');
+        const isoTbody = document.getElementById('isoMetricTbody');
+        const isoSaveBtn = document.getElementById('isoSaveBtn');
+        const isoClearBtn = document.getElementById('isoClearBtn');
+        const isoCanvas = document.getElementById('isoMetricChart');
+        const isoRenderBtn = document.getElementById('isoRenderBtn');
+        const isoOrgName = document.getElementById('isoOrgName');
+        const isoOrgAddr = document.getElementById('isoOrgAddr');
+        const isoDownloadBtn = document.getElementById('isoDownloadBtn');
+        // duplicate cleanup: ensure only one lastMonths exists
+        function lastMonths(n){
+          const arr = []; const d = new Date(); d.setDate(1);
+          for(let i=n-1;i>=0;i--){ const t = new Date(d.getFullYear(), d.getMonth()-i, 1); const m = t.toLocaleString('default',{month:'short'}); arr.push({ key: `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`, label: `${m} ${t.getFullYear()}` }); }
+          return arr;
+        }
+        function getStore(){ try { return JSON.parse(localStorage.getItem('qsas_iso15189_metrics')||'{}')||{}; } catch(e){ return {}; } }
+        function setStore(obj){ try { localStorage.setItem('qsas_iso15189_metrics', JSON.stringify(obj)); } catch(e){} }
+        function getOrgStore(){ try { return JSON.parse(localStorage.getItem('qsas_iso15189_org')||'{}')||{}; } catch(e){ return {}; } }
+        function setOrgStore(obj){ try { localStorage.setItem('qsas_iso15189_org', JSON.stringify(obj)); } catch(e){} }
+        function renderIsoRows(){
+          const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
+          isoBench.textContent = String(metric.benchmark) + '%';
+          const months = lastMonths(Number(document.getElementById('isoPeriodSelect').value || '6'));
+          const store = getStore();
+          const saved = (store[metric.code] || []);
+          isoTbody.innerHTML = '';
+          let sum = 0; let cnt = 0;
+          if (isoAvgLabel) isoAvgLabel.textContent = `Average (${period} months)`;
+          months.forEach((m, idx)=>{
+            const rowSaved = saved.find(r=>r.key===m.key) || { n: '', d: '' };
+            const tr = document.createElement('tr'); tr.style.borderTop='1px solid #eef1f6';
+            const tdM = document.createElement('td'); tdM.textContent = m.label; tdM.style.padding='8px';
+            const tdN = document.createElement('td'); tdN.style.padding='8px'; const inN = document.createElement('input'); inN.type='number'; inN.min='0'; inN.value = rowSaved.n || ''; inN.dataset.key = m.key; inN.dataset.f = 'n'; inN.style.width='100%';
+            const tdD = document.createElement('td'); tdD.style.padding='8px'; const inD = document.createElement('input'); inD.type='number'; inD.min='0'; inD.value = rowSaved.d || ''; inD.dataset.key = m.key; inD.dataset.f = 'd'; inD.style.width='100%';
+            const tdP = document.createElement('td'); tdP.style.padding='8px'; tdP.dataset.key = m.key; tdP.className='percent-cell';
+            tr.append(tdM, tdN, tdD, tdP); tdN.appendChild(inN); tdD.appendChild(inD); isoTbody.appendChild(tr);
+            function update(){ const n = Number(inN.value||0); const d = Number(inD.value||0); const p = d>0 ? Math.round((n/d)*100) : 0; tdP.textContent = p + '%'; }
+            inN.addEventListener('input', update); inD.addEventListener('input', update); update();
+            const pText = tdP.textContent || '0%'; const pVal = Number(pText.replace('%',''))||0; if (pText !== '0%') { sum += pVal; cnt += 1; }
+          });
+          isoAvg.textContent = cnt ? (Math.round((sum/cnt)*10)/10) + '%' : '—';
+        }
+        function saveIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const rows = []; const cells = isoTbody.querySelectorAll('tr'); cells.forEach(tr=>{ const key = tr.querySelector('.percent-cell')?.dataset.key || ''; const n = tr.querySelector('input[data-f="n"]')?.value || ''; const d = tr.querySelector('input[data-f="d"]')?.value || ''; rows.push({ key, n, d }); }); const store = getStore(); const prev = store[metric.code] || []; const byKey = new Map(prev.map(r=>[r.key, r])); rows.forEach(r=>byKey.set(r.key, r)); store[metric.code] = Array.from(byKey.values()); setStore(store); alert('Saved'); }
+        function clearIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const store = getStore(); delete store[metric.code]; setStore(store); renderIsoRows(); }
+        function renderChart(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const ctx = isoCanvas.getContext('2d'); const w = isoCanvas.width; const h = isoCanvas.height; ctx.clearRect(0,0,w,h); const months = lastMonths(Number(document.getElementById('isoPeriodSelect').value || '6')); const percents = []; months.forEach(m=>{ const cell = isoTbody.querySelector(`td.percent-cell[data-key="${m.key}"]`); const v = cell ? Number((cell.textContent||'0').replace('%',''))||0 : 0; percents.push(v); }); const padL=40, padB=30, padT=20, padR=10; const plotW = w - padL - padR; const plotH = h - padT - padB; ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+plotH); ctx.lineTo(padL+plotW, padT+plotH); ctx.stroke(); const maxY = 100; const stepX = plotW / Math.max(1, percents.length-1); ctx.strokeStyle = '#4774e2'; ctx.lineWidth = 2; ctx.beginPath(); percents.forEach((v,i)=>{ const x = padL + i*stepX; const y = padT + plotH - (v/maxY)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); ctx.fillStyle = '#1f2a3d'; ctx.font = '12px Poppins, sans-serif'; months.forEach((m,i)=>{ const x = padL + i*stepX; ctx.fillText(m.label.split(' ')[0], x-12, padT+plotH+18); }); const bench = metric.benchmark; const by = padT + plotH - (bench/maxY)*plotH; ctx.strokeStyle = '#ef4444'; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(padL, by); ctx.lineTo(padL+plotW, by); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#ef4444'; ctx.fillText('Benchmark ' + bench + '%', padL+8, by-6); }
+        function downloadIsoReport(){
+          try {
+            const { jsPDF } = window.jspdf || {};
+            if (!jsPDF) { alert('PDF library not loaded'); return; }
+            const org = sanitize(isoOrgName?.value || '').trim();
+            const addr = sanitize(isoOrgAddr?.value || '').trim();
+            if (org) setOrgStore({ name: org, address: addr });
+            const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
+            const period = Number(document.getElementById('isoPeriodSelect').value || '6');
+            const months = lastMonths(period);
+            const rows = months.map(m => {
+              const n = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="n"]`)?.value)||0);
+              const d = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="d"]`)?.value)||0);
+              const p = d>0 ? Math.round((n/d)*100) : 0; return { label: m.label, n, d, p };
+            });
+            const avg = (function(){ const vals = rows.filter(r=>r.d>0).map(r=>r.p); return vals.length ? Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10 : 0; })();
+            renderChart(); const img = isoCanvas.toDataURL('image/png');
+            const doc = new jsPDF({ unit:'pt', format:'a4' });
+            const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight(); const m = 40; const mw = pw - 2*m; let y = m;
+            const write = (t, lh=16, bold=false) => { const txt = sanitize(t); const lines = doc.splitTextToSize(txt, mw); doc.setFont('helvetica', bold ? 'bold' : 'normal'); lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y, { maxWidth: mw }); y += lh; }); };
+            doc.setFont('helvetica','bold'); doc.setFontSize(18); write('QuXAT Quality Metric Report', 22, true);
+            doc.setFont('helvetica','normal'); doc.setFontSize(12);
+            if (org) write('Organization: ' + org);
+            if (addr) write('Address: ' + addr);
+            write('Metric: ' + String(metric.name));
+            write('Benchmark: ' + String(metric.benchmark) + '%');
+            write('Period: ' + String(period) + ' months');
+            write('Average: ' + String(avg) + '%');
+            y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Monthly Data:', 18, true);
+            doc.setFont('helvetica','normal'); doc.setFontSize(12);
+            rows.forEach(r => write(`${r.label} • N=${r.n} • D=${r.d} • ${r.p}%`));
+            try { const cw = mw; const ch = Math.min(260, ph - y - 60); doc.addImage(img, 'PNG', m, y+6, cw, ch); y += ch + 18; } catch(e) {}
+            write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
+            const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
+            doc.save(fname);
+          } catch(e) { alert('Unable to generate report'); }
+        }
+        ISO_METRICS.forEach(m=>{ const o=document.createElement('option'); o.value=m.code; o.textContent=m.name; isoSel.appendChild(o); }); isoSel.value = ISO_METRICS[0].code; const orgPref = getOrgStore(); if (orgPref.name) isoOrgName.value = orgPref.name; if (orgPref.address) isoOrgAddr.value = orgPref.address; renderIsoRows(); isoSel.addEventListener('change', renderIsoRows); document.getElementById('isoPeriodSelect').addEventListener('change', renderIsoRows); isoSaveBtn.addEventListener('click', saveIso); isoClearBtn.addEventListener('click', clearIso); isoRenderBtn.addEventListener('click', renderChart); isoDownloadBtn.addEventListener('click', downloadIsoReport);
       })();
     </script>
   </body>
