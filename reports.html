@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QuXAT Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header logo-only">
+      <div class="brand-bar container wide">
+        <div class="brand-left">
+          <img class="brand-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+        </div>
+      </div>
+    </header>
+
+    <main class="container wide">
+      <section class="hero">
+        <div class="hero-inner">
+          <h1 class="hero-title">QuXAT Reports</h1>
+          <p class="hero-subtitle">Generate self assessment reports based on quality metrics submitted by users.</p>
+          <div class="actions">
+            <button id="tabLabs" class="btn btn-primary">Diagnostic Laboratories — Quality Metric Reports</button>
+            <button id="tabHosp" class="btn">Hospitals — Quality Metric Reports</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="labsPanel" class="card">
+        <h3>Diagnostic Laboratories — Reports</h3>
+        <div id="labsTable" class="table-container"></div>
+        <p id="labsEmpty" class="empty" hidden>No lab assessments found.</p>
+      </section>
+
+      <section id="hospPanel" class="card" hidden>
+        <h3>Hospitals — Reports</h3>
+        <div id="hospTable" class="table-container"></div>
+        <p id="hospEmpty" class="empty" hidden>No hospital assessments found.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>© QuXAT — QSAS • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
+    </footer>
+
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/branding.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      (function(){
+        const labsPanel = document.getElementById('labsPanel');
+        const hospPanel = document.getElementById('hospPanel');
+        const tabLabs = document.getElementById('tabLabs');
+        const tabHosp = document.getElementById('tabHosp');
+        const labsTable = document.getElementById('labsTable');
+        const hospTable = document.getElementById('hospTable');
+        const labsEmpty = document.getElementById('labsEmpty');
+        const hospEmpty = document.getElementById('hospEmpty');
+
+        function isLab(rec){
+          const t = String(rec.orgType || rec.checklistName || '').toLowerCase();
+          return t.includes('lab') || t.includes('laboratory');
+        }
+        function isHospital(rec){
+          const t = String(rec.orgType || rec.checklistName || '').toLowerCase();
+          return t.includes('hospital');
+        }
+
+        function sanitize(s){
+          return String(s || '').replace(/[\u2010-\u2015\u2212]/g,'-').replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[\u00a0\u2000-\u200b\u200c\u200d\u202f\u205f\u3000]/g,' ');
+        }
+
+        function generatePdfReport(assessment){
+          try{
+            const { jsPDF } = window.jspdf || {};
+            if (!jsPDF) { alert('PDF library not loaded'); return; }
+            const doc = new jsPDF({ unit:'pt', format:'a4' });
+            const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight();
+            const m = 40; const mw = pw - 2*m; let y = m;
+            const write = (t, lh=16, bold=false) => {
+              const txt = sanitize(t);
+              const lines = doc.splitTextToSize(txt, mw);
+              doc.setFont('helvetica', bold ? 'bold' : 'normal');
+              lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y, { maxWidth: mw }); y += lh; });
+            };
+            doc.setFont('helvetica','bold'); doc.setFontSize(18); write('QuXAT Self Assessment Score Card', 20, true);
+            doc.setFont('helvetica','normal'); doc.setFontSize(12);
+            write('Email: ' + sanitize(assessment.email));
+            if (assessment.checklistName || assessment.checklistId) write('Checklist: ' + sanitize(assessment.checklistName || assessment.checklistId));
+            write('Submitted At: ' + sanitize(assessment.submittedAt || '-'));
+            if (assessment.verifiedAt) write('Verified At: ' + sanitize(assessment.verifiedAt));
+            if (assessment.adminNote) write('Admin Note: ' + sanitize(assessment.adminNote));
+            write('Selected Metrics:', 18, true);
+            (Array.isArray(assessment.selectedMetrics) ? assessment.selectedMetrics : []).forEach(mo => write('- ' + sanitize(mo.name)));
+            write('Notes:', 18, true);
+            write('This report is based on the self assessment provided by the organization’s authorized representative.');
+            doc.save('QSAS-' + String(assessment.email || 'report') + '.pdf');
+          }catch(e){ alert('Unable to generate PDF'); }
+        }
+
+        function renderTable(target, emptyEl, list){
+          target.innerHTML = '';
+          if (!list.length) { emptyEl.hidden = false; return; }
+          emptyEl.hidden = true;
+          const table = document.createElement('table');
+          table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
+          const thead = document.createElement('thead'); const trh = document.createElement('tr');
+          const ths = ['Email','Checklist','Submitted','Status','Selected','Action'];
+          ths.forEach(h => { const th = document.createElement('th'); th.textContent = h; th.style.textAlign='left'; th.style.padding='8px'; th.style.borderBottom='1px solid #e5e7eb'; trh.appendChild(th); });
+          thead.appendChild(trh);
+          const tbody = document.createElement('tbody');
+          list.forEach(a => {
+            const tr = document.createElement('tr'); tr.style.borderTop='1px solid #eef1f6';
+            const tdEmail = document.createElement('td'); tdEmail.textContent = a.email || '-'; tdEmail.style.padding='8px';
+            const tdChk = document.createElement('td'); tdChk.textContent = a.checklistName || a.checklistId || '-'; tdChk.style.padding='8px';
+            const tdSub = document.createElement('td'); tdSub.textContent = a.submittedAt ? new Date(a.submittedAt).toLocaleString() : '-'; tdSub.style.padding='8px';
+            const tdStat = document.createElement('td'); tdStat.textContent = (a.status || 'pending').toUpperCase(); tdStat.style.padding='8px';
+            const tdSel = document.createElement('td'); tdSel.textContent = String((a.selectedMetrics||[]).length); tdSel.style.padding='8px';
+            const tdAct = document.createElement('td'); tdAct.style.padding='8px';
+            const btn = document.createElement('button'); btn.className='btn'; btn.textContent='Download Report'; btn.onclick = () => generatePdfReport(a);
+            tdAct.appendChild(btn);
+            tr.append(tdEmail, tdChk, tdSub, tdStat, tdSel, tdAct); tbody.appendChild(tr);
+          });
+          table.append(thead, tbody); target.appendChild(table);
+        }
+
+        function refresh(){
+          let all = [];
+          try { all = getAssessments() || []; } catch(e) { all = []; }
+          const labs = all.filter(isLab);
+          const hosp = all.filter(isHospital);
+          renderTable(labsTable, labsEmpty, labs);
+          renderTable(hospTable, hospEmpty, hosp);
+        }
+
+        tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
+        tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
+        refresh();
+      })();
+    </script>
+  </body>
+</html>

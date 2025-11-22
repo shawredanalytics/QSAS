@@ -231,6 +231,12 @@ def render_sidebar_once():
 
         st.subheader("Admin")
         go_admin = st.button("QSAS Admin Portal", use_container_width=True)
+        try:
+            st.divider()
+        except Exception:
+            st.markdown("<hr>", unsafe_allow_html=True)
+        st.subheader("Reports")
+        go_reports = st.button("QuXAT Reports", use_container_width=True)
 
     if go_home:
         st.session_state["section"] = "Home"
@@ -243,6 +249,10 @@ def render_sidebar_once():
     if go_advisory:
         st.session_state["section"] = "QuXAT Advisory Services"
         _set_query_section("QuXAT Advisory Services")
+        st.rerun()
+    if go_reports:
+        st.session_state["section"] = "QuXAT Reports"
+        _set_query_section("QuXAT Reports")
         st.rerun()
 
 _sync_section_from_query()
@@ -423,6 +433,9 @@ elif section == "Register for the Healthcare Quality Grid":
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)
+elif section == "QuXAT Reports":
+    html_reports = build_embedded_page("reports.html")
+    st.components.v1.html(html_reports, height=3600, scrolling=False)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")
