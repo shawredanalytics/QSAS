@@ -27,12 +27,7 @@
   const gridRegsList = document.getElementById("gridRegsList");
   const gridRegsEmpty = document.getElementById("gridRegsEmpty");
 
-  const emailList = document.getElementById("emailList");
-  const emailEmpty = document.getElementById("emailEmpty");
-  const emailSubject = document.getElementById("emailSubject");
-  const emailBody = document.getElementById("emailBody");
-  const sendEmailBtn = document.getElementById("sendEmailBtn");
-  const selectAllEmails = document.getElementById("selectAllEmails");
+  
 
   let isAuthed = false;
   let currentChecklistId = "";
@@ -180,55 +175,7 @@
     });
   }
 
-  function renderEmailTargets() {
-    if (!emailList || !emailEmpty) return;
-    let assessments = [];
-    try { assessments = getAssessments() || []; } catch(e) { assessments = []; }
-    const byEmail = new Map();
-    assessments.forEach(a => {
-      const key = String(a.email || '').trim();
-      if (!key) return;
-      const item = byEmail.get(key) || { email: key, org: a.orgName || '', type: a.orgType || '', count: 0, last: a.submittedAt || '' };
-      item.count += 1; item.last = a.submittedAt || item.last; byEmail.set(key, item);
-    });
-    const rows = Array.from(byEmail.values()).sort((a,b) => String(a.email).localeCompare(String(b.email)));
-    emailList.innerHTML = '';
-    emailEmpty.hidden = rows.length !== 0;
-    const selected = new Set();
-    rows.forEach(r => {
-      const li = document.createElement('li');
-      const title = document.createElement('div'); title.className = 'item-title'; title.textContent = `${r.email}`;
-      const sub = document.createElement('div'); sub.className = 'item-sub'; sub.textContent = `${r.org || '—'} • ${r.type || '—'} • submissions: ${r.count}`;
-      const actions = document.createElement('div'); actions.className = 'item-actions';
-      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.onchange = () => { if (cb.checked) selected.add(r.email); else selected.delete(r.email); };
-      actions.appendChild(cb);
-      li.append(title, actions, sub);
-      emailList.appendChild(li);
-    });
-    if (selectAllEmails) {
-      selectAllEmails.checked = false;
-      selectAllEmails.onchange = () => {
-        const boxes = emailList.querySelectorAll('input[type=checkbox]');
-        boxes.forEach(b => { b.checked = selectAllEmails.checked; const e = b.closest('li')?.querySelector('.item-title')?.textContent || ''; if (selectAllEmails.checked) selected.add(e); else selected.delete(e); });
-      };
-    }
-    if (sendEmailBtn) {
-      sendEmailBtn.onclick = () => {
-        const subject = (emailSubject?.value || '').trim();
-        const body = (emailBody?.value || '').trim();
-        const emails = Array.from(selected);
-        if (!subject || !body) return alert('Subject and message are required');
-        if (emails.length === 0) return alert('Select at least one organization');
-        try {
-          const payload = btoa(JSON.stringify({ emails, subject, body }));
-          const topWin = window.top || window.parent || window;
-          const base = topWin.location.origin;
-          const url = base + '/?section=Admin&sync=email&payload=' + encodeURIComponent(payload);
-          topWin.location.assign(url);
-        } catch(e) { alert('Unable to send'); }
-      };
-    }
-  }
+  
 
   function renderGridRegistrations() {
     const host = document.getElementById("gridRegistrationsHost") || document.body;
@@ -351,7 +298,7 @@
   });
 
   // Initialize email targets
-  try { renderEmailTargets(); } catch(e) {}
+  
   
 })();
   

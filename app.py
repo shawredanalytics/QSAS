@@ -531,16 +531,6 @@ else:  # Admin
                     sync_msg = "ok"
             except Exception:
                 sync_msg = "error"
-        elif sync == "email" and payload_b64:
-            try:
-                data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
-                to_list = list(dict.fromkeys([str(x).strip() for x in (data_json.get("emails") or []) if str(x).strip()]))
-                subject = str(data_json.get("subject") or "").strip()
-                body = str(data_json.get("body") or "").strip()
-                ok = _send_bulk_email(to_list, subject, body)
-                sync_msg = "ok" if ok else "error"
-            except Exception:
-                sync_msg = "error"
         # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
         gh_regs = []
         try:
@@ -651,44 +641,7 @@ def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid r
         body["sha"] = sha
     r = requests.put(url, headers=_gh_headers(), json=body, timeout=20)
     return r.status_code in (200, 201)
-def _send_bulk_email(to_list, subject, body):
-    try:
-        import smtplib
-        from email.mime.text import MIMEText
-        from email.utils import formataddr
-        host = str(st.secrets.get("SMTP_HOST") or os.environ.get("SMTP_HOST") or "smtp.gmail.com")
-        port = int(st.secrets.get("SMTP_PORT") or os.environ.get("SMTP_PORT") or 587)
-        use_tls = True if str(st.secrets.get("SMTP_USE_TLS") or os.environ.get("SMTP_USE_TLS") or "true").lower() in ("1","true","yes") else False
-        username = str(st.secrets.get("SMTP_USERNAME") or os.environ.get("SMTP_USERNAME") or "")
-        password = str(st.secrets.get("SMTP_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "")
-        sender = "quxat.team@gmail.com"
-        if not username or not password:
-            return False
-        server = smtplib.SMTP(host, port, timeout=20)
-        if use_tls:
-            try:
-                server.starttls()
-            except Exception:
-                pass
-        server.login(username, password)
-        ok_any = False
-        for rcpt in to_list:
-            msg = MIMEText(body, "plain", "utf-8")
-            msg["Subject"] = subject
-            msg["From"] = formataddr(("QuXAT Team", sender))
-            msg["To"] = rcpt
-            try:
-                server.sendmail(sender, [rcpt], msg.as_string())
-                ok_any = True
-            except Exception:
-                pass
-        try:
-            server.quit()
-        except Exception:
-            pass
-        return ok_any
-    except Exception:
-        return False
+ 
 def _load_nabl_labs():
     try:
         xlsx_path = ROOT / "data" / "NABL Accredited Labs 2025.xlsx"
