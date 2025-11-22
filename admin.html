@@ -130,28 +130,11 @@
               </div>
             </form>
           </div>
-          <p class="hint">Metrics below operate on the selected checklist.</p>
+          
         </div>
 
         <div class="grid two">
           <div>
-            <h3>Add / Edit Metric</h3>
-            <form id="metricForm" class="form-grid">
-              <input type="hidden" id="metricId" />
-              <label>
-                Metric name
-                <input type="text" id="metricName" placeholder="e.g., Code Review Completed" required />
-              </label>
-              <label>
-                Points
-                <input type="number" id="metricPoints" placeholder="e.g., 5" min="0" step="1" required />
-              </label>
-              <div class="actions">
-                <button type="submit" class="btn btn-primary">Save Metric</button>
-                <button type="button" id="resetFormBtn" class="btn">Reset</button>
-              </div>
-            </form>
-
             <h3 class="mt">Admin Credentials</h3>
             <form id="credForm" class="form-grid">
               <label>
@@ -164,23 +147,6 @@
               </label>
               <button type="submit" class="btn">Update Credentials</button>
             </form>
-          </div>
-
-          <div>
-            <h3>Metrics List</h3>
-            <div class="actions mt">
-              <input type="text" id="metricsSearch" placeholder="Search metrics by name or code" />
-            </div>
-            <div id="metricsEmpty" class="empty" hidden>No metrics yet.</div>
-            <ul id="metricsList" class="list"></ul>
-            <div class="actions mt">
-              <button id="exportBtn" class="btn">Export JSON</button>
-              <label class="btn file-btn">
-                Import JSON
-                <input type="file" id="importInput" accept="application/json" />
-              </label>
-              <button id="clearBtn" class="btn btn-danger">Clear All Metrics</button>
-            </div>
           </div>
         </div>
 

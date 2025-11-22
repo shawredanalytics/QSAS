@@ -5,11 +5,7 @@
   const adminPanel = document.getElementById("adminPanel");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  const metricForm = document.getElementById("metricForm");
-  const metricIdInput = document.getElementById("metricId");
-  const metricNameInput = document.getElementById("metricName");
-  const metricPointsInput = document.getElementById("metricPoints");
-  const resetFormBtn = document.getElementById("resetFormBtn");
+  
 
   const checklistSelect = document.getElementById("checklistSelect");
   const checklistForm = document.getElementById("checklistForm");
@@ -24,12 +20,7 @@
   const credUsernameInput = document.getElementById("credUsername");
   const credPasswordInput = document.getElementById("credPassword");
 
-  const metricsList = document.getElementById("metricsList");
-  const metricsEmpty = document.getElementById("metricsEmpty");
-  const exportBtn = document.getElementById("exportBtn");
-  const importInput = document.getElementById("importInput");
-  const clearBtn = document.getElementById("clearBtn");
-  const goToMetricsBtn = document.getElementById("goToMetricsBtn");
+  
 
   const subsList = document.getElementById("subsList");
   const subsEmpty = document.getElementById("subsEmpty");
@@ -87,56 +78,7 @@
     }
   }
 
-  function renderMetrics() {
-    // Query DOM elements on each render to avoid early nulls
-    const input = document.getElementById("metricsSearch");
-    const listEl = document.getElementById("metricsList");
-    const emptyEl = document.getElementById("metricsEmpty");
-    const q = ((input && input.value) || "").trim().toLowerCase();
-    if (!listEl || !emptyEl) return; // wait until DOM is ready
-    const metrics = getMetrics(currentChecklistId).filter(m => {
-      const name = String(m.name || "").toLowerCase();
-      const code = String(m.code || "").toLowerCase();
-      return !q || name.includes(q) || code.includes(q);
-    });
-    listEl.innerHTML = "";
-    emptyEl.hidden = metrics.length !== 0;
-    metrics.forEach((m, idx) => {
-      const li = document.createElement("li");
-      const title = document.createElement("div");
-      title.className = "item-title";
-      title.textContent = `S. No: ${idx + 1} • ${m.code ? `[${m.code}] ` : ""}${m.name}`;
-      const sub = document.createElement("div");
-      sub.className = "item-sub";
-      sub.textContent = `${m.points} points`;
-      const actions = document.createElement("div");
-      actions.className = "item-actions";
-
-      const editBtn = document.createElement("button");
-      editBtn.className = "btn";
-      editBtn.textContent = "Edit";
-      editBtn.onclick = () => {
-        metricIdInput.value = m.id;
-        metricNameInput.value = m.name;
-        metricPointsInput.value = String(m.points);
-        metricNameInput.focus();
-      };
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "btn btn-danger";
-      delBtn.textContent = "Delete";
-      delBtn.onclick = () => {
-        if (confirm("Delete this metric?")) {
-          deleteMetric(currentChecklistId, m.id);
-          renderMetrics();
-        }
-      };
-
-      actions.append(editBtn, delBtn);
-      li.append(title, sub, actions);
-      listEl.appendChild(li);
-    });
-  }
+  
 
   function showPanel() {
     isAuthed = true;
@@ -146,7 +88,6 @@
     if (credUsernameInput) credUsernameInput.value = creds.username;
     if (credPasswordInput) credPasswordInput.value = creds.password;
     renderChecklists();
-    renderMetrics();
     renderSubmissions();
     renderGridRegistrations();
   }
@@ -170,27 +111,7 @@
     try { loginForm && loginForm.reset(); } catch {}
   });
 
-  metricForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!currentChecklistId) return alert("Create or select a checklist first.");
-    const id = metricIdInput.value.trim();
-    const name = metricNameInput.value.trim();
-    const points = Number(metricPointsInput.value);
-    if (!name || Number.isNaN(points)) return;
-    if (id) {
-      updateMetric(currentChecklistId, id, name, points);
-    } else {
-      addMetric(currentChecklistId, name, points);
-    }
-    metricForm.reset();
-    metricIdInput.value = "";
-    renderMetrics();
-  });
-
-  resetFormBtn?.addEventListener("click", () => {
-    metricForm.reset();
-    metricIdInput.value = "";
-  });
+  
 
   credForm?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -201,43 +122,7 @@
     alert("Credentials updated");
   });
 
-  exportBtn?.addEventListener("click", () => {
-    if (!currentChecklistId) return alert("Select a checklist to export metrics.");
-    const metrics = getMetrics(currentChecklistId);
-    const json = JSON.stringify({ checklistId: currentChecklistId, metrics }, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `qsas-metrics-${currentChecklistId}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  importInput?.addEventListener("change", async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!currentChecklistId) { importInput.value = ""; return alert("Select a checklist before importing metrics."); }
-    const text = await file.text();
-    try {
-      const data = JSON.parse(text);
-      const list = Array.isArray(data.metrics) ? data.metrics : Array.isArray(data) ? data : [];
-      saveMetrics(currentChecklistId, list);
-      renderMetrics();
-      alert("Metrics imported");
-    } catch {
-      alert("Invalid JSON format");
-    }
-    importInput.value = "";
-  });
-
-  clearBtn?.addEventListener("click", () => {
-    if (!currentChecklistId) return alert("Select a checklist before clearing metrics.");
-    if (confirm("Clear all metrics?")) {
-      saveMetrics(currentChecklistId, []);
-      renderMetrics();
-    }
-  });
+  
 
   function renderSubmissions() {
     const listEl = document.getElementById("subsList");
@@ -389,7 +274,6 @@
   // Checklist selection controls
   checklistSelect?.addEventListener("change", () => {
     currentChecklistId = checklistSelect.value;
-    renderMetrics();
     fillChecklistFormFromSelected();
   });
 
@@ -402,9 +286,6 @@
     const id = addChecklist(name, desc, category);
     currentChecklistId = id;
     renderChecklists();
-    renderMetrics();
-    metricForm?.scrollIntoView({ behavior: "smooth", block: "start" });
-    metricNameInput?.focus();
   });
 
   // Save/publish current checklist (requires at least 1 metric)
@@ -414,8 +295,6 @@
     const desc = checklistDescInput.value.trim();
     const category = checklistCategoryInput ? checklistCategoryInput.value : "";
     if (name) updateChecklist(currentChecklistId, name, desc, category);
-    const count = getMetrics(currentChecklistId).length;
-    if (count === 0) return alert("Add at least one metric before saving.");
     publishChecklist(currentChecklistId);
     renderChecklists();
     alert("Checklist saved and published.");
@@ -427,20 +306,11 @@
       deleteChecklist(currentChecklistId);
       currentChecklistId = "";
       renderChecklists();
-      renderMetrics();
     }
   });
-  // Jump to metrics form for the selected checklist
-  goToMetricsBtn?.addEventListener("click", () => {
-    currentChecklistId = checklistSelect?.value || currentChecklistId || "";
-    renderMetrics();
-    metricForm?.scrollIntoView({ behavior: "smooth", block: "start" });
-    metricNameInput?.focus();
-  });
+  
 })();
-  // Metrics search
-  const metricsSearchInput = document.getElementById("metricsSearch");
-  metricsSearchInput?.addEventListener("input", () => { renderMetrics(); });
+  
     function syncGridToGitHub() {
       try {
         // Send only approved registrations to keep payload small and match public bootstrap usage
