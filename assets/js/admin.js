@@ -175,22 +175,6 @@
 
   function renderGridRegistrations() {
     const host = document.getElementById("gridRegistrationsHost") || document.body;
-    if (!document.getElementById("backupActions")) {
-      const bar = document.createElement("div");
-      bar.id = "backupActions";
-      bar.style.display = "flex";
-      bar.style.gap = "8px";
-      bar.style.margin = "8px 0";
-      const expBtn = document.createElement("button"); expBtn.className = "btn"; expBtn.textContent = "Export Grid Data";
-      const impBtn = document.createElement("button"); impBtn.className = "btn"; impBtn.textContent = "Import Grid Data";
-      const file = document.createElement("input"); file.type = "file"; file.accept = "application/json"; file.style.display = "none";
-      function downloadJSON(name, obj){ const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200); }
-      expBtn.onclick = () => { const regs = getGridRegistrations() || []; downloadJSON("qsas_grid_registrations_backup.json", regs); };
-      impBtn.onclick = () => file.click();
-      file.onchange = (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(reader.result || "[]"); if (Array.isArray(data)) { saveGridRegistrations(data); alert("Backup restored"); } else { alert("Invalid file"); } } catch { alert("Invalid file"); } renderGridRegistrations(); }; reader.readAsText(f); };
-      bar.append(expBtn, impBtn, file);
-      host.parentElement && host.parentElement.insertBefore(bar, host);
-    }
     try {
       const res = localStorage.getItem('qsas_sync_result');
       if (res) {
