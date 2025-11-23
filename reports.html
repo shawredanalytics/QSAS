@@ -442,37 +442,30 @@
             doc.line(colX[0], yy + totalH, colX[4], yy + totalH);
             y = yy + totalH + 12;
             try { const cw = mw; const ch = Math.min(260, ph - y - 60); doc.addImage(img, 'PNG', m, y+6, cw, ch); y += ch + 18; } catch(e) {}
-            // CAPA checklist for deviant months
+            // CAPA checklist for deviant months (printed copy: blank tick boxes)
             const dir = metric.dir || '>='; const bench = Number(metric.benchmark || 0);
             const deviants = rows.filter(r => dir === '>=' ? (r.p < bench) : (r.p > bench));
             if (deviants.length) {
               doc.setFont('helvetica','bold'); doc.setFontSize(14); write('CAPA Checklist for Deviant Months:', 18, true);
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              const capaSaved = getCapaStore()[metric.code + ':' + period] || {};
               deviants.forEach(dv => {
-                const checked = !!capaSaved[dv.label.split(' ')[0]]; // approximate key by month label start
-                const boxX = m; const boxY = y + 4; const boxW = 10; const boxH = 10;
-                doc.rect(boxX, boxY, boxW, boxH);
-                if (checked) { doc.text('✓', boxX+2, boxY+9); }
                 write(`${dv.label}: ${dv.p}% vs benchmark ${bench}%`);
-                if (metric.n && metric.d) { write(`  - Root cause analysis on ${metric.n} relative to ${metric.d}`); }
-                write('  - Implement corrective actions (SOP updates, training, process optimization)');
-                write('  - Preventive monitoring and re-measure next month');
+                const startY = y; const boxW = 10; const boxH = 10; const gap = 6;
+                // Items: Root cause analyzed, Corrective actions implemented, Preventive actions planned, Re-measure scheduled, Effectiveness verified
+                const items = ['Root cause analyzed', 'Corrective actions implemented', 'Preventive actions planned', 'Re-measure scheduled', 'Effectiveness verified'];
+                items.forEach(it => { doc.rect(m, y + 2, boxW, boxH); doc.text(String(it), m + boxW + gap, y + 10); y += 18; });
+                y = startY + items.length * 18 + 10;
               });
             }
             // Prepared/Approved blocks
+            // Prepared/Approved blocks (printed copy fields)
+            const line = (label) => { const txt = String(label) + ' ______________________________'; write(txt); };
             y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Prepared By', 18, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            write('Name: ' + String(isoPrepName?.value || ''));
-            write('Designation: ' + String(isoPrepDesig?.value || ''));
-            write('Signature: ' + String(isoPrepSign?.value || ''));
-            write('Date: ' + String(isoPrepDate?.value || '') + ' • Time: ' + String(isoPrepTime?.value || ''));
+            line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
             y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Approved By', 18, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            write('Name: ' + String(isoApprName?.value || ''));
-            write('Designation: ' + String(isoApprDesig?.value || ''));
-            write('Signature: ' + String(isoApprSign?.value || ''));
-            write('Date: ' + String(isoApprDate?.value || '') + ' • Time: ' + String(isoApprTime?.value || ''));
+            line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
             write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
             const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
             doc.save(fname);
