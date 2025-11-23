@@ -282,7 +282,32 @@
         }
         function saveIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const rows = []; const cells = isoTbody.querySelectorAll('tr'); cells.forEach(tr=>{ const key = tr.querySelector('.percent-cell')?.dataset.key || ''; const n = tr.querySelector('input[data-f="n"]')?.value || ''; const d = tr.querySelector('input[data-f="d"]')?.value || ''; rows.push({ key, n, d }); }); const store = getStore(); const prev = store[metric.code] || []; const byKey = new Map(prev.map(r=>[r.key, r])); rows.forEach(r=>byKey.set(r.key, r)); store[metric.code] = Array.from(byKey.values()); setStore(store); alert('Saved'); }
         function clearIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const store = getStore(); delete store[metric.code]; setStore(store); renderIsoRows(); }
-        function renderChart(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const ctx = isoCanvas.getContext('2d'); const w = isoCanvas.width; const h = isoCanvas.height; ctx.clearRect(0,0,w,h); const months = lastMonths(Number(document.getElementById('isoPeriodSelect').value || '6')); const percents = []; months.forEach(m=>{ const cell = isoTbody.querySelector(`td.percent-cell[data-key="${m.key}"]`); const v = cell ? Number((cell.textContent||'0').replace('%',''))||0 : 0; percents.push(v); }); const padL=40, padB=30, padT=20, padR=10; const plotW = w - padL - padR; const plotH = h - padT - padB; ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+plotH); ctx.lineTo(padL+plotW, padT+plotH); ctx.stroke(); const maxY = 100; const stepX = plotW / Math.max(1, percents.length-1); ctx.strokeStyle = '#4774e2'; ctx.lineWidth = 2; ctx.beginPath(); percents.forEach((v,i)=>{ const x = padL + i*stepX; const y = padT + plotH - (v/maxY)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); ctx.fillStyle = '#1f2a3d'; ctx.font = '12px Poppins, sans-serif'; months.forEach((m,i)=>{ const x = padL + i*stepX; ctx.fillText(m.label.split(' ')[0], x-12, padT+plotH+18); }); const bench = metric.benchmark; const by = padT + plotH - (bench/maxY)*plotH; ctx.strokeStyle = '#ef4444'; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(padL, by); ctx.lineTo(padL+plotW, by); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#ef4444'; ctx.fillText('Benchmark ' + bench + '%', padL+8, by-6); }
+        function renderChart(){
+          const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
+          const ctx = isoCanvas.getContext('2d'); const w = isoCanvas.width; const h = isoCanvas.height; ctx.clearRect(0,0,w,h);
+          const period = Number(document.getElementById('isoPeriodSelect').value || '6');
+          const months = lastMonths(period);
+          const percents = months.map(m=>{ const cell = isoTbody.querySelector(`td.percent-cell[data-key="${m.key}"]`); const v = cell ? Number((cell.textContent||'0').replace('%',''))||0 : 0; return v; });
+          const padL=50, padB=40, padT=30, padR=20; const plotW = w - padL - padR; const plotH = h - padT - padB; const maxY = 100;
+          // Axes
+          ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+plotH); ctx.lineTo(padL+plotW, padT+plotH); ctx.stroke();
+          // Y ticks and labels
+          ctx.fillStyle = '#1f2a3d'; ctx.font = '12px Poppins, sans-serif';
+          [0,25,50,75,100].forEach(t => { const ty = padT + plotH - (t/maxY)*plotH; ctx.strokeStyle = '#f3f4f6'; ctx.beginPath(); ctx.moveTo(padL, ty); ctx.lineTo(padL+plotW, ty); ctx.stroke(); ctx.fillText(String(t) + '%', padL-38, ty+4); });
+          // Line
+          const stepX = percents.length > 1 ? (plotW / (percents.length-1)) : plotW; ctx.strokeStyle = '#4774e2'; ctx.lineWidth = 2; ctx.beginPath();
+          percents.forEach((v,i)=>{ const x = padL + i*stepX; const y = padT + plotH - (v/maxY)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke();
+          // X labels (Month and Year)
+          months.forEach((m,i)=>{ const x = padL + i*stepX; ctx.fillText(m.label, x-20, padT+plotH+18); });
+          // Benchmark line and label
+          const bench = Number(metric.benchmark || 0); const by = padT + plotH - (bench/maxY)*plotH; ctx.strokeStyle = '#ef4444'; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(padL, by); ctx.lineTo(padL+plotW, by); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#ef4444'; ctx.fillText('Benchmark ' + bench + '%', padL+8, by-6);
+          // Axis titles
+          ctx.fillStyle = '#1f2a3d'; ctx.font = '12px Poppins, sans-serif'; ctx.fillText('Month (YYYY)', padL + plotW/2 - 40, padT + plotH + 36);
+          ctx.save(); ctx.translate(18, padT + plotH/2); ctx.rotate(-Math.PI/2); ctx.fillText('Percent (%)', 0, 0); ctx.restore();
+          // Deviant points
+          const dir = metric.dir || '>='; ctx.fillStyle = '#ef4444';
+          percents.forEach((v,i)=>{ const x = padL + i*stepX; const y = padT + plotH - (v/maxY)*plotH; const dev = dir === '>=' ? v < bench : v > bench; if (dev) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill(); } });
+        }
         function downloadIsoReport(){
           try {
             const { jsPDF } = window.jspdf || {};
@@ -340,6 +365,14 @@
             doc.line(colX[0], yy + totalH, colX[4], yy + totalH);
             y = yy + totalH + 12;
             try { const cw = mw; const ch = Math.min(260, ph - y - 60); doc.addImage(img, 'PNG', m, y+6, cw, ch); y += ch + 18; } catch(e) {}
+            // CAPA checklist for deviant months
+            const dir = metric.dir || '>='; const bench = Number(metric.benchmark || 0);
+            const deviants = rows.filter(r => dir === '>=' ? (r.p < bench) : (r.p > bench));
+            if (deviants.length) {
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('CAPA Checklist for Deviant Months:', 18, true);
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              deviants.forEach(dv => { write(`• ${dv.label}: ${dv.p}% vs benchmark ${bench}%`); if (metric.n && metric.d) { write(`  - Root cause analysis on ${metric.n} relative to ${metric.d}`); } write('  - Implement corrective actions (SOP updates, training, process optimization)'); write('  - Preventive monitoring and re-measure next month'); });
+            }
             write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
             const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
             doc.save(fname);
