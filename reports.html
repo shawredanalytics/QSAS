@@ -98,11 +98,44 @@
               </div>
             </div>
             <div>
-              <h4>Metric Trend</h4>
+              <h4 id="isoTrendTitle">Metric Trend</h4>
               <canvas id="isoMetricChart" width="680" height="280" style="width:100%; border:1px solid #e5e7eb; border-radius:8px;"></canvas>
               <div class="actions" style="margin-top:10px;">
                 <button id="isoRenderBtn" class="btn btn-primary">Generate Graph</button>
               </div>
+              <section class="card" style="margin-top:10px;">
+                <h4>CAPA Checklist for Deviant Months</h4>
+                <p class="hint">Tick the items resolved. Saved per metric and period.</p>
+                <ul id="isoCapaList" class="list"></ul>
+                <div class="actions"><button id="isoCapaSaveBtn" class="btn">Save CAPA</button></div>
+              </section>
+              <section class="card" style="margin-top:10px;">
+                <h4>Prepared By</h4>
+                <div class="grid two">
+                  <label> Name <input type="text" id="isoPrepName" /></label>
+                  <label> Designation <input type="text" id="isoPrepDesig" /></label>
+                </div>
+                <label> Signature <input type="text" id="isoPrepSign" placeholder="Type name for signature" /></label>
+                <div class="grid two" style="margin-top:6px;">
+                  <label> Date <input type="date" id="isoPrepDate" /></label>
+                  <label> Time <input type="time" id="isoPrepTime" /></label>
+                </div>
+              </section>
+              <section class="card" style="margin-top:10px;">
+                <h4>Approved By</h4>
+                <div class="grid two">
+                  <label> Name <input type="text" id="isoApprName" /></label>
+                  <label> Designation <input type="text" id="isoApprDesig" /></label>
+                </div>
+                <label> Signature <input type="text" id="isoApprSign" placeholder="Type name for signature" /></label>
+                <div class="grid two" style="margin-top:6px;">
+                  <label> Date <input type="date" id="isoApprDate" /></label>
+                  <label> Time <input type="time" id="isoApprTime" /></label>
+                </div>
+                <div class="actions" style="margin-top:10px;">
+                  <button id="isoPrintBtn" class="btn btn-slate">Print Report</button>
+                </div>
+              </section>
             </div>
           </div>
         </section>
@@ -241,6 +274,20 @@
         const isoClearBtn = document.getElementById('isoClearBtn');
         const isoCanvas = document.getElementById('isoMetricChart');
         const isoRenderBtn = document.getElementById('isoRenderBtn');
+        const isoTrendTitle = document.getElementById('isoTrendTitle');
+        const isoCapaList = document.getElementById('isoCapaList');
+        const isoCapaSaveBtn = document.getElementById('isoCapaSaveBtn');
+        const isoPrepName = document.getElementById('isoPrepName');
+        const isoPrepDesig = document.getElementById('isoPrepDesig');
+        const isoPrepSign = document.getElementById('isoPrepSign');
+        const isoPrepDate = document.getElementById('isoPrepDate');
+        const isoPrepTime = document.getElementById('isoPrepTime');
+        const isoApprName = document.getElementById('isoApprName');
+        const isoApprDesig = document.getElementById('isoApprDesig');
+        const isoApprSign = document.getElementById('isoApprSign');
+        const isoApprDate = document.getElementById('isoApprDate');
+        const isoApprTime = document.getElementById('isoApprTime');
+        const isoPrintBtn = document.getElementById('isoPrintBtn');
         const isoOrgName = document.getElementById('isoOrgName');
         const isoOrgAddr = document.getElementById('isoOrgAddr');
         const isoDownloadBtn = document.getElementById('isoDownloadBtn');
@@ -254,6 +301,8 @@
         function setStore(obj){ try { localStorage.setItem('qsas_iso15189_metrics', JSON.stringify(obj)); } catch(e){} }
         function getOrgStore(){ try { return JSON.parse(localStorage.getItem('qsas_iso15189_org')||'{}')||{}; } catch(e){ return {}; } }
         function setOrgStore(obj){ try { localStorage.setItem('qsas_iso15189_org', JSON.stringify(obj)); } catch(e){} }
+        function getCapaStore(){ try { return JSON.parse(localStorage.getItem('qsas_iso15189_capa')||'{}')||{}; } catch(e){ return {}; } }
+        function setCapaStore(obj){ try { localStorage.setItem('qsas_iso15189_capa', JSON.stringify(obj)); } catch(e){} }
         function renderIsoRows(){
           const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
           isoBench.textContent = String(metric.benchmark) + '%';
@@ -279,6 +328,34 @@
             const pText = tdP.textContent || '0%'; const pVal = Number(pText.replace('%',''))||0; if (pText !== '0%') { sum += pVal; cnt += 1; }
           });
           isoAvg.textContent = cnt ? (Math.round((sum/cnt)*10)/10) + '%' : '—';
+          if (isoTrendTitle) isoTrendTitle.textContent = `${metric.name} — ${period} months`;
+          updateCapaList();
+        }
+        function updateCapaList(){
+          if (!isoCapaList) return;
+          const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
+          const period = Number(document.getElementById('isoPeriodSelect').value || '6');
+          const months = lastMonths(period);
+          const dir = metric.dir || '>='; const bench = Number(metric.benchmark || 0);
+          const rows = months.map(m => {
+            const n = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="n"]`)?.value)||0);
+            const d = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="d"]`)?.value)||0);
+            const p = d>0 ? Math.round((n/d)*100) : 0; return { key:m.key, label:m.label, p };
+          });
+          const capa = getCapaStore(); const key = metric.code + ':' + period; const saved = capa[key] || {};
+          isoCapaList.innerHTML = '';
+          rows.forEach(r => {
+            const dev = dir === '>=' ? (r.p < bench) : (r.p > bench);
+            if (!dev) return;
+            const li = document.createElement('li');
+            const title = document.createElement('div'); title.className = 'item-title'; title.textContent = `${r.label}: ${r.p}% (benchmark ${bench}%)`;
+            const actions = document.createElement('div'); actions.className = 'item-actions';
+            const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!saved[r.key]; cb.onchange = () => { saved[r.key] = cb.checked; };
+            actions.appendChild(cb);
+            li.append(title, actions);
+            isoCapaList.appendChild(li);
+          });
+          isoCapaSaveBtn.onclick = () => { capa[key] = saved; setCapaStore(capa); alert('CAPA saved'); };
         }
         function saveIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const rows = []; const cells = isoTbody.querySelectorAll('tr'); cells.forEach(tr=>{ const key = tr.querySelector('.percent-cell')?.dataset.key || ''; const n = tr.querySelector('input[data-f="n"]')?.value || ''; const d = tr.querySelector('input[data-f="d"]')?.value || ''; rows.push({ key, n, d }); }); const store = getStore(); const prev = store[metric.code] || []; const byKey = new Map(prev.map(r=>[r.key, r])); rows.forEach(r=>byKey.set(r.key, r)); store[metric.code] = Array.from(byKey.values()); setStore(store); alert('Saved'); }
         function clearIso(){ const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0]; const store = getStore(); delete store[metric.code]; setStore(store); renderIsoRows(); }
@@ -371,14 +448,64 @@
             if (deviants.length) {
               doc.setFont('helvetica','bold'); doc.setFontSize(14); write('CAPA Checklist for Deviant Months:', 18, true);
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              deviants.forEach(dv => { write(`• ${dv.label}: ${dv.p}% vs benchmark ${bench}%`); if (metric.n && metric.d) { write(`  - Root cause analysis on ${metric.n} relative to ${metric.d}`); } write('  - Implement corrective actions (SOP updates, training, process optimization)'); write('  - Preventive monitoring and re-measure next month'); });
+              const capaSaved = getCapaStore()[metric.code + ':' + period] || {};
+              deviants.forEach(dv => {
+                const checked = !!capaSaved[dv.label.split(' ')[0]]; // approximate key by month label start
+                const boxX = m; const boxY = y + 4; const boxW = 10; const boxH = 10;
+                doc.rect(boxX, boxY, boxW, boxH);
+                if (checked) { doc.text('✓', boxX+2, boxY+9); }
+                write(`${dv.label}: ${dv.p}% vs benchmark ${bench}%`);
+                if (metric.n && metric.d) { write(`  - Root cause analysis on ${metric.n} relative to ${metric.d}`); }
+                write('  - Implement corrective actions (SOP updates, training, process optimization)');
+                write('  - Preventive monitoring and re-measure next month');
+              });
             }
+            // Prepared/Approved blocks
+            y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Prepared By', 18, true);
+            doc.setFont('helvetica','normal'); doc.setFontSize(12);
+            write('Name: ' + String(isoPrepName?.value || ''));
+            write('Designation: ' + String(isoPrepDesig?.value || ''));
+            write('Signature: ' + String(isoPrepSign?.value || ''));
+            write('Date: ' + String(isoPrepDate?.value || '') + ' • Time: ' + String(isoPrepTime?.value || ''));
+            y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Approved By', 18, true);
+            doc.setFont('helvetica','normal'); doc.setFontSize(12);
+            write('Name: ' + String(isoApprName?.value || ''));
+            write('Designation: ' + String(isoApprDesig?.value || ''));
+            write('Signature: ' + String(isoApprSign?.value || ''));
+            write('Date: ' + String(isoApprDate?.value || '') + ' • Time: ' + String(isoApprTime?.value || ''));
             write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
             const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
             doc.save(fname);
           } catch(e) { alert('Unable to generate report'); }
         }
         ISO_METRICS.forEach(m=>{ const o=document.createElement('option'); o.value=m.code; o.textContent=m.name; isoSel.appendChild(o); }); isoSel.value = ISO_METRICS[0].code; const orgPref = getOrgStore(); if (orgPref.name) isoOrgName.value = orgPref.name; if (orgPref.address) isoOrgAddr.value = orgPref.address; renderIsoRows(); isoSel.addEventListener('change', renderIsoRows); document.getElementById('isoPeriodSelect').addEventListener('change', renderIsoRows); isoSaveBtn.addEventListener('click', saveIso); isoClearBtn.addEventListener('click', clearIso); isoRenderBtn.addEventListener('click', renderChart); isoDownloadBtn.addEventListener('click', downloadIsoReport);
+        isoPrintBtn.addEventListener('click', () => {
+          try {
+            const { jsPDF } = window.jspdf || {}; if (!jsPDF) return;
+            // Reuse download generator but open in a window and print
+            const doc = (function(){
+              // minimal regeneration path: call downloadIsoReport but capture doc; for simplicity, regenerate here
+              const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
+              const period = Number(document.getElementById('isoPeriodSelect').value || '6');
+              const months = lastMonths(period);
+              const rows = months.map(m => {
+                const n = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="n"]`)?.value)||0);
+                const d = Number((isoTbody.querySelector(`input[data-key="${m.key}"][data-f="d"]`)?.value)||0);
+                const p = d>0 ? Math.round((n/d)*100) : 0; return { label: m.label, n, d, p };
+              });
+              renderChart(); const img = isoCanvas.toDataURL('image/png');
+              const doc = new jsPDF({ unit:'pt', format:'a4' });
+              const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight(); const m = 40; const mw = pw - 2*m; let y = m;
+              const write = (t, lh=16, bold=false) => { const txt = sanitize(t); const lines = doc.splitTextToSize(txt, mw); doc.setFont('helvetica', bold ? 'bold' : 'normal'); lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y, { maxWidth: mw }); y += lh; }); };
+              doc.setFont('helvetica','bold'); doc.setFontSize(18); write('QuXAT Quality Metric Report', 22, true);
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              write('Metric: ' + String(metric.name)); write('Period: ' + String(period) + ' months');
+              try { const cw = mw; const ch = Math.min(260, ph - y - 60); doc.addImage(img, 'PNG', m, y+6, cw, ch); y += ch + 18; } catch(e) {}
+              return doc;
+            })();
+            const blobUrl = doc.output('bloburl'); const w = window.open(blobUrl, '_blank'); if (w) setTimeout(() => { try { w.print(); } catch(e){} }, 300);
+          } catch(e) {}
+        });
       })();
     </script>
   </body>
