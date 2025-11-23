@@ -57,6 +57,16 @@
                   <div id="isoAvg" class="item-sub">—</div>
                 </div>
               </div>
+              <div class="grid two" style="margin-top:8px;">
+                <div>
+                  <div class="item-title">Numerator</div>
+                  <div id="isoNumDesc" class="item-sub">—</div>
+                </div>
+                <div>
+                  <div class="item-title">Denominator</div>
+                  <div id="isoDenDesc" class="item-sub">—</div>
+                </div>
+              </div>
               <div class="table-container" style="margin-top:8px;">
                 <table class="qsas-table" style="width:100%; border-collapse:collapse;">
                   <thead>
@@ -206,25 +216,27 @@
         refresh();
 
         const ISO_METRICS = [
-          { code:'TAT_COMPLIANCE', name:'Turnaround Time Compliance', benchmark: 90 },
-          { code:'SAMPLE_REJECTION', name:'Sample Rejection Rate', benchmark: 2 },
-          { code:'IQC_FAILURE', name:'Internal QC Failure Rate', benchmark: 5 },
-          { code:'CRITICAL_REPORTING', name:'Critical Value Reporting Timeliness', benchmark: 95 },
-          { code:'DELTA_CHECK', name:'Delta Check Exceptions Resolved', benchmark: 95 },
-          { code:'PT_PASS_RATE', name:'Proficiency Testing Pass Rate', benchmark: 95 },
-          { code:'AMENDED_REPORTS', name:'Amended Reports Rate', benchmark: 1 },
-          { code:'TRANSPORT_TAT', name:'Specimen Transport TAT Compliance', benchmark: 90 },
-          { code:'EQUIP_DOWNTIME', name:'Equipment Downtime (≤ target)', benchmark: 5 },
-          { code:'COMPLAINT_RESOLUTION', name:'Customer Complaints Resolved within TAT', benchmark: 95 },
-          { code:'REPEAT_TESTING', name:'Repeat Testing due to Lab Error', benchmark: 1 },
-          { code:'CALIB_COMPLIANCE', name:'Calibration Schedule Compliance', benchmark: 95 },
-          { code:'EQA_PARTICIPATION', name:'External Quality Assessment Participation Compliance', benchmark: 100 }
+          { code:'TAT_COMPLIANCE', name:'Turnaround Time Compliance', benchmark: 90, n:'Reports delivered within defined TAT', d:'Total reports issued' },
+          { code:'SAMPLE_REJECTION', name:'Sample Rejection Rate', benchmark: 2, n:'Samples rejected', d:'Total samples received' },
+          { code:'IQC_FAILURE', name:'Internal QC Failure Rate', benchmark: 5, n:'IQC runs failed', d:'Total IQC runs performed' },
+          { code:'CRITICAL_REPORTING', name:'Critical Value Reporting Timeliness', benchmark: 95, n:'Critical results reported within time window', d:'Total critical results identified' },
+          { code:'DELTA_CHECK', name:'Delta Check Exceptions Resolved', benchmark: 95, n:'Delta check exceptions resolved/documented', d:'Total delta check exceptions triggered' },
+          { code:'PT_PASS_RATE', name:'Proficiency Testing Pass Rate', benchmark: 95, n:'PT events passed', d:'Total PT events participated' },
+          { code:'AMENDED_REPORTS', name:'Amended Reports Rate', benchmark: 1, n:'Amended reports', d:'Total reports issued' },
+          { code:'TRANSPORT_TAT', name:'Specimen Transport TAT Compliance', benchmark: 90, n:'Specimens delivered within transport TAT', d:'Total specimens transported' },
+          { code:'EQUIP_DOWNTIME', name:'Equipment Downtime (≤ target)', benchmark: 5, n:'Equipment downtime hours', d:'Total scheduled operational hours' },
+          { code:'COMPLAINT_RESOLUTION', name:'Customer Complaints Resolved within TAT', benchmark: 95, n:'Complaints resolved within TAT', d:'Total complaints received' },
+          { code:'REPEAT_TESTING', name:'Repeat Testing due to Lab Error', benchmark: 1, n:'Repeat tests due to lab error', d:'Total tests performed' },
+          { code:'CALIB_COMPLIANCE', name:'Calibration Schedule Compliance', benchmark: 95, n:'Calibrations completed on schedule', d:'Total calibrations scheduled' },
+          { code:'EQA_PARTICIPATION', name:'External Quality Assessment Participation Compliance', benchmark: 100, n:'EQA events participated', d:'Total EQA events planned' }
         ];
         const isoSel = document.getElementById('isoMetricSelect');
         const isoBench = document.getElementById('isoBenchmark');
         const isoAvg = document.getElementById('isoAvg');
         const isoAvgLabel = document.getElementById('isoAvgLabel');
         const isoTbody = document.getElementById('isoMetricTbody');
+        const isoNumDesc = document.getElementById('isoNumDesc');
+        const isoDenDesc = document.getElementById('isoDenDesc');
         const isoSaveBtn = document.getElementById('isoSaveBtn');
         const isoClearBtn = document.getElementById('isoClearBtn');
         const isoCanvas = document.getElementById('isoMetricChart');
@@ -245,6 +257,8 @@
         function renderIsoRows(){
           const metric = ISO_METRICS.find(x => x.code === isoSel.value) || ISO_METRICS[0];
           isoBench.textContent = String(metric.benchmark) + '%';
+          if (isoNumDesc) isoNumDesc.textContent = String(metric.n || '—');
+          if (isoDenDesc) isoDenDesc.textContent = String(metric.d || '—');
           const period = Number(document.getElementById('isoPeriodSelect').value || '6');
           const months = lastMonths(period);
           const store = getStore();
