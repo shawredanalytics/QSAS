@@ -313,7 +313,32 @@
             write('Average: ' + String(avg) + '%');
             y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Monthly Data:', 18, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            rows.forEach(r => write(`${r.label} • N=${r.n} • D=${r.d} • ${r.p}%`));
+            const rowH = 22; const topY = y + 8; const pad = 6;
+            const colW = [Math.floor(mw*0.45), Math.floor(mw*0.2), Math.floor(mw*0.2), Math.floor(mw*0.15)];
+            const colX = [m, m+colW[0], m+colW[0]+colW[1], m+colW[0]+colW[1]+colW[2], m+mw];
+            const neededH = (rows.length + 1) * rowH + 12;
+            if (topY + neededH > ph - m) { doc.addPage(); y = m; }
+            let yy = y + 8;
+            doc.setDrawColor(229,231,235); doc.setLineWidth(0.5);
+            doc.setFont('helvetica','bold');
+            doc.text('Month', colX[0] + pad, yy + 14);
+            doc.text('Numerator', colX[1] + pad, yy + 14);
+            doc.text('Denominator', colX[2] + pad, yy + 14);
+            doc.text('Percent', colX[3] + pad, yy + 14);
+            doc.setFont('helvetica','normal');
+            for (let i = 0; i < rows.length; i++) {
+              const r = rows[i]; const ry = yy + (i+1)*rowH;
+              doc.text(String(r.label), colX[0] + pad, ry + 14);
+              doc.text(String(r.n), colX[1] + pad, ry + 14);
+              doc.text(String(r.d), colX[2] + pad, ry + 14);
+              doc.text(String(r.p) + '%', colX[3] + pad, ry + 14);
+            }
+            const totalH = (rows.length + 1) * rowH;
+            for (let xi = 0; xi < colX.length; xi++) { doc.line(colX[xi], yy, colX[xi], yy + totalH); }
+            doc.line(colX[0], yy, colX[4], yy);
+            doc.line(colX[0], yy + rowH, colX[4], yy + rowH);
+            doc.line(colX[0], yy + totalH, colX[4], yy + totalH);
+            y = yy + totalH + 12;
             try { const cw = mw; const ch = Math.min(260, ph - y - 60); doc.addImage(img, 'PNG', m, y+6, cw, ch); y += ch + 18; } catch(e) {}
             write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
             const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
