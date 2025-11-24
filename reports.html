@@ -331,6 +331,7 @@
             const doc = new jsPDF({ unit:'pt', format:'a4' });
             const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight(); const m = 40; const mw = pw - 2*m; let y = m;
             const write = (t, lh=16, bold=false) => { const txt = sanitize(t); const lines = doc.splitTextToSize(txt, mw); doc.setFont('helvetica', bold ? 'bold' : 'normal'); lines.forEach(line => { if (y > ph - m) { doc.addPage(); y = m; } doc.text(line, m, y, { maxWidth: mw }); y += lh; }); };
+            const ensureSpace = (h) => { if (y + h > ph - m) { doc.addPage(); y = m; } };
             doc.setFont('helvetica','bold'); doc.setFontSize(18); write('QuXAT Quality Metric Report', 22, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
             if (org) write('Organization: ' + org);
@@ -375,23 +376,24 @@
               doc.setFont('helvetica','bold'); doc.setFontSize(14); write('CAPA Checklist for Deviant Months:', 18, true);
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               deviants.forEach(dv => {
+                ensureSpace(22);
                 write(`${dv.label}: ${dv.p}% vs benchmark ${bench}%`);
                 const startY = y; const boxW = 10; const boxH = 10; const gap = 6;
                 // Items: Root cause analyzed, Corrective actions implemented, Preventive actions planned, Re-measure scheduled, Effectiveness verified
                 const items = ['Root cause analyzed', 'Corrective actions implemented', 'Preventive actions planned', 'Re-measure scheduled', 'Effectiveness verified'];
-                items.forEach(it => { doc.rect(m, y + 2, boxW, boxH); doc.text(String(it), m + boxW + gap, y + 10); y += 18; });
+                items.forEach(it => { ensureSpace(18); doc.rect(m, y + 2, boxW, boxH); doc.text(String(it), m + boxW + gap, y + 10); y += 18; });
                 y = startY + items.length * 18 + 10;
               });
             }
             // Prepared/Approved blocks
             // Prepared/Approved blocks (printed copy fields)
             const line = (label) => { const txt = String(label) + ' ______________________________'; write(txt); };
-            y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Prepared By', 18, true);
+            ensureSpace(24); y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Prepared By', 18, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
-            y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Approved By', 18, true);
+            ensureSpace(80); line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
+            ensureSpace(24); y += 6; doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Approved By', 18, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
+            ensureSpace(80); line('Name:'); line('Designation:'); line('Signature:'); line('Date:'); line('Time:');
             write('Note: Percent = (Numerator / Denominator) × 100. Benchmark shown as dashed line in the chart.');
             const fname = 'QSAS-Metric-' + (metric.code || 'report') + '.pdf';
             doc.save(fname);
