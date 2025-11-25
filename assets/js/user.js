@@ -166,6 +166,7 @@
     "Industrial & Manufacturing",
     "Offices & Corporate",
     "Public & Community Organizations",
+    "Travel & Transportation",
   ];
 
   // Light pastel color per category for visual differentiation
@@ -222,6 +223,11 @@
       "Government Departments",
       "NGOs & Nonprofits",
     ],
+    "Travel & Transportation": [
+      "Air Travelers",
+      "Airlines & Aviation",
+      "Airports",
+    ],
   };
 
   function normalizeCategoryLabel(label) {
@@ -234,6 +240,7 @@
       "industrial & manufacturing": "Industrial & Manufacturing",
       "offices & corporate": "Offices & Corporate",
       "public & community organizations": "Public & Community Organizations",
+      "travel & transportation": "Travel & Transportation",
     };
     const key = s.toLowerCase();
     return map[key] || s || "";

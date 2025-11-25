@@ -347,6 +347,46 @@ function ensureDefaults() {
     );
 
     addBaselineIfMissing(
+      "Industrial & Manufacturing - Fire Safety Preparedness Checklist",
+      "Self assessment checklist to evaluate fire safety readiness across equipment, procedures, training, and emergency response.",
+      "Industrial & Manufacturing",
+      [
+        { name: "Fire Risk Assessment performed and documented", points: 5 },
+        { name: "Fire extinguishers available, accessible, and inspected (monthly)", points: 5 },
+        { name: "Automatic sprinkler/hydrant systems operational with maintenance logs", points: 5 },
+        { name: "Fire alarm and detection systems tested per schedule", points: 5 },
+        { name: "Clearly marked emergency exits and illuminated exit signage", points: 5 },
+        { name: "Evacuation route maps displayed at key locations", points: 5 },
+        { name: "Periodic fire drills conducted with attendance and CAPA", points: 5 },
+        { name: "Hot work permits enforced with fire watch and PPE", points: 5 },
+        { name: "Combustible storage controls and housekeeping maintained", points: 5 },
+        { name: "Electrical safety inspections to prevent overheating/overload", points: 5 },
+        { name: "Designated muster points and headcount process", points: 5 },
+        { name: "Trained Emergency Response Team with roles assigned", points: 5 }
+      ]
+    );
+
+    addBaselineIfMissing(
+      "How Safe was your recent Air Travel ?",
+      "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
+      "Travel & Transportation",
+      [
+        { name: "Safety briefing attended and understood", points: 5 },
+        { name: "Seat belt fastened during taxi, take‑off, and landing", points: 5 },
+        { name: "Cabin baggage stowed correctly under seat/overhead", points: 5 },
+        { name: "Exit row rules acknowledged (if allocated)", points: 5 },
+        { name: "Compliance during turbulence seat‑belt ON", points: 5 },
+        { name: "Followed crew instructions without delay", points: 5 },
+        { name: "No hazardous or restricted items carried", points: 5 },
+        { name: "Health protocols observed (mask/hand hygiene, if applicable)", points: 5 },
+        { name: "Device usage complied with airplane mode notices", points: 5 },
+        { name: "Aware of emergency exits and life vest location", points: 5 },
+        { name: "Security screening completed without violations", points: 5 },
+        { name: "Know how to report safety incidents to airline/authority", points: 5 }
+      ]
+    );
+
+    addBaselineIfMissing(
       "How Safe is your Medical Diagnostic Laboratory ?",
       "Safety and quality readiness checklist for hospital-based medical diagnostic laboratories covering biosafety, QC/EQA, traceability, and emergency preparedness.",
       "Hospitals & Healthcare",
