@@ -404,6 +404,31 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Infection Control Guidelines Compliance for Hospitals
+    addBaselineIfMissing(
+      "Hospital - Infection Control Guidelines Compliance",
+      "Self assessment to evaluate compliance with standard infection control practices across hand hygiene, PPE, isolation, sterilization, cleaning, waste, surveillance, and training.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Hand hygiene program implemented with routine audits", points: 5 },
+        { name: "PPE availability ensured; usage per risk level monitored", points: 5 },
+        { name: "Isolation precautions (contact/droplet/airborne) applied", points: 5 },
+        { name: "Sterilization monitoring (chemical/biological indicators) logged", points: 5 },
+        { name: "High‑touch surface cleaning/disinfection schedule followed", points: 5 },
+        { name: "Environmental cleaning SOPs and checklists in use", points: 5 },
+        { name: "Central line bundle compliance recorded", points: 5 },
+        { name: "Surgical site infection prevention bundle applied", points: 5 },
+        { name: "Instrument reprocessing SOPs and tracking maintained", points: 5 },
+        { name: "Biomedical waste segregation and disposal per rules", points: 5 },
+        { name: "Needle‑stick injury reporting and post‑exposure management", points: 5 },
+        { name: "HAI surveillance and outbreak reporting performed", points: 5 },
+        { name: "Antimicrobial stewardship activities documented", points: 5 },
+        { name: "Staff IPC training and competency checks completed", points: 5 },
+        { name: "Patient/visitor IPC education materials displayed", points: 5 },
+        { name: "Ventilation/air changes monitored in critical areas", points: 5 },
+      ]
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
