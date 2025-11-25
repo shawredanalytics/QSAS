@@ -38,6 +38,7 @@
   const downloadUnverifiedBtn = document.getElementById("downloadUnverifiedBtn");
   const downloadVerifiedBtn = document.getElementById("downloadVerifiedBtn");
   const contactWhatsAppBtn = document.getElementById("contactWhatsAppBtn");
+  const shareChecklistBtn = document.getElementById("shareChecklistBtn");
   const scoreRowEl = document.querySelector(".score-row");
   const suggestionsEl = document.createElement("div");
   suggestionsEl.id = "suggestionsBox";
@@ -145,6 +146,23 @@
       const deep = 'whatsapp://send?phone=+' + tel + '&text=' + msg;
       const web = 'https://wa.me/' + tel + '?text=' + msg;
       try { const w = window.open(deep, '_blank'); if (!w) throw new Error('deep'); } catch(e) { window.open(web, '_blank'); }
+    } catch(e) {}
+  }
+
+  function shareChecklistByEmail(){
+    try {
+      const lists = getChecklists();
+      const cl = lists.find(c => c.id === currentChecklistId || c.code === currentChecklistId);
+      const name = cl ? cl.name : 'QSAS Checklist';
+      const cat = cl ? cl.category : (localStorage.getItem('qsas_boot_category') || '');
+      const chk = cl ? (cl.code || cl.id) : (localStorage.getItem('qsas_boot_checklist') || '');
+      const topWin = window.top || window.parent || window;
+      const base = topWin.location.origin;
+      const url = base + '/?section=' + encodeURIComponent('Self Assessment') + (cat ? ('&cat=' + encodeURIComponent(cat)) : '') + (chk ? ('&chk=' + encodeURIComponent(chk)) : '');
+      const subject = encodeURIComponent('QSAS Self Assessment — ' + String(name));
+      const body = encodeURIComponent('Please open the QSAS checklist at the following link:\n' + url + '\n\nPowered by QuXAT — QSAS');
+      const mail = 'mailto:?subject=' + subject + '&body=' + body;
+      window.location.href = mail;
     } catch(e) {}
   }
 
@@ -474,6 +492,9 @@
 
   if (contactWhatsAppBtn) {
     contactWhatsAppBtn.addEventListener("click", openWhatsAppAdvisory);
+  }
+  if (shareChecklistBtn) {
+    shareChecklistBtn.addEventListener("click", shareChecklistByEmail);
   }
 
   startForm.addEventListener("submit", (e) => {
