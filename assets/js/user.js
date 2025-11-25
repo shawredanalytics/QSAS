@@ -158,7 +158,7 @@
       const chk = cl ? (cl.code || cl.id) : (localStorage.getItem('qsas_boot_checklist') || '');
       const topWin = window.top || window.parent || window;
       const base = topWin.location.origin;
-      const url = base + '/?section=' + encodeURIComponent('Self Assessment') + (cat ? ('&cat=' + encodeURIComponent(cat)) : '') + (chk ? ('&chk=' + encodeURIComponent(chk)) : '');
+      const url = base + '/?section=' + encodeURIComponent('User Assessment') + (cat ? ('&category=' + encodeURIComponent(cat)) : '') + (chk ? ('&checklist=' + encodeURIComponent(chk)) : '');
       const subject = encodeURIComponent('QSAS Self Assessment — ' + String(name));
       const tcat = String(cat || '').toLowerCase();
       let greet = 'Dear Team,';
