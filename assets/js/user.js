@@ -37,6 +37,7 @@
   const submitVerificationBtn = document.getElementById("submitVerificationBtn");
   const downloadUnverifiedBtn = document.getElementById("downloadUnverifiedBtn");
   const downloadVerifiedBtn = document.getElementById("downloadVerifiedBtn");
+  const contactWhatsAppBtn = document.getElementById("contactWhatsAppBtn");
   const scoreRowEl = document.querySelector(".score-row");
   const suggestionsEl = document.createElement("div");
   suggestionsEl.id = "suggestionsBox";
@@ -135,6 +136,16 @@
       const approved = !!(prev && prev.status === "approved");
       if (downloadVerifiedBtn) downloadVerifiedBtn.hidden = !approved;
     } catch (e) {}
+  }
+
+  function openWhatsAppAdvisory(){
+    try {
+      const msg = encodeURIComponent('Hello QuXAT Advisory Team — I need assistance with Quality & Safety Self Assessment');
+      const tel = '916301237212';
+      const deep = 'whatsapp://send?phone=+' + tel + '&text=' + msg;
+      const web = 'https://wa.me/' + tel + '?text=' + msg;
+      try { const w = window.open(deep, '_blank'); if (!w) throw new Error('deep'); } catch(e) { window.open(web, '_blank'); }
+    } catch(e) {}
   }
 
   function clsToBadge(label) {
@@ -454,6 +465,10 @@
     }
   });
 
+  if (contactWhatsAppBtn) {
+    contactWhatsAppBtn.addEventListener("click", openWhatsAppAdvisory);
+  }
+
   startForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = userEmailInput.value.trim();
@@ -610,7 +625,7 @@
 
     const statusLabel = verified ? "VERIFIED AND APPROVED REPORT" : "UNVERIFIED SELF-ASSESSMENT REPORT";
     const lines = [];
-    lines.push({ t: "QuXAT Self Assessment Report", style: "h1" });
+    lines.push({ t: "QuXAT Self Assessment Score Card", style: "h1" });
     lines.push({ t: statusLabel, style: verified ? "ok" : "warn" });
     lines.push({ t: `Email: ${assessment.email}` });
     if (assessment.checklistName || assessment.checklistId) {
@@ -643,7 +658,7 @@
 
     let y = 20;
     const left = 15;
-    doc.setFontSize(18); doc.text("QuXAT Self Assessment Report", left, y); y += 8;
+    doc.setFontSize(18); doc.text("QuXAT Self Assessment Score Card", left, y); y += 8;
     doc.setFontSize(12);
     doc.setTextColor(verified ? 0 : 200, verified ? 128 : 80, verified ? 0 : 0);
     doc.text(statusLabel, left, y); y += 10;
