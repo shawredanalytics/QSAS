@@ -160,7 +160,24 @@
       const base = topWin.location.origin;
       const url = base + '/?section=' + encodeURIComponent('Self Assessment') + (cat ? ('&cat=' + encodeURIComponent(cat)) : '') + (chk ? ('&chk=' + encodeURIComponent(chk)) : '');
       const subject = encodeURIComponent('QSAS Self Assessment — ' + String(name));
-      const body = encodeURIComponent('Please open the QSAS checklist at the following link:\n' + url + '\n\nPowered by QuXAT — QSAS');
+      const tcat = String(cat || '').toLowerCase();
+      let bodyText = '';
+      if (tcat.includes('hospitals')) {
+        bodyText = 'Improve care quality and patient safety by completing this QSAS self assessment. Use the checklist to verify controls, identify gaps, and plan corrective actions.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Share results with leaders\n• Prioritize high‑risk items\n• Define CAPA with timelines';
+      } else if (tcat.includes('schools') || tcat.includes('college')) {
+        bodyText = 'Strengthen student safety and academic quality using this QSAS checklist. Assess current practices, uncover gaps, and schedule improvements.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Involve safety and academics teams\n• Track actions and re‑assess\n• Communicate progress to stakeholders';
+      } else if (tcat.includes('industrial')) {
+        bodyText = 'Enhance workplace safety and process quality with this QSAS checklist. Review SOPs, training, audits, and KPIs to drive outcomes.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Close critical safety items first\n• Assign owners and due dates\n• Monitor KPI trends monthly';
+      } else if (tcat.includes('offices')) {
+        bodyText = 'Elevate organizational quality and culture. Use this QSAS self assessment to identify policy, training, and workflow improvements.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Address high‑impact gaps\n• Establish review cadence\n• Celebrate improvements';
+      } else if (tcat.includes('public')) {
+        bodyText = 'Assess community service quality and safety. Apply this QSAS checklist to improve readiness, transparency, and response.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Engage cross‑functional teams\n• Publish results and actions\n• Re‑measure to confirm progress';
+      } else if (tcat.includes('travel')) {
+        bodyText = 'Evaluate air travel safety behaviors and compliance using this QSAS checklist. Reflect on the journey and improve future readiness.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Share feedback with airline\n• Adopt best practices\n• Encourage peers to assess';
+      } else {
+        bodyText = 'Complete this QSAS self assessment to drive measurable quality and safety improvements.\n\nStart now: ' + url + '\n\nRecommended next steps:\n• Review results with your team\n• Plan CAPA actions\n• Track progress and re‑assess';
+      }
+      const body = encodeURIComponent(bodyText + '\n\nPowered by QuXAT — QSAS');
       const mail = 'mailto:?subject=' + subject + '&body=' + body;
       window.location.href = mail;
     } catch(e) {}
