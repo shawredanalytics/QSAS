@@ -161,7 +161,33 @@
 
         <hr class="mt" />
 
-        
+        <section class="card info">
+          <h3>Sponsor Logo Management</h3>
+          <p class="hint">Upload a sponsor logo to display across Self Assessment areas.</p>
+          <div class="grid two">
+            <div>
+              <label>
+                Sponsor Name
+                <input type="text" id="sponsorNameInput" placeholder="e.g., Shawred Analytics" />
+              </label>
+              <label class="mt">
+                Sponsor Logo (PNG/JPG)
+                <input type="file" id="sponsorLogoInput" accept="image/*" />
+              </label>
+              <div class="actions mt">
+                <button id="saveSponsorBtn" class="btn btn-primary">Save Sponsor</button>
+                <button id="clearSponsorBtn" class="btn btn-danger">Clear Sponsor</button>
+              </div>
+            </div>
+            <div>
+              <h4>Preview</h4>
+              <div id="sponsorPreview" class="card" style="padding:12px; display:flex; align-items:center; gap:12px;">
+                <img id="sponsorPreviewImg" alt="Sponsor Logo" style="height:40px; display:none;" />
+                <span id="sponsorPreviewText" class="item-sub">No logo selected</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
 

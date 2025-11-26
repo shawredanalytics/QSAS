@@ -366,9 +366,26 @@
       const h = document.createElement('h3'); h.textContent = 'Sponsors';
       const row = document.createElement('div'); row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '12px';
       const img = document.createElement('img'); img.alt = 'Shawred Analytics'; img.style.height = '36px';
-      const srcP = (window.QSAS_ASSETS && (window.QSAS_ASSETS['assets/Shawred Analytics Logo.png'] || window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png'])) || 'assets/Shawred%20Analytics%20Logo.png';
-      img.src = srcP;
+      const stored = (() => { try { return localStorage.getItem('qsas_sponsor_logo') || null; } catch(e){ return null; } })();
+      const candidates = [
+        stored,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred Analytics Logo.png']) || null,
+        'assets/Shawred%20Analytics%20Logo.png',
+        '/assets/Shawred%20Analytics%20Logo.png',
+        'assets/Shawred Analytics Logo.png',
+        '/assets/Shawred Analytics Logo.png',
+      ].filter(Boolean);
+      let idx = 0;
+      const tryNext = () => {
+        if (idx >= candidates.length) { img.style.display = 'none'; return; }
+        img.src = candidates[idx++];
+      };
+      img.onerror = () => { img.onerror = null; setTimeout(() => { img.onerror = tryNext; tryNext(); }, 0); };
+      tryNext();
       const span = document.createElement('span'); span.textContent = 'Sponsored by Shawred Analytics';
+      // Use stored sponsor name if available
+      try { const nm = localStorage.getItem('qsas_sponsor_name'); if (nm) span.textContent = 'Sponsored by ' + nm; } catch(e){}
       row.append(img, span); section.append(h, row);
       mount.appendChild(section);
     } catch(e) {}

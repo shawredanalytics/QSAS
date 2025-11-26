@@ -26,6 +26,12 @@
   const subsEmpty = document.getElementById("subsEmpty");
   const gridRegsList = document.getElementById("gridRegsList");
   const gridRegsEmpty = document.getElementById("gridRegsEmpty");
+  const sponsorLogoInput = document.getElementById("sponsorLogoInput");
+  const sponsorNameInput = document.getElementById("sponsorNameInput");
+  const sponsorPreviewImg = document.getElementById("sponsorPreviewImg");
+  const sponsorPreviewText = document.getElementById("sponsorPreviewText");
+  const saveSponsorBtn = document.getElementById("saveSponsorBtn");
+  const clearSponsorBtn = document.getElementById("clearSponsorBtn");
 
   
 
@@ -174,6 +180,56 @@
       listEl.appendChild(li);
     });
   }
+
+  // Sponsor logo management
+  (function(){
+    try {
+      const logoB64 = localStorage.getItem('qsas_sponsor_logo');
+      const name = localStorage.getItem('qsas_sponsor_name') || '';
+      if (sponsorPreviewImg && logoB64) { sponsorPreviewImg.src = logoB64; sponsorPreviewImg.style.display = 'inline'; }
+      if (sponsorPreviewText) sponsorPreviewText.textContent = name ? name : (logoB64 ? 'Logo loaded' : 'No logo selected');
+      if (sponsorNameInput && name) sponsorNameInput.value = name;
+    } catch(e) {}
+    if (sponsorLogoInput) {
+      sponsorLogoInput.addEventListener('change', () => {
+        const f = sponsorLogoInput.files && sponsorLogoInput.files[0];
+        if (!f) return;
+        const rd = new FileReader();
+        rd.onload = () => {
+          try {
+            const dataUrl = rd.result;
+            if (sponsorPreviewImg) { sponsorPreviewImg.src = dataUrl; sponsorPreviewImg.style.display = 'inline'; }
+            if (sponsorPreviewText) sponsorPreviewText.textContent = 'Preview loaded';
+            sponsorLogoInput.dataset.b64 = dataUrl;
+          } catch(e) {}
+        };
+        rd.readAsDataURL(f);
+      });
+    }
+    if (saveSponsorBtn) {
+      saveSponsorBtn.addEventListener('click', () => {
+        try {
+          const b64 = sponsorLogoInput?.dataset?.b64 || localStorage.getItem('qsas_sponsor_logo');
+          const name = sponsorNameInput?.value || '';
+          if (b64) localStorage.setItem('qsas_sponsor_logo', b64);
+          localStorage.setItem('qsas_sponsor_name', name);
+          alert('Sponsor saved');
+        } catch(e) { alert('Unable to save'); }
+      });
+    }
+    if (clearSponsorBtn) {
+      clearSponsorBtn.addEventListener('click', () => {
+        try {
+          localStorage.removeItem('qsas_sponsor_logo');
+          localStorage.removeItem('qsas_sponsor_name');
+          if (sponsorPreviewImg) { sponsorPreviewImg.src = ''; sponsorPreviewImg.style.display = 'none'; }
+          if (sponsorPreviewText) sponsorPreviewText.textContent = 'No logo selected';
+          sponsorLogoInput && (sponsorLogoInput.value = '');
+          sponsorNameInput && (sponsorNameInput.value = '');
+        } catch(e) {}
+      });
+    }
+  })();
 
   
 
