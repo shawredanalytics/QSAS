@@ -429,6 +429,31 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Hospital Medical Tourism Readiness
+    addBaselineIfMissing(
+      "Hospital - Medical Tourism Readiness",
+      "Self assessment checklist to evaluate a hospital’s preparedness to serve national and international medical tourism clientele across coordination, compliance, logistics, and follow‑up.",
+      "Hospitals & Healthcare",
+      [
+        { name: "International Patient Desk established with coordinators", points: 5 },
+        { name: "Visa support and invitation letter process defined", points: 5 },
+        { name: "Language translation and interpretation services available", points: 5 },
+        { name: "Transparent package pricing with inclusions/exclusions", points: 5 },
+        { name: "Insurance/TPA onboarding and cashless arrangements in place", points: 5 },
+        { name: "Accommodation and travel partner network established", points: 5 },
+        { name: "Clinical pathways and fast‑track scheduling for electives", points: 5 },
+        { name: "Emergency readiness and infection prevention protocols", points: 5 },
+        { name: "Discharge planning with telemedicine follow‑up", points: 5 },
+        { name: "Medical records sharing and data privacy/consent controls", points: 5 },
+        { name: "Grievance redressal and feedback mechanisms", points: 5 },
+        { name: "Staff training on international patient etiquette and SOPs", points: 5 },
+        { name: "Airport pickup/transfer coordination SOPs", points: 5 },
+        { name: "Risk management for international patient journey documented", points: 5 },
+        { name: "Public web presence detailing packages and contact channels", points: 5 },
+        { name: "Cultural sensitivity materials available for staff and patients", points: 5 },
+      ]
+    );
+
     // Persist updated checklists and mark seeding complete for v2
     localStorage.setItem(QSAS_KEYS.checklists, JSON.stringify(lists));
     if (!seeded) localStorage.setItem(QSAS_KEYS.seeded, "true");
