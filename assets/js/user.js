@@ -38,6 +38,7 @@
   const downloadUnverifiedBtn = document.getElementById("downloadUnverifiedBtn");
   const downloadVerifiedBtn = document.getElementById("downloadVerifiedBtn");
   const contactWhatsAppBtn = document.getElementById("contactWhatsAppBtn");
+  const contactWhatsAppStartBtn = document.getElementById("contactWhatsAppStartBtn");
   const shareChecklistBtn = document.getElementById("shareChecklistBtn");
   const scoreRowEl = document.querySelector(".score-row");
   const suggestionsEl = document.createElement("div");
@@ -359,8 +360,9 @@
     const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     listEl.innerHTML = "";
     emptyEl.hidden = metrics.length !== 0;
-    gateMsgEl.hidden = !!currentEmail;
-    listEl.hidden = !currentEmail || awaitingChoice || !currentChecklistId;
+    // Allow deep-linked viewing without entering email
+    gateMsgEl.hidden = !!currentEmail || !!currentChecklistId;
+    listEl.hidden = awaitingChoice || !currentChecklistId;
     checklistChooser.hidden = !(currentEmail && !awaitingChoice && !currentChecklistId);
     // Update selected checklist header
     try {
@@ -518,6 +520,9 @@
 
   if (contactWhatsAppBtn) {
     contactWhatsAppBtn.addEventListener("click", openWhatsAppAdvisory);
+  }
+  if (contactWhatsAppStartBtn) {
+    contactWhatsAppStartBtn.addEventListener("click", openWhatsAppAdvisory);
   }
   if (shareChecklistBtn) {
     shareChecklistBtn.addEventListener("click", shareChecklistByEmail);
