@@ -80,6 +80,7 @@
           <!-- Removed Industry Categories table from User page (now shown on Home) -->
           <div class="actions">
             <button type="submit" class="btn btn-primary">Proceed</button>
+            <button type="button" id="startAssessmentBtn" class="btn btn-primary">Start Self Assessment</button>
             <button type="button" id="shareChecklistBtn" class="btn">Share Checklist via Email</button>
             <button type="button" id="contactWhatsAppStartBtn" class="btn btn-success">Contact Advisory Team</button>
           </div>
@@ -194,7 +195,10 @@
     </section>
 
     <footer class="site-footer">
-      <small>© QuXAT — QSAS • <a href="https://quxat.com/" target="_blank" rel="noopener">Visit quxat.com</a></small>
+      <div style="display:flex; align-items:center; gap:12px; justify-content:center; padding:8px 0;">
+        <small>© QuXAT — QSAS</small>
+        <a href="https://quxat.com/" target="_blank" rel="noopener" class="btn btn-primary">Visit quxat.com</a>
+      </div>
     </footer>
 
     <script src="assets/js/storage.js"></script>

@@ -611,6 +611,27 @@
   if (shareChecklistBtn) {
     shareChecklistBtn.addEventListener("click", shareChecklistByEmail);
   }
+  const startAssessmentBtn = document.getElementById("startAssessmentBtn");
+  if (startAssessmentBtn) {
+    startAssessmentBtn.addEventListener("click", () => {
+      const email = (userEmailInput?.value || "").trim();
+      if (!email || !email.includes("@")) return alert("Please enter a valid email ID.");
+      currentEmail = email;
+      awaitingChoice = false;
+      prevPanel.hidden = true;
+      if (!currentChecklistId) {
+        let lists = getChecklists().filter(c => c.published !== false);
+        if (currentCategory) {
+          lists = lists.filter(c => String(deriveCategory(c.category) || "").trim() === currentCategory);
+        }
+        if (lists.length) currentChecklistId = lists[0].id;
+      }
+      render();
+      updateActionButtonsVisibility();
+      const target = document.getElementById("userMetrics");
+      try { target && target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e) {}
+    });
+  }
 
   startForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -637,6 +658,13 @@
     } else {
       awaitingChoice = false;
       prevPanel.hidden = true;
+      if (!currentChecklistId) {
+        let lists = getChecklists().filter(c => c.published !== false);
+        if (currentCategory) {
+          lists = lists.filter(c => String(deriveCategory(c.category) || "").trim() === currentCategory);
+        }
+        if (lists.length) currentChecklistId = lists[0].id;
+      }
       render();
     }
     updateActionButtonsVisibility();
