@@ -211,8 +211,12 @@
         try {
           const b64 = sponsorLogoInput?.dataset?.b64 || localStorage.getItem('qsas_sponsor_logo');
           const name = sponsorNameInput?.value || '';
-          if (b64) localStorage.setItem('qsas_sponsor_logo', b64);
+          if (b64) {
+            localStorage.setItem('qsas_sponsor_logo', b64);
+            try { (window.top || window).localStorage.setItem('qsas_sponsor_logo', b64); } catch(e){}
+          }
           localStorage.setItem('qsas_sponsor_name', name);
+          try { (window.top || window).localStorage.setItem('qsas_sponsor_name', name); } catch(e){}
           alert('Sponsor saved');
         } catch(e) { alert('Unable to save'); }
       });

@@ -94,6 +94,10 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
         "assets/Authorized Signatory.png": file_to_data_url("assets/Authorized Signatory.png"),
         "assets/Authorized%20Signatory.png": file_to_data_url("assets/Authorized Signatory.png"),
         "assets/img/quxat-logo.svg": file_to_data_url("assets/img/quxat-logo.svg"),
+        "assets/Shawred Analytics Logo.png": file_to_data_url("assets/Shawred Analytics Logo.png"),
+        "assets/Shawred%20Analytics%20Logo.png": file_to_data_url("assets/Shawred Analytics Logo.png"),
+        "assets/Transparent Logo SAPLC.png": file_to_data_url("assets/Transparent Logo SAPLC.png"),
+        "assets/Transparent%20Logo%20SAPLC.png": file_to_data_url("assets/Transparent Logo SAPLC.png"),
     }
     # Extract body content from original HTML
     lower = html.lower()
@@ -389,7 +393,7 @@ if section == "Home":
         gh_regs = []
     gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
     html_index = build_embedded_page("index.html", bootstrap_js=gh_boot)
-    st.components.v1.html(html_index, height=4200, scrolling=False)
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -423,13 +427,13 @@ elif section == "Healthcare Quality Grid":
     _set_query_section("Home")
     st.session_state["section"] = "Home"
     html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=4200, scrolling=False)
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "Register for the Healthcare Quality Grid":
     # Page removed — redirect to Home
     _set_query_section("Home")
     st.session_state["section"] = "Home"
     html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=4200, scrolling=False)
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)

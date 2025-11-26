@@ -376,13 +376,12 @@
               doc.setFont('helvetica','bold'); doc.setFontSize(14); write('CAPA Checklist for Deviant Months:', 18, true);
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
               deviants.forEach(dv => {
-                ensureSpace(22);
+                ensureSpace(20);
                 write(`${dv.label}: ${dv.p}% vs benchmark ${bench}%`);
-                const startY = y; const boxW = 10; const boxH = 10; const gap = 6;
-                // Items: Root cause analyzed, Corrective actions implemented, Preventive actions planned, Re-measure scheduled, Effectiveness verified
+                const boxW = 10; const boxH = 10; const gap = 6;
                 const items = ['Root cause analyzed', 'Corrective actions implemented', 'Preventive actions planned', 'Re-measure scheduled', 'Effectiveness verified'];
-                items.forEach(it => { ensureSpace(18); doc.rect(m, y + 2, boxW, boxH); doc.text(String(it), m + boxW + gap, y + 10); y += 18; });
-                y = startY + items.length * 18 + 10;
+                items.forEach(it => { ensureSpace(16); doc.rect(m, y + 2, boxW, boxH); doc.text(String(it), m + boxW + gap, y + 10); y += 14; });
+                y += 8;
               });
             }
             // Prepared/Approved blocks

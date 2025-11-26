@@ -92,6 +92,45 @@
     } catch(e) {}
   })();
 
+  (function(){
+    try {
+      const bar = document.getElementById('sponsorsBar');
+      if (!bar) return;
+      const img = bar.querySelector('img');
+      const txt = bar.querySelector('span');
+      let name = null;
+      const stored = (() => { try { return localStorage.getItem('qsas_sponsor_logo') || (window.top||window).localStorage.getItem('qsas_sponsor_logo') || null; } catch(e){ return null; } })();
+      const currentSrc = img ? (img.getAttribute('src') || '') : '';
+      const candidates = [
+        stored,
+        currentSrc || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred Analytics Logo.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Transparent%20Logo%20SAPLC.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Transparent Logo SAPLC.png']) || null,
+        'assets/Shawred%20Analytics%20Logo.png',
+        '/assets/Shawred%20Analytics%20Logo.png',
+        'assets/Shawred Analytics Logo.png',
+        '/assets/Shawred Analytics Logo.png',
+        'assets/Transparent%20Logo%20SAPLC.png',
+        '/assets/Transparent%20Logo%20SAPLC.png',
+        'assets/Transparent Logo SAPLC.png',
+        '/assets/Transparent Logo SAPLC.png',
+      ].filter(Boolean);
+      if (img) {
+        let idx = 0;
+        const tryNext = () => {
+          if (idx >= candidates.length) { img.style.display = 'none'; return; }
+          img.src = candidates[idx++]; img.style.display = 'inline';
+        };
+        img.onerror = () => { setTimeout(tryNext, 0); };
+        tryNext();
+      }
+      try { name = localStorage.getItem('qsas_sponsor_name') || (window.top||window).localStorage.getItem('qsas_sponsor_name'); } catch(e){}
+      if (txt) { txt.textContent = 'Sponsored by Shawred Analytics PLC'; }
+    } catch(e) {}
+  })();
+
   // Also parse query params when loaded directly as a static page (no Streamlit)
   (function(){
     try {
@@ -121,7 +160,13 @@
   })();
 
   function limitedMetrics(id) {
-    const all = id ? (getMetrics(id) || []) : [];
+    let target = id || '';
+    try {
+      const lists = getChecklists();
+      const cl = lists.find(c => c.id === target || c.code === target);
+      if (cl) target = cl.id;
+    } catch(e) {}
+    const all = target ? (getMetrics(target) || []) : [];
     return all.slice(0, Math.min(METRIC_LIMIT, all.length));
   }
   function perMetricPoints(metrics) {
@@ -366,15 +411,21 @@
       const h = document.createElement('h3'); h.textContent = 'Sponsors';
       const row = document.createElement('div'); row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '12px';
       const img = document.createElement('img'); img.alt = 'Shawred Analytics'; img.style.height = '36px';
-      const stored = (() => { try { return localStorage.getItem('qsas_sponsor_logo') || null; } catch(e){ return null; } })();
+      const stored = (() => { try { return localStorage.getItem('qsas_sponsor_logo') || (window.top||window).localStorage.getItem('qsas_sponsor_logo') || null; } catch(e){ return null; } })();
       const candidates = [
         stored,
         (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png']) || null,
         (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Shawred Analytics Logo.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Transparent%20Logo%20SAPLC.png']) || null,
+        (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/Transparent Logo SAPLC.png']) || null,
         'assets/Shawred%20Analytics%20Logo.png',
         '/assets/Shawred%20Analytics%20Logo.png',
         'assets/Shawred Analytics Logo.png',
         '/assets/Shawred Analytics Logo.png',
+        'assets/Transparent%20Logo%20SAPLC.png',
+        '/assets/Transparent%20Logo%20SAPLC.png',
+        'assets/Transparent Logo SAPLC.png',
+        '/assets/Transparent Logo SAPLC.png',
       ].filter(Boolean);
       let idx = 0;
       const tryNext = () => {
@@ -383,9 +434,7 @@
       };
       img.onerror = () => { img.onerror = null; setTimeout(() => { img.onerror = tryNext; tryNext(); }, 0); };
       tryNext();
-      const span = document.createElement('span'); span.textContent = 'Sponsored by Shawred Analytics';
-      // Use stored sponsor name if available
-      try { const nm = localStorage.getItem('qsas_sponsor_name'); if (nm) span.textContent = 'Sponsored by ' + nm; } catch(e){}
+      const span = document.createElement('span'); span.textContent = 'Sponsored by Shawred Analytics PLC';
       row.append(img, span); section.append(h, row);
       mount.appendChild(section);
     } catch(e) {}
