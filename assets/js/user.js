@@ -366,7 +366,7 @@
       const h = document.createElement('h3'); h.textContent = 'Sponsors';
       const row = document.createElement('div'); row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '12px';
       const img = document.createElement('img'); img.alt = 'Shawred Analytics'; img.style.height = '36px';
-      const src = (window.QSAS_ASSETS && (window.QSAS_ASSETS['assets/Shawred Analytics Logo.png'] || window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png'])) || 'assets/Shawred%20Analytics%20Logo.png';
+      const src = (window.QSAS_ASSETS && (window.QSAS_ASSETS['assets/Shawred Analytics Logo.png'] || window.QSAS_ASSETS['assets/Shawred%20Analytics%20Logo.png'])) || 'assets/Shawred Analytics Logo.png';
       img.src = src;
       const span = document.createElement('span'); span.textContent = 'Sponsored by Shawred Analytics';
       row.append(img, span); section.append(h, row);
