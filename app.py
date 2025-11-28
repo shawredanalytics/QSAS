@@ -223,10 +223,11 @@ def render_sidebar_once():
 
     with st.sidebar:
         st.subheader("Navigation")
-        # Primary navigation at the top
+        # Primary navigation at the top (ordered)
+        go_product = st.button("Quality based Self Check of Products", use_container_width=True)
+        go_services = st.button("QuXAT based Self Check of Services", use_container_width=True)
         go_home = st.button("QuXAT Organizational Self Assessment", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
-        go_product = st.button("Quality based Self Check of Products", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -243,6 +244,14 @@ def render_sidebar_once():
         st.subheader("Reports")
         go_reports = st.button("QuXAT Reports", use_container_width=True)
 
+    if go_product:
+        st.session_state["section"] = "Product based Quality Check"
+        _set_query_section("Product based Quality Check")
+        st.rerun()
+    if go_services:
+        st.session_state["section"] = "QuXAT based Self Check of Services"
+        _set_query_section("QuXAT based Self Check of Services")
+        st.rerun()
     if go_home:
         st.session_state["section"] = "Home"
         _set_query_section("Home")
@@ -448,6 +457,9 @@ elif section == "QuXAT Reports":
 elif section == "Product based Quality Check":
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
+elif section == "QuXAT based Self Check of Services":
+    html_srv = build_embedded_page("service-quality.html")
+    st.components.v1.html(html_srv, height=2600, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")

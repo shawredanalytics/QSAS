@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QuXAT based Self Check of Services</title>
+  </head>
+  <body>
+    <main class="container wide">
+      <section class="card hero-card">
+        <h2>QuXAT based Self Check of Services</h2>
+        <p class="hint">Browse service-oriented checklists (excluding product quality) and start a self assessment.</p>
+      </section>
+
+      <section class="card info">
+        <h3>Available Service Checklists</h3>
+        <div id="cardsMount" class="cards-grid"></div>
+        <div id="cardsEmpty" class="empty" hidden>No service checklists published yet.</div>
+      </section>
+
+      <section class="card">
+        <h3>Existing Service Checklists</h3>
+        <div id="existingLists" class="table-container"></div>
+      </section>
+    </main>
+
+    <script>
+      (function(){
+        function normalizeCategoryLabel(label){
+          const s = String(label || '').trim();
+          const map = {
+            'foods & consumables': 'Foods & Consumables',
+            'industrial & manufacturing': 'Industrial & Manufacturing',
+            'public & community organizations': 'Public & Community Organizations',
+            'hospitals & healthcare': 'Hospitals & Healthcare',
+            'schools': 'Schools',
+            'colleges & universities': 'Colleges & Universities',
+            'offices & corporate': 'Offices & Corporate',
+            'travel & transportation': 'Travel & Transportation',
+          };
+          const key = s.toLowerCase();
+          return map[key] || s || '';
+        }
+        function deriveCategory(raw){ return normalizeCategoryLabel(raw); }
+        function categoryColor(cat){
+          const palette = ['#FFF7ED','#F0FDF4','#F0F9FF','#FDF2F8','#F5F3FF','#EEF2FF','#FEF2F2','#ECFDF5','#FFFBEB','#F1F5F9'];
+          if (!cat) return '#F1F5F9';
+          let h = 0; const s = String(cat);
+          for (let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))>>>0; }
+          return palette[Math.abs(h)%palette.length];
+        }
+
+        const cardsMount = document.getElementById('cardsMount');
+        const cardsEmpty = document.getElementById('cardsEmpty');
+        const existingMount = document.getElementById('existingLists');
+
+        function isServiceCategory(cat){ const c = deriveCategory(cat) || cat; return c !== 'Foods & Consumables'; }
+
+        function renderCards(){
+          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
+          if (!lists.length) { cardsMount.innerHTML=''; cardsEmpty.hidden = false; return; }
+          cardsEmpty.hidden = true; cardsMount.innerHTML='';
+          const categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
+          const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
+          lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });
+          categories.forEach(cat => {
+            const items = (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+            const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
+            const title = document.createElement('div'); title.className='item-title'; title.textContent = cat;
+            const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
+            const actions = document.createElement('div'); actions.className='actions';
+            items.forEach(c => {
+              const a = document.createElement('a'); a.href='#'; a.className='btn'; a.textContent=c.name;
+              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
+              actions.appendChild(a);
+            });
+            card.append(title, sub, actions);
+            cardsMount.appendChild(card);
+          });
+        }
+
+        function renderExisting(){
+          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
+          const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
+          const thead = document.createElement('thead'); const trh = document.createElement('tr');
+          ['Category','Checklist','Description','Metrics','Action'].forEach(t => { const th = document.createElement('th'); th.textContent = t; th.style.textAlign = 'left'; th.style.padding = '8px'; th.style.borderBottom = '1px solid #e5e7eb'; trh.appendChild(th); });
+          thead.appendChild(trh);
+          const tbody = document.createElement('tbody');
+          lists.forEach(c => {
+            const tr = document.createElement('tr'); tr.style.borderTop = '1px solid #eef1f6';
+            const tdCat = document.createElement('td'); tdCat.textContent = deriveCategory(c.category) || c.category; tdCat.style.padding = '8px';
+            const tdName = document.createElement('td'); tdName.textContent = `${c.code ? '[' + c.code + '] ' : ''}${c.name}`; tdName.style.padding = '8px';
+            const tdDesc = document.createElement('td'); tdDesc.textContent = c.description || ''; tdDesc.style.padding = '8px';
+            const tdCount = document.createElement('td'); tdCount.style.padding = '8px';
+            try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e){ tdCount.textContent = '—'; }
+            const tdAct = document.createElement('td'); tdAct.style.padding = '8px';
+            const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Open';
+            btn.onclick = () => {
+              const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`;
+              try { const w = top.open(url, '_blank'); w && w.focus && w.focus(); } catch(e) { try { const w2 = window.open(url, '_blank'); w2 && w2.focus && w2.focus(); } catch(_){} }
+            };
+            tdAct.appendChild(btn);
+            tr.append(tdCat, tdName, tdDesc, tdCount, tdAct);
+            tbody.appendChild(tr);
+          });
+          table.append(thead, tbody);
+          existingMount.innerHTML = '';
+          existingMount.appendChild(table);
+        }
+
+        try { renderCards(); renderExisting(); } catch {}
+      })();
+    </script>
+  </body>
+  </html>
