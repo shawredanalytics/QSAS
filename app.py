@@ -226,6 +226,7 @@ def render_sidebar_once():
         # Primary navigation at the top
         go_home = st.button("QSAS Portal", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
+        go_product = st.button("Product based Quality Check", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -257,6 +258,10 @@ def render_sidebar_once():
     if go_reports:
         st.session_state["section"] = "QuXAT Reports"
         _set_query_section("QuXAT Reports")
+        st.rerun()
+    if go_product:
+        st.session_state["section"] = "Product based Quality Check"
+        _set_query_section("Product based Quality Check")
         st.rerun()
 
 _sync_section_from_query()
@@ -440,6 +445,9 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     html_reports = build_embedded_page("reports.html")
     st.components.v1.html(html_reports, height=3600, scrolling=False)
+elif section == "Product based Quality Check":
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")

@@ -366,6 +366,27 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Foods & Consumables — Product-based Quality Checklists
+    addBaselineIfMissing(
+      "Quality Check of Processed Milk",
+      "Product-based checklist to assess processed milk quality as per food safety standards (pasteurization, composition, hygiene, packaging, labeling, and cold chain).",
+      "Foods & Consumables",
+      [
+        { name: "Raw milk acceptance per SOP (sensory, acidity)", points: 5 },
+        { name: "Pasteurization time–temperature achieved and logged (e.g., 72°C/15s)", points: 10 },
+        { name: "Phosphatase test negative (pasteurization effectiveness)", points: 10 },
+        { name: "Homogenization pressure and effectiveness documented", points: 5 },
+        { name: "Fat% and SNF% within declared range; daily compositional tests", points: 10 },
+        { name: "Microbiological limits (TPC, coliforms) within standard", points: 10 },
+        { name: "Adulteration/contaminant screening (urea, starch, detergent) negative", points: 10 },
+        { name: "CIP and equipment hygiene logs completed", points: 5 },
+        { name: "Packaging integrity checks (seal, leaks) and visual inspection", points: 5 },
+        { name: "Batch coding/traceability implemented; records maintained", points: 5 },
+        { name: "Cold chain maintained: storage 2–4°C; dispatch temperature recorded", points: 10 },
+        { name: "Labeling compliance (FSSAI license, net quantity, MRP, date)", points: 5 },
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
