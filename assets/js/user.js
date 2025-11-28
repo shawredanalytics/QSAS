@@ -377,7 +377,8 @@
     if (!industryTableMount) return;
     const lists = getChecklists().filter(c => c.published !== false);
     const catSet = new Set(lists.map(c => deriveCategory(c.category)).filter(Boolean));
-    const categories = catSet.size ? Array.from(catSet).sort() : DEFAULT_CATEGORIES;
+    let categories = catSet.size ? Array.from(catSet).sort() : DEFAULT_CATEGORIES;
+    categories = ['Hospitals & Healthcare'].concat(categories.filter(c => c !== 'Hospitals & Healthcare'));
 
     const table = document.createElement("table");
     table.className = "table";
@@ -712,7 +713,8 @@
     trh.append(thCat, thName, thDesc, thCount, thAct); thead.appendChild(trh);
     const tbody = document.createElement("tbody");
     // Group
-    const categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || "Uncategorized"))).sort((a,b)=>a.localeCompare(b));
+    let categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || "Uncategorized"))).sort((a,b)=>a.localeCompare(b));
+    categories = ['Hospitals & Healthcare'].concat(categories.filter(c => c !== 'Hospitals & Healthcare'));
     const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
     lists.forEach(c => { const cat = deriveCategory(c.category) || "Uncategorized"; byCat.get(cat)?.push(c); });
     categories.forEach(cat => {

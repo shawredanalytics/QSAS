@@ -60,7 +60,8 @@
           const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
           cardsMount.innerHTML='';
           const categoriesRaw = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
-          const categories = categoriesRaw.length ? categoriesRaw : ['Hospitals & Healthcare','Schools','Colleges & Universities','Industrial & Manufacturing','Offices & Corporate','Public & Community Organizations','Travel & Transportation'];
+          let categories = categoriesRaw.length ? categoriesRaw : ['Hospitals & Healthcare','Schools','Colleges & Universities','Industrial & Manufacturing','Offices & Corporate','Public & Community Organizations','Travel & Transportation'];
+          categories = ['Hospitals & Healthcare'].concat(categories.filter(c => c !== 'Hospitals & Healthcare'));
           cardsEmpty.hidden = categories.length > 0;
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });

@@ -266,7 +266,8 @@
             byCat.get(cat).push(c);
           });
           // Sort categories and items
-          const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+          let sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+          sortedCats = ['Hospitals & Healthcare'].concat(sortedCats.filter(c => c !== 'Hospitals & Healthcare'));
           sortedCats.forEach(cat => {
             const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
             if (items.length === 0) {
@@ -317,7 +318,8 @@
               if (!byCat.has(cat)) byCat.set(cat, []);
               byCat.get(cat).push(c);
             });
-            const sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+            let sortedCats = Array.from(byCat.keys()).sort((a,b) => a.localeCompare(b));
+            sortedCats = ['Hospitals & Healthcare'].concat(sortedCats.filter(c => c !== 'Hospitals & Healthcare'));
             sortedCats.forEach(cat => {
               const items = (byCat.get(cat) || []).sort((a,b) => String(a.name).localeCompare(String(b.name)));
               const card = document.createElement('div');
