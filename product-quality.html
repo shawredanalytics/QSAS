@@ -7,9 +7,19 @@
   </head>
   <body>
     <main class="container wide">
-      <section class="card">
+      <section class="card hero-card">
         <h2>Product based Quality Check</h2>
-        <p class="hint">Create and publish product-specific quality checklists by category, then open them in Self Assessment.</p>
+        <p class="hint">Browse product checklists by category and start a self assessment. Create and publish new product-specific checklists using the builder below.</p>
+      </section>
+
+      <section class="card info">
+        <h3>Available Product Checklists</h3>
+        <div id="cardsMount" class="cards-grid"></div>
+        <div id="cardsEmpty" class="empty" hidden>No product checklists published yet.</div>
+      </section>
+
+      <section class="card">
+        <h3>Create New Product Checklist</h3>
         <form id="prodForm" class="form-grid">
           <label>
             Category
@@ -64,6 +74,29 @@
 
     <script>
       (function(){
+        function normalizeCategoryLabel(label){
+          const s = String(label || '').trim();
+          const map = {
+            'foods & consumables': 'Foods & Consumables',
+            'industrial & manufacturing': 'Industrial & Manufacturing',
+            'public & community organizations': 'Public & Community Organizations',
+            'hospitals & healthcare': 'Hospitals & Healthcare',
+            'schools': 'Schools',
+            'colleges & universities': 'Colleges & Universities',
+            'offices & corporate': 'Offices & Corporate',
+            'travel & transportation': 'Travel & Transportation',
+          };
+          const key = s.toLowerCase();
+          return map[key] || s || '';
+        }
+        function deriveCategory(raw){ return normalizeCategoryLabel(raw); }
+        function categoryColor(cat){
+          const palette = ['#FFF7ED','#F0FDF4','#F0F9FF','#FDF2F8','#F5F3FF','#EEF2FF','#FEF2F2','#ECFDF5','#FFFBEB','#F1F5F9'];
+          if (!cat) return '#F1F5F9';
+          let h = 0; const s = String(cat);
+          for (let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))>>>0; }
+          return palette[Math.abs(h)%palette.length];
+        }
         function el(tag, props, children){ const e = document.createElement(tag); if(props) Object.assign(e, props); if(children) children.forEach(c => e.appendChild(c)); return e; }
 
         const form = document.getElementById('prodForm');
@@ -75,6 +108,8 @@
         const addMetricBtn = document.getElementById('addMetricBtn');
         const openSelfBtn = document.getElementById('openSelfBtn');
         const existingMount = document.getElementById('existingProdLists');
+        const cardsMount = document.getElementById('cardsMount');
+        const cardsEmpty = document.getElementById('cardsEmpty');
 
         function addMetricRow(name = '', points = 5){
           const tr = document.createElement('tr'); tr.style.borderTop = '1px solid #eef1f6';
@@ -123,6 +158,29 @@
           try { const w = top.open(url, '_blank'); w && w.focus && w.focus(); } catch(e) { try { const w2 = window.open(url, '_blank'); w2 && w2.focus && w2.focus(); } catch(_){} }
         });
 
+        function renderCards(){
+          const lists = getChecklists().filter(c => c.published !== false);
+          if (!lists.length) { cardsMount.innerHTML=''; cardsEmpty.hidden = false; return; }
+          cardsEmpty.hidden = true; cardsMount.innerHTML='';
+          const categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
+          const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
+          lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });
+          categories.forEach(cat => {
+            const items = (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+            const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
+            const title = document.createElement('div'); title.className='item-title'; title.textContent = cat;
+            const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
+            const actions = document.createElement('div'); actions.className='actions';
+            items.forEach(c => {
+              const a = document.createElement('a'); a.href='#'; a.className='btn'; a.textContent=c.name;
+              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
+              actions.appendChild(a);
+            });
+            card.append(title, sub, actions);
+            cardsMount.appendChild(card);
+          });
+        }
+
         function renderExisting(){
           const lists = getChecklists().filter(c => c.published !== false);
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
@@ -152,7 +210,7 @@
           existingMount.appendChild(table);
         }
 
-        try { renderExisting(); } catch {}
+        try { renderCards(); renderExisting(); } catch {}
       })();
     </script>
   </body>
