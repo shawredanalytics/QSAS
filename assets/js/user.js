@@ -52,9 +52,9 @@
   const certEmailEl = document.getElementById("certEmail");
   const certChecklistEl = document.getElementById("certChecklist");
   const certDateEl = document.getElementById("certDate");
-  const certScoreEl = null;
-  const certPercentEl = null;
-  const certClassEl = null;
+  const certScoreEl = document.getElementById("certScore");
+  const certPercentEl = document.getElementById("certPercent");
+  const certClassEl = document.getElementById("certClass");
   const certChecklistDescEl = document.getElementById("certChecklistDesc");
   const certSelectedCountEl = document.getElementById("certSelectedCount");
   const certStatusEl = document.getElementById("certStatus");
@@ -554,10 +554,15 @@
     const metrics = currentChecklistId ? limitedMetrics(currentChecklistId) : [];
     const selected = metrics.filter(m => selections.has(m.id));
     const pm = perMetricPoints(metrics);
-    // scoring removed
-    if (scoreEl) scoreEl.textContent = "";
+    const score = Math.round(selected.length * pm);
+    const cls = classifyScore(score, 100, { metrics, selectedIds: selected.map(m=>m.id) });
+    if (scoreEl) scoreEl.textContent = String(score);
     if (countEl) countEl.textContent = String(selected.length);
-    // Classification & suggestions removed
+    try {
+      if (certScoreEl) { certScoreEl.textContent = String(score); certScoreEl.classList.add('animate'); setTimeout(()=>certScoreEl.classList.remove('animate'), 320); }
+      if (certPercentEl) certPercentEl.textContent = String(cls.percent || 0);
+      if (certClassEl) { certClassEl.textContent = cls.label || "—"; const b = clsToBadge(cls.label); certClassEl.className = ('badge ' + (b||'')); }
+    } catch(e) {}
     const show = !!currentEmail && !!currentChecklistId && metrics.length > 0;
     suggestionsEl.hidden = true;
     if (certEl) certEl.hidden = !show;
@@ -565,7 +570,6 @@
       suggestionsEl.innerHTML = "";
       // Certificate population
       // Animations on change
-      // scoring/classification outputs removed
       certEmailEl && (certEmailEl.textContent = currentEmail);
       const missing = "Details Not Provided by Self - Assessment User";
       certOrgEl && (certOrgEl.textContent = currentOrgName || missing);
@@ -579,7 +583,6 @@
       const prev = getAssessmentByEmail(currentEmail, currentChecklistId);
       certStatusEl && (certStatusEl.textContent = prev ? String(prev.status || "pending") : "Not submitted");
       updateActionButtonsVisibility();
-      // classification badge removed
     }
   }
 
