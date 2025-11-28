@@ -137,6 +137,7 @@
       const sp = new URLSearchParams(window.location.search);
       const qCat = sp.get('category');
       const qChk = sp.get('checklist');
+      const qCustomer = sp.get('customer');
       const short = sp.get('s');
       if (short) {
         try {
@@ -156,6 +157,7 @@
       if (qChk) {
         currentChecklistId = String(qChk);
       }
+      try { window.__QSAS_CUSTOMER_MODE = !!(qCustomer && String(qCustomer).trim() !== '' && String(qCustomer) !== '0'); } catch(e) {}
     } catch(e) {}
   })();
 
@@ -584,6 +586,12 @@
       certStatusEl && (certStatusEl.textContent = prev ? String(prev.status || "pending") : "Not submitted");
       updateActionButtonsVisibility();
     }
+    try {
+      if (gateMsgEl) {
+        const isCustomer = !!(window.__QSAS_CUSTOMER_MODE);
+        gateMsgEl.textContent = isCustomer ? 'As a customer, you can view and answer the checklist components to assess service quality.' : 'Please enter your email and start the assessment.';
+      }
+    } catch(e) {}
   }
 
   resetBtn.addEventListener("click", () => {

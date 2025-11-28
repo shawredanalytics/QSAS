@@ -9,7 +9,7 @@
     <main class="container wide">
       <section class="card hero-card">
         <h2>QuXAT based Self Check of Services</h2>
-        <p class="hint">Browse service-oriented checklists (excluding product quality) and start a self assessment.</p>
+        <p class="hint">Customers/Clients can use these self‑check checklists to assess the quality of services provided by organizations under each category.</p>
       </section>
 
       <section class="card info">
@@ -70,8 +70,8 @@
             const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
             const actions = document.createElement('div'); actions.className='actions';
             items.forEach(c => {
-              const a = document.createElement('a'); a.href='#'; a.className='btn'; a.textContent=c.name;
-              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
+              const a = document.createElement('a'); a.href='#'; a.className='btn btn-primary'; a.textContent='Start Customer Self Check';
+              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}&customer=1`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
               actions.appendChild(a);
             });
             card.append(title, sub, actions);
@@ -94,9 +94,9 @@
             const tdCount = document.createElement('td'); tdCount.style.padding = '8px';
             try { tdCount.textContent = String((getMetrics(c.id) || []).length); } catch(e){ tdCount.textContent = '—'; }
             const tdAct = document.createElement('td'); tdAct.style.padding = '8px';
-            const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Open';
+            const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Start Customer Self Check';
             btn.onclick = () => {
-              const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`;
+              const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}&customer=1`;
               try { const w = top.open(url, '_blank'); w && w.focus && w.focus(); } catch(e) { try { const w2 = window.open(url, '_blank'); w2 && w2.focus && w2.focus(); } catch(_){} }
             };
             tdAct.appendChild(btn);
