@@ -367,15 +367,13 @@ function ensureDefaults() {
     );
 
     // New: Foods & Consumables — Product-based Quality Checklists
-    addBaselineIfMissing(
+    const milkId = addBaselineIfMissing(
       "Quality Check of Processed Milk",
       "Product-based checklist to assess processed milk quality as per food safety standards (pasteurization, composition, hygiene, packaging, labeling, and cold chain).",
       "Foods & Consumables",
       [
-        { name: "Raw milk acceptance per SOP (sensory, acidity)", points: 5 },
         { name: "Pasteurization time–temperature achieved and logged (e.g., 72°C/15s)", points: 10 },
         { name: "Phosphatase test negative (pasteurization effectiveness)", points: 10 },
-        { name: "Homogenization pressure and effectiveness documented", points: 5 },
         { name: "Fat% and SNF% within declared range; daily compositional tests", points: 10 },
         { name: "Microbiological limits (TPC, coliforms) within standard", points: 10 },
         { name: "Adulteration/contaminant screening (urea, starch, detergent) negative", points: 10 },
@@ -386,6 +384,13 @@ function ensureDefaults() {
         { name: "Labeling compliance (FSSAI license, net quantity, MRP, date)", points: 5 },
       ]
     );
+    try {
+      const map = JSON.parse(localStorage.getItem(QSAS_KEYS.metricsByChecklist) || "{}") || {};
+      if (milkId && Array.isArray(map[milkId]) && map[milkId].length > 10) {
+        map[milkId] = map[milkId].slice(0, 10);
+        localStorage.setItem(QSAS_KEYS.metricsByChecklist, JSON.stringify(map));
+      }
+    } catch {}
 
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
