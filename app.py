@@ -226,7 +226,7 @@ def render_sidebar_once():
         # Primary navigation at the top
         go_home = st.button("QuXAT Organizational Self Assessment", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
-        go_product = st.button("Product based Quality Check", use_container_width=True)
+        go_product = st.button("Quality based Self Check of Products", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
         try:
