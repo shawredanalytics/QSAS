@@ -9,7 +9,7 @@
     <main class="container wide">
       <section class="card hero-card">
         <h2>Product based Quality Check</h2>
-        <p class="hint">Browse product checklists by category and start a self assessment. Create and publish new product-specific checklists using the builder below.</p>
+        <p class="hint">Browse product checklists by category and start a self assessment.</p>
       </section>
 
       <section class="card info">
@@ -18,53 +18,7 @@
         <div id="cardsEmpty" class="empty" hidden>No product checklists published yet.</div>
       </section>
 
-      <section class="card">
-        <h3>Create New Product Checklist</h3>
-        <form id="prodForm" class="form-grid">
-          <label>
-            Category
-            <input type="text" id="prodCategory" list="prodCategories" placeholder="e.g., Foods & Consumables" required />
-            <datalist id="prodCategories">
-              <option value="Foods & Consumables"></option>
-              <option value="Industrial & Manufacturing"></option>
-              <option value="Public & Community Organizations"></option>
-              <option value="Hospitals & Healthcare"></option>
-              <option value="Schools"></option>
-              <option value="Colleges & Universities"></option>
-              <option value="Offices & Corporate"></option>
-              <option value="Travel & Transportation"></option>
-            </datalist>
-          </label>
-          <label>
-            Product / Checklist Name
-            <input type="text" id="prodName" placeholder="e.g., Quality Check of Processed Milk" required />
-          </label>
-          <label>
-            Description
-            <input type="text" id="prodDesc" placeholder="Short description of the checklist" />
-          </label>
-          <div class="card info" style="grid-column: 1 / -1;">
-            <h3>Metrics</h3>
-            <table id="metricsTable" class="qsas-table" style="width:100%; border-collapse:collapse;">
-              <thead>
-                <tr>
-                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Metric</th>
-                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Points</th>
-                  <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Action</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <div class="actions" style="margin-top:8px;">
-              <button type="button" id="addMetricBtn" class="btn">Add Metric</button>
-            </div>
-          </div>
-          <div class="actions" style="grid-column: 1 / -1;">
-            <button type="submit" class="btn btn-primary">Save & Publish</button>
-            <button type="button" id="openSelfBtn" class="btn">Open in Self Assessment</button>
-          </div>
-        </form>
-      </section>
+      
 
       <section class="card">
         <h3>Existing Product Checklists</h3>
@@ -99,64 +53,10 @@
         }
         function el(tag, props, children){ const e = document.createElement(tag); if(props) Object.assign(e, props); if(children) children.forEach(c => e.appendChild(c)); return e; }
 
-        const form = document.getElementById('prodForm');
-        const nameEl = document.getElementById('prodName');
-        const catEl = document.getElementById('prodCategory');
-        const descEl = document.getElementById('prodDesc');
-        const table = document.getElementById('metricsTable');
-        const tbody = table.querySelector('tbody');
-        const addMetricBtn = document.getElementById('addMetricBtn');
-        const openSelfBtn = document.getElementById('openSelfBtn');
         const existingMount = document.getElementById('existingProdLists');
         const cardsMount = document.getElementById('cardsMount');
         const cardsEmpty = document.getElementById('cardsEmpty');
 
-        function addMetricRow(name = '', points = 5){
-          const tr = document.createElement('tr'); tr.style.borderTop = '1px solid #eef1f6';
-          const tdName = document.createElement('td'); tdName.style.padding = '8px';
-          const tdPts = document.createElement('td'); tdPts.style.padding = '8px';
-          const tdAct = document.createElement('td'); tdAct.style.padding = '8px';
-          const inpName = document.createElement('input'); inpName.type = 'text'; inpName.placeholder = 'Metric name'; inpName.value = name;
-          const inpPts = document.createElement('input'); inpPts.type = 'number'; inpPts.min = '0'; inpPts.max = '20'; inpPts.value = String(points);
-          const del = document.createElement('button'); del.className = 'btn'; del.textContent = 'Remove'; del.type = 'button'; del.onclick = () => tr.remove();
-          tdName.appendChild(inpName); tdPts.appendChild(inpPts); tdAct.appendChild(del);
-          tr.append(tdName, tdPts, tdAct); tbody.appendChild(tr);
-        }
-
-        addMetricBtn.addEventListener('click', () => addMetricRow());
-        // Prepopulate a few rows for convenience
-        ['Pasteurization time–temperature achieved', 'Phosphatase test negative'].forEach((n,i)=>addMetricRow(n, i?10:10));
-
-        form.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const name = (nameEl.value || '').trim();
-          const cat = (catEl.value || '').trim();
-          const desc = (descEl.value || '').trim();
-          if (!name || !cat) { alert('Please enter category and product/checklist name'); return; }
-          try {
-            const id = addChecklist(name, desc, cat);
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const metrics = rows.map(r => {
-              const nm = (r.querySelector('input[type="text"]').value || '').trim();
-              const pts = Number(r.querySelector('input[type="number"]').value || 0);
-              return nm ? { name: nm, points: pts } : null;
-            }).filter(Boolean);
-            metrics.forEach(m => addMetric(id, m.name, m.points));
-            publishChecklist(id);
-            alert('Checklist saved and published');
-            renderExisting();
-            openSelfBtn.dataset.checklistId = id;
-            openSelfBtn.dataset.category = cat;
-          } catch(err){ alert('Unable to save checklist'); }
-        });
-
-        openSelfBtn.addEventListener('click', () => {
-          const id = openSelfBtn.dataset.checklistId || '';
-          const cat = openSelfBtn.dataset.category || (catEl.value || '');
-          if (!id) { alert('Please save the checklist first'); return; }
-          const url = `/?section=User+Assessment&category=${encodeURIComponent(cat)}&checklist=${encodeURIComponent(id)}`;
-          try { const w = top.open(url, '_blank'); w && w.focus && w.focus(); } catch(e) { try { const w2 = window.open(url, '_blank'); w2 && w2.focus && w2.focus(); } catch(_){} }
-        });
 
         function renderCards(){
           const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Foods & Consumables');
