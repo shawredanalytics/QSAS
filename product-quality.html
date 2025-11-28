@@ -159,12 +159,12 @@
         });
 
         function renderCards(){
-          const lists = getChecklists().filter(c => c.published !== false);
+          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Foods & Consumables');
           if (!lists.length) { cardsMount.innerHTML=''; cardsEmpty.hidden = false; return; }
           cardsEmpty.hidden = true; cardsMount.innerHTML='';
-          const categories = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
+          const categories = ['Foods & Consumables'];
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
-          lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });
+          lists.forEach(c => { byCat.get('Foods & Consumables').push(c); });
           categories.forEach(cat => {
             const items = (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
             const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
@@ -173,7 +173,7 @@
             const actions = document.createElement('div'); actions.className='actions';
             items.forEach(c => {
               const a = document.createElement('a'); a.href='#'; a.className='btn'; a.textContent=c.name;
-              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
+              a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent('Foods & Consumables')}&checklist=${encodeURIComponent(c.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
               actions.appendChild(a);
             });
             card.append(title, sub, actions);
@@ -182,7 +182,7 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false);
+          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Foods & Consumables');
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
           const thead = document.createElement('thead'); const trh = document.createElement('tr');
           ['Category','Checklist','Description','Metrics','Action'].forEach(t => { const th = document.createElement('th'); th.textContent = t; th.style.textAlign = 'left'; th.style.padding = '8px'; th.style.borderBottom = '1px solid #e5e7eb'; trh.appendChild(th); });
