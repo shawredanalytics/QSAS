@@ -219,7 +219,7 @@ def _no_persist_bootstrap_js() -> str:
 def render_sidebar_once():
     # Initialize section
     if "section" not in st.session_state:
-        st.session_state["section"] = "Home"
+        st.session_state["section"] = "Product based Quality Check"
 
     with st.sidebar:
         st.subheader("Navigation")
@@ -388,26 +388,10 @@ def build_home_hero_html():
     return html
 
 if section == "Home":
-    # Embed Home and bootstrap registrations so verified cards persist across reloads
-    gh_regs = []
-    try:
-        gh_regs = _github_get_json("data/grid_registrations.json", default=[])
-        if not gh_regs:
-            owner_repo = _github_repo()
-            branch = "main"
-            try:
-                branch = _github_default_branch()
-            except Exception:
-                pass
-            url = f"https://raw.githubusercontent.com/{owner_repo}/{branch}/data/grid_registrations.json"
-            r = requests.get(url, timeout=10)
-            if r.status_code == 200:
-                gh_regs = json.loads(r.text)
-    except Exception:
-        gh_regs = []
-    gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");}}catch(e){{}}}})();"
-    html_index = build_embedded_page("index.html", bootstrap_js=gh_boot)
-    st.components.v1.html(html_index, height=6000, scrolling=True)
+    _set_query_section("Product based Quality Check")
+    st.session_state["section"] = "Product based Quality Check"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
