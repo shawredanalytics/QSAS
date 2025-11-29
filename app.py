@@ -224,7 +224,7 @@ def render_sidebar_once():
     with st.sidebar:
         st.subheader("Navigation")
         # Primary navigation at the top (ordered)
-        go_product = st.button("Quality based Self Check of Products", use_container_width=True)
+        go_product = st.button("Quality of Life - Self Assessment", use_container_width=True)
         go_services = st.button("QuXAT based Self Check of Services", use_container_width=True)
         go_home = st.button("QuXAT Organizational Self Assessment", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
