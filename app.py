@@ -257,8 +257,8 @@ def render_sidebar_once():
         _set_query_section("Quality based Self Check of Products & Services")
         st.rerun()
     if go_home:
-        st.session_state["section"] = "Home"
-        _set_query_section("Home")
+        st.session_state["section"] = "Organizational Self Assessment"
+        _set_query_section("Organizational Self Assessment")
         st.rerun()
     if go_admin:
         st.session_state["section"] = "Admin"
@@ -445,6 +445,9 @@ elif section == "QuXAT Reports":
 elif section in ("Product based Quality Check", "Quality of Life - Self Assessment"):
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
+elif section == "Organizational Self Assessment":
+    html_index = build_embedded_page("index.html")
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "Quality based Self Check of Products & Services":
     html_srv = build_embedded_page("service-quality.html")
     st.components.v1.html(html_srv, height=2600, scrolling=True)
