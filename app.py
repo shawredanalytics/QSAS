@@ -223,7 +223,10 @@ def render_sidebar_once():
 
     with st.sidebar:
         st.subheader("Navigation")
-        st.caption(f"QSAS Portal v{APP_VERSION}")
+        try:
+            st.caption(f"QSAS Portal v{globals().get('APP_VERSION', '3')}")
+        except Exception:
+            st.caption("QSAS Portal v3")
         # Primary navigation at the top (ordered)
         go_product = st.button("Quality of Life - Self Assessment", use_container_width=True)
         go_services = st.button("Quality based Self Check of Products & Services", use_container_width=True)
