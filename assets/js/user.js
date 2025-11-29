@@ -260,6 +260,7 @@
     "Public & Community Organizations",
     "Travel & Transportation",
     "Foods & Consumables",
+    "Pharmacy & Pharmaceuticals",
   ];
 
   // Light pastel color per category for visual differentiation
@@ -321,6 +322,11 @@
       "Airlines & Aviation",
       "Airports",
     ],
+    "Pharmacy & Pharmaceuticals": [
+      "Pharmacy Stores",
+      "Hospital Pharmacies",
+      "Pharmaceutical Distributors",
+    ],
   };
 
   function normalizeCategoryLabel(label) {
@@ -335,6 +341,7 @@
       "public & community organizations": "Public & Community Organizations",
       "travel & transportation": "Travel & Transportation",
       "foods & consumables": "Foods & Consumables",
+      "pharmacy & pharmaceuticals": "Pharmacy & Pharmaceuticals",
     };
     const key = s.toLowerCase();
     return map[key] || s || "";

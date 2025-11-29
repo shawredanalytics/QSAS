@@ -392,6 +392,25 @@ function ensureDefaults() {
       }
     } catch {}
 
+    // New: Pharmacy & Pharmaceuticals — Quality of Purchased Medicine
+    addBaselineIfMissing(
+      "Quality Check of Purchased Medicine",
+      "Customer checklist to verify the quality and compliance of a medicine obtained from a pharmacy store (packaging, labeling, prescription, storage, and traceability).",
+      "Pharmacy & Pharmaceuticals",
+      [
+        { name: "Outer packaging intact; no tampering/damage", points: 5 },
+        { name: "Expiry date clearly visible and valid", points: 10 },
+        { name: "Batch/Lot number and manufacturing date present", points: 10 },
+        { name: "Brand name, generic name, strength clearly labeled", points: 10 },
+        { name: "MRP and regulatory license details visible", points: 5 },
+        { name: "Schedule drug dispensed against valid prescription (if applicable)", points: 10 },
+        { name: "Cold chain medicines provided in chilled pack with storage guidance", points: 10 },
+        { name: "Tamper‑evident seal unbroken; strip/blister undamaged", points: 10 },
+        { name: "Pharmacy bill issued with pharmacy details and item list", points: 10 },
+        { name: "Adverse reaction reporting/info leaflet provided", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
