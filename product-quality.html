@@ -82,7 +82,7 @@
         function renderCards(){
           const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Work Life Balance');
           cardsMount.innerHTML='';
-          cardsEmpty.hidden = !lists.length;
+          cardsEmpty.hidden = lists.length > 0;
           const categories = ['Work Life Balance'];
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || c.category; if (byCat.has(cat)) byCat.get(cat).push(c); });
