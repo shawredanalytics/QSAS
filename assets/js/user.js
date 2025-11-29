@@ -265,24 +265,22 @@
 
   // Light pastel color per category for visual differentiation
   function categoryColor(cat) {
-    const palette = [
-      '#FFF7ED', // orange-50
-      '#F0FDF4', // green-50
-      '#F0F9FF', // sky-50
-      '#FDF2F8', // pink-50
-      '#F5F3FF', // violet-50
-      '#EEF2FF', // indigo-50
-      '#FEF2F2', // red-50
-      '#ECFDF5', // emerald-50
-      '#FFFBEB', // amber-50
-      '#F1F5F9'  // slate-100
-    ];
-    if (!cat) return '#F1F5F9';
-    let h = 0;
-    const s = String(cat);
-    for (let i = 0; i < s.length; i++) {
-      h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    }
+    const map = {
+      'Hospitals & Healthcare': '#FFF7ED',
+      'Schools': '#F0F9FF',
+      'Colleges & Universities': '#F5F3FF',
+      'Industrial & Manufacturing': '#ECFDF5',
+      'Offices & Corporate': '#FEF2F2',
+      'Public & Community Organizations': '#FFFBEB',
+      'Travel & Transportation': '#E0F2FE',
+      'Foods & Consumables': '#FDF2F8',
+      'Pharmacy & Pharmaceuticals': '#EEF2FF',
+    };
+    const m = map[String(cat || '').trim()];
+    if (m) return m;
+    const palette = ['#F0FDF4','#F0F9FF','#FDF2F8','#EEF2FF','#F1F5F9'];
+    let h = 0; const s = String(cat || '');
+    for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
     return palette[Math.abs(h) % palette.length];
   }
 
