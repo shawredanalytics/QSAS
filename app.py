@@ -454,7 +454,7 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     html_reports = build_embedded_page("reports.html")
     st.components.v1.html(html_reports, height=3600, scrolling=False)
-elif section == "Product based Quality Check":
+elif section in ("Product based Quality Check", "Quality of Life - Self Assessment"):
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Quality based Self Check of Products & Services":
