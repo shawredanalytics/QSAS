@@ -23,7 +23,7 @@
       <section class="card info">
         <h3>Available Quality of Life - Self Assessment Checklists</h3>
         <div id="cardsMount" class="cards-grid"></div>
-        <div id="cardsEmpty" class="empty" hidden>No product checklists published yet.</div>
+        <div id="cardsEmpty" class="empty" hidden>No checklists published yet.</div>
       </section>
 
       
@@ -63,6 +63,7 @@
             'Travel & Transportation': '#E0F2FE',
             'Foods & Consumables': '#FDF2F8',
             'Pharmacy & Pharmaceuticals': '#EEF2FF',
+            'Work Life Balance': '#FAF5FF',
           };
           const m = map[String(cat||'').trim()];
           if (m) return m;
@@ -79,10 +80,10 @@
 
 
         function renderCards(){
-          const lists = getChecklists().filter(c => c.published !== false && ['Foods & Consumables','Pharmacy & Pharmaceuticals'].includes(deriveCategory(c.category) || c.category));
+          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Work Life Balance');
           cardsMount.innerHTML='';
           cardsEmpty.hidden = !lists.length;
-          const categories = ['Hospitals & Healthcare','Foods & Consumables','Pharmacy & Pharmaceuticals'].filter((c,i,arr)=>['Foods & Consumables','Pharmacy & Pharmaceuticals'].includes(c));
+          const categories = ['Work Life Balance'];
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || c.category; if (byCat.has(cat)) byCat.get(cat).push(c); });
           categories.forEach(cat => {
@@ -102,7 +103,7 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false && ['Foods & Consumables','Pharmacy & Pharmaceuticals'].includes(deriveCategory(c.category) || c.category));
+          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Work Life Balance');
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
           const thead = document.createElement('thead'); const trh = document.createElement('tr');
           ['Category','Checklist','Description','Metrics','Action'].forEach(t => { const th = document.createElement('th'); th.textContent = t; th.style.textAlign = 'left'; th.style.padding = '8px'; th.style.borderBottom = '1px solid #e5e7eb'; trh.appendChild(th); });

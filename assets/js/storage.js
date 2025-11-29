@@ -411,6 +411,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Work Life Balance — Quality of Life Self Assessment
+    addBaselineIfMissing(
+      "Work Life Balance - Self Assessment",
+      "Self assessment to reflect on and improve personal work-life balance across time, health, boundaries, and relationships.",
+      "Work Life Balance",
+      [
+        { name: "Daily schedule includes planned breaks and recovery time", points: 10 },
+        { name: "Average sleep duration and quality are adequate", points: 10 },
+        { name: "Routine physical activity practiced weekly", points: 10 },
+        { name: "Clear boundaries for work hours (start/end) maintained", points: 10 },
+        { name: "Family/household time scheduled and honored", points: 10 },
+        { name: "Meaningful social engagement with friends/community", points: 10 },
+        { name: "Personal hobbies/creative pursuits practiced", points: 10 },
+        { name: "Stress management tools used (breathing, journaling)", points: 10 },
+        { name: "Digital detox practiced (limited screen time after hours)", points: 10 },
+        { name: "Workload is fair; escalation process used when overloaded", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",

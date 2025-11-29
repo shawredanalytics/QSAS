@@ -261,6 +261,7 @@
     "Travel & Transportation",
     "Foods & Consumables",
     "Pharmacy & Pharmaceuticals",
+    "Work Life Balance",
   ];
 
   // Light pastel color per category for visual differentiation
@@ -275,6 +276,7 @@
       'Travel & Transportation': '#E0F2FE',
       'Foods & Consumables': '#FDF2F8',
       'Pharmacy & Pharmaceuticals': '#EEF2FF',
+      'Work Life Balance': '#FAF5FF',
     };
     const m = map[String(cat || '').trim()];
     if (m) return m;
@@ -325,6 +327,11 @@
       "Hospital Pharmacies",
       "Pharmaceutical Distributors",
     ],
+    "Work Life Balance": [
+      "Individuals",
+      "Households",
+      "Communities",
+    ],
   };
 
   function normalizeCategoryLabel(label) {
@@ -340,6 +347,7 @@
       "travel & transportation": "Travel & Transportation",
       "foods & consumables": "Foods & Consumables",
       "pharmacy & pharmaceuticals": "Pharmacy & Pharmaceuticals",
+      "work life balance": "Work Life Balance",
     };
     const key = s.toLowerCase();
     return map[key] || s || "";
