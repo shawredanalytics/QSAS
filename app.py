@@ -238,14 +238,13 @@ def render_sidebar_once():
                     st.query_params.clear()
                 except Exception:
                     pass
-                st.query_params["section"] = "QuXAT Reports"
-                st.query_params["panel"] = "score"
+                st.query_params["section"] = "QuXAT Score Home"
             except Exception:
                 try:
-                    st.experimental_set_query_params(section="QuXAT Reports", panel="score")
+                    st.experimental_set_query_params(section="QuXAT Score Home")
                 except Exception:
                     pass
-            st.session_state["section"] = "QuXAT Reports"
+            st.session_state["section"] = "QuXAT Score Home"
 
         gap_choice = st.selectbox("Gap Assessment", ["Select…", "ISO 9001:2015"], index=0)
         if gap_choice == "ISO 9001:2015":
@@ -442,6 +441,9 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     html_reports = build_embedded_page("reports.html")
     st.components.v1.html(html_reports, height=3600, scrolling=False)
+elif section == "QuXAT Score Home":
+    html_score = build_embedded_page("quxat-score.html")
+    st.components.v1.html(html_score, height=2200, scrolling=False)
 elif section == "Quality of Life - Self Assessment":
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
