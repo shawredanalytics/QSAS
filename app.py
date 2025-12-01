@@ -222,7 +222,7 @@ def _no_persist_bootstrap_js() -> str:
 def render_sidebar_once():
     # Initialize section
     if "section" not in st.session_state:
-        st.session_state["section"] = "Organizational Self Assessment"
+        st.session_state["section"] = "Quality of Life - Self Assessment"
 
     with st.sidebar:
         st.subheader("Navigation")
@@ -230,9 +230,11 @@ def render_sidebar_once():
             st.caption(f"QSAS Portal v{globals().get('APP_VERSION', '3')}")
         except Exception:
             st.caption("QSAS Portal v3")
-        # Primary navigation at the top (ordered)
-        # Transform page removed
-        go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
+        # Primary navigation
+        quxat_score = st.button("QuXAT Score", type="primary", use_container_width=True)
+        if quxat_score:
+            st.session_state["section"] = "QuXAT Reports"
+            _set_query_section("QuXAT Reports")
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -245,10 +247,6 @@ def render_sidebar_once():
     # Organizational page removed
     # Transform page removed
     # Admin removed
-    if go_advisory:
-        st.session_state["section"] = "QuXAT Advisory Services"
-        _set_query_section("QuXAT Advisory Services")
-        st.rerun()
     # Reports removed
     # removed Product based Quality Check navigation
 
@@ -367,10 +365,10 @@ def build_home_hero_html():
     return html
 
 if section == "Home":
-    _set_query_section("Organizational Self Assessment")
-    st.session_state["section"] = "Organizational Self Assessment"
-    html_index = build_embedded_page("index.html", bootstrap_js="window.QSAS_PAGE='organizational';")
-    st.components.v1.html(html_index, height=6000, scrolling=True)
+    _set_query_section("Quality of Life - Self Assessment")
+    st.session_state["section"] = "Quality of Life - Self Assessment"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -413,7 +411,7 @@ elif section == "Register for the Healthcare Quality Grid":
     st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=3800, scrolling=False)
+    st.components.v1.html(html_adv, height=2200, scrolling=False)
 elif section == "QuXAT Reports":
     html_reports = build_embedded_page("reports.html")
     st.components.v1.html(html_reports, height=3600, scrolling=False)
@@ -421,17 +419,17 @@ elif section == "Quality of Life - Self Assessment":
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Organizational Self Assessment":
-    # Page removed — redirect to Advisory Services
-    _set_query_section("QuXAT Advisory Services")
-    st.session_state["section"] = "QuXAT Advisory Services"
-    html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=3800, scrolling=False)
+    # Page removed — redirect to Quality of Life
+    _set_query_section("Quality of Life - Self Assessment")
+    st.session_state["section"] = "Quality of Life - Self Assessment"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "QuXAT Quality Transformation":
-    # Page removed — redirect to Advisory Services
-    _set_query_section("QuXAT Advisory Services")
-    st.session_state["section"] = "QuXAT Advisory Services"
-    html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=3800, scrolling=False)
+    # Page removed — redirect to Quality of Life
+    _set_query_section("Quality of Life - Self Assessment")
+    st.session_state["section"] = "Quality of Life - Self Assessment"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Quality based Self Check of Products & Services":
     # Page removed — redirect to Organizational Self Assessment
     _set_query_section("Organizational Self Assessment")
@@ -461,16 +459,16 @@ elif section == "Gap Assessment":
     html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
 elif section == "Certificate":
-    _set_query_section("QuXAT Advisory Services")
-    st.session_state["section"] = "QuXAT Advisory Services"
-    html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=3800, scrolling=False)
+    _set_query_section("Quality of Life - Self Assessment")
+    st.session_state["section"] = "Quality of Life - Self Assessment"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 else:
-    # Default fallback: Advisory Services
-    _set_query_section("QuXAT Advisory Services")
-    st.session_state["section"] = "QuXAT Advisory Services"
-    html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=3800, scrolling=False)
+    # Default fallback: Quality of Life
+    _set_query_section("Quality of Life - Self Assessment")
+    st.session_state["section"] = "Quality of Life - Self Assessment"
+    html_prod = build_embedded_page("product-quality.html")
+    st.components.v1.html(html_prod, height=2600, scrolling=True)
 def _github_repo():
     return str(st.secrets.get("GITHUB_REPO") or "shawredanalytics/QSAS")
 
