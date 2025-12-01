@@ -572,7 +572,13 @@
     const selected = metrics.filter(m => selections.has(m.id));
     const pm = perMetricPoints(metrics);
     const score = Math.round(selected.length * pm);
-    const cls = classifyScore(score, 100, { metrics, selectedIds: selected.map(m=>m.id) });
+    let catForClass = "";
+    try {
+      const lists = getChecklists();
+      const cl = lists.find(c => c.id === currentChecklistId);
+      catForClass = deriveCategory(cl?.category) || cl?.category || "";
+    } catch(e) {}
+    const cls = classifyScore(score, 100, { metrics, selectedIds: selected.map(m=>m.id), category: catForClass });
     if (scoreEl) scoreEl.textContent = String(score);
     if (countEl) countEl.textContent = String(selected.length);
     try {

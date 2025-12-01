@@ -430,6 +430,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Work Life Balance — Identify Workplace Toxicity (self assessment)
+    addBaselineIfMissing(
+      "Identify Workplace Toxicity (Self Assessment)",
+      "Self assessment to identify toxic workplace behaviors and cultural risks impacting work-life balance and well-being.",
+      "Work Life Balance",
+      [
+        { name: "Frequent disrespectful communication or bullying observed", points: 10 },
+        { name: "Harassment policy awareness and reporting channels unclear", points: 10 },
+        { name: "Retaliation fears prevent speaking up", points: 10 },
+        { name: "Excessive workload/overtime with poor boundaries", points: 10 },
+        { name: "Pay/promotion transparency lacking; perceived unfairness", points: 10 },
+        { name: "Leadership accountability and feedback mechanisms weak", points: 10 },
+        { name: "Psychological safety low; ideas dismissed frequently", points: 10 },
+        { name: "Conflict resolution SOP absent or ineffective", points: 10 },
+        { name: "Mental health support/EAP access unavailable or unknown", points: 10 },
+        { name: "DEI practices weak; exclusionary behavior unchecked", points: 10 }
+      ]
+    );
+
     // New: Quality of Environment — Quality of Air to Breathe
     addBaselineIfMissing(
       "Quality of Air to Breathe",
@@ -847,41 +866,77 @@ function classifyScore(score, total, opts = {}) {
   const percent = total ? Math.round((score / total) * 100) : 0;
   let label = "";
   let suggestions = [];
-  // Healthcare Quality Improvement oriented bands
-  if (percent >= 90) {
-    label = "Exemplary Quality Improvement";
-    suggestions = [
-      "Sustain gains with quarterly Plan–Do–Study–Act cycles and executive reviews",
-      "Embed run charts and control charts in clinical dashboards",
-      "Advance to outcome measures such as readmissions, length of stay, and patient safety events",
-    ];
-  } else if (percent >= 75) {
-    label = "Strong Quality Improvement";
-    suggestions = [
-      "Standardize high-impact processes such as medication reconciliation and hand hygiene",
-      "Close gaps via targeted Plan–Do–Study–Act cycles and clinical audits",
-      "Strengthen incident reporting and root-cause analysis follow-through",
-    ];
-  } else if (percent >= 50) {
-    label = "Developing Quality Improvement";
-    suggestions = [
-      "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
-      "Launch staff training and competency checks for critical procedures",
-    ];
-  } else if (percent >= 25) {
-    label = "Early Quality Improvement";
-    suggestions = [
-      "Establish a Quality Improvement committee and routine huddles",
-      "Adopt baseline documentation including policies, pathways, and checklists",
-      "Start monthly audits on patient safety and infection control",
-    ];
+  const cat = String((opts && opts.category) || "").trim();
+  const qolCats = new Set(["Work Life Balance", "Quality of Environment"]);
+  if (qolCats.has(cat)) {
+    if (percent >= 85) {
+      label = "Healthy & Balanced";
+      suggestions = [
+        "Sustain routines; track weekly trends and keep personal boundaries",
+        "Share practices with family/community to reinforce habits",
+      ];
+    } else if (percent >= 70) {
+      label = "Stable";
+      suggestions = [
+        "Strengthen weak areas with small daily actions (sleep, activity, detox)",
+        "Schedule check-ins to keep momentum and avoid regressions",
+      ];
+    } else if (percent >= 50) {
+      label = "Needs Improvement";
+      suggestions = [
+        "Pick 2–3 focus items; set realistic weekly goals and reminders",
+        "Use simple tracking (journal/app) and reflect every weekend",
+      ];
+    } else if (percent >= 30) {
+      label = "At Risk";
+      suggestions = [
+        "Address highest-impact gaps first (air/water quality, sleep)",
+        "Ask for support; reduce toxic exposures and workload spikes",
+      ];
+    } else {
+      label = "Critical Attention";
+      suggestions = [
+        "Start with safety basics; seek professional guidance if needed",
+        "Create a 30-day recovery plan with daily micro-habits",
+      ];
+    }
   } else {
-    label = "Needs Immediate Improvement";
-    suggestions = [
-      "Address patient safety risks urgently, including falls and medication errors",
-      "Implement basic controls: hand hygiene, personal protective equipment, time-outs, and checklists",
-      "Create a 90-day QI roadmap with leadership accountability",
-    ];
+    // Healthcare Quality Improvement oriented bands (organizational)
+    if (percent >= 90) {
+      label = "Exemplary Quality Improvement";
+      suggestions = [
+        "Sustain gains with quarterly Plan–Do–Study–Act cycles and executive reviews",
+        "Embed run charts and control charts in clinical dashboards",
+        "Advance to outcome measures such as readmissions, length of stay, and patient safety events",
+      ];
+    } else if (percent >= 75) {
+      label = "Strong Quality Improvement";
+      suggestions = [
+        "Standardize high-impact processes such as medication reconciliation and hand hygiene",
+        "Close gaps via targeted Plan–Do–Study–Act cycles and clinical audits",
+        "Strengthen incident reporting and root-cause analysis follow-through",
+      ];
+    } else if (percent >= 50) {
+      label = "Developing Quality Improvement";
+      suggestions = [
+        "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
+        "Launch staff training and competency checks for critical procedures",
+      ];
+    } else if (percent >= 25) {
+      label = "Early Quality Improvement";
+      suggestions = [
+        "Establish a Quality Improvement committee and routine huddles",
+        "Adopt baseline documentation including policies, pathways, and checklists",
+        "Start monthly audits on patient safety and infection control",
+      ];
+    } else {
+      label = "Needs Immediate Improvement";
+      suggestions = [
+        "Address patient safety risks urgently, including falls and medication errors",
+        "Implement basic controls: hand hygiene, personal protective equipment, time-outs, and checklists",
+        "Create a 90-day QI roadmap with leadership accountability",
+      ];
+    }
   }
   // Gap-driven suggestions based on metric responses (ids not selected are gaps)
   try {
