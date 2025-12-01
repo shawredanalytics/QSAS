@@ -233,8 +233,19 @@ def render_sidebar_once():
         # Primary navigation
         quxat_score = st.button("QuXAT Score", type="primary", use_container_width=True)
         if quxat_score:
-            st.session_state["section"] = "QuXAT Reports"
-            _set_query_section("QuXAT Reports")
+            try:
+                try:
+                    st.query_params.clear()
+                except Exception:
+                    pass
+                st.query_params["section"] = "Gap Assessment"
+                st.query_params["plan"] = "ISO9001"
+            except Exception:
+                try:
+                    st.experimental_set_query_params(section="Gap Assessment", plan="ISO9001")
+                except Exception:
+                    pass
+            st.session_state["section"] = "Gap Assessment"
 
         # Visual separation, admin actions moved to the bottom area
         try:
