@@ -901,41 +901,140 @@ function classifyScore(score, total, opts = {}) {
       ];
     }
   } else {
-    // Healthcare Quality Improvement oriented bands (organizational)
-    if (percent >= 90) {
-      label = "Exemplary Quality Improvement";
-      suggestions = [
-        "Sustain gains with quarterly Plan–Do–Study–Act cycles and executive reviews",
-        "Embed run charts and control charts in clinical dashboards",
-        "Advance to outcome measures such as readmissions, length of stay, and patient safety events",
-      ];
-    } else if (percent >= 75) {
-      label = "Strong Quality Improvement";
-      suggestions = [
-        "Standardize high-impact processes such as medication reconciliation and hand hygiene",
-        "Close gaps via targeted Plan–Do–Study–Act cycles and clinical audits",
-        "Strengthen incident reporting and root-cause analysis follow-through",
-      ];
-    } else if (percent >= 50) {
-      label = "Developing Quality Improvement";
-      suggestions = [
-        "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
-        "Launch staff training and competency checks for critical procedures",
-      ];
-    } else if (percent >= 25) {
-      label = "Early Quality Improvement";
-      suggestions = [
-        "Establish a Quality Improvement committee and routine huddles",
-        "Adopt baseline documentation including policies, pathways, and checklists",
-        "Start monthly audits on patient safety and infection control",
-      ];
+    // Product quality categories — consumer-friendly labeling
+    if (cat === "Foods & Consumables") {
+      if (percent >= 85) {
+        label = "High Quality Product";
+        suggestions = [
+          "Maintain cold chain and check seals and batch coding",
+          "Verify labeling: license, net quantity, MRP, packed-on date",
+        ];
+      } else if (percent >= 70) {
+        label = "Good Quality Product";
+        suggestions = [
+          "Improve hygiene logs and compositional testing frequency",
+          "Strengthen packaging integrity checks and traceability",
+        ];
+      } else if (percent >= 50) {
+        label = "Acceptable Quality";
+        suggestions = [
+          "Address minor gaps: labeling completeness, leak checks, storage",
+          "Add periodic microbial/adulteration screening",
+        ];
+      } else if (percent >= 30) {
+        label = "Attention Needed";
+        suggestions = [
+          "Verify pasteurization/processing evidence and compositional ranges",
+          "Avoid use if seals/dates are suspect; prefer verified sources",
+        ];
+      } else {
+        label = "Unsafe — Do Not Use";
+        suggestions = [
+          "Discard and report; seek verified, sealed, in-date products",
+          "Escalate to vendor/regulator for noncompliance",
+        ];
+      }
+    } else if (cat === "Pharmacy & Pharmaceuticals") {
+      if (percent >= 85) {
+        label = "Safe & Compliant Medicine";
+        suggestions = [
+          "Keep receipts and batch details for traceability",
+          "Follow storage guidance; track refill/expiry dates",
+        ];
+      } else if (percent >= 70) {
+        label = "Compliant";
+        suggestions = [
+          "Ensure valid prescription for schedule drugs",
+          "Verify seals and vendor hygiene more consistently",
+        ];
+      } else if (percent >= 50) {
+        label = "Attention Needed";
+        suggestions = [
+          "Confirm batch/date info and labeling clarity",
+          "Use trusted pharmacies; avoid damaged packaging",
+        ];
+      } else if (percent >= 30) {
+        label = "Risk — Verify Prescription";
+        suggestions = [
+          "Avoid use until prescription and medicine details are verified",
+          "Report suspected noncompliance to authority/vendor",
+        ];
+      } else {
+        label = "Unsafe — Do Not Consume";
+        suggestions = [
+          "Do not consume; return and report to pharmacist/regulator",
+          "Seek medical advice if already consumed",
+        ];
+      }
+    } else if (cat === "Travel & Transportation") {
+      if (percent >= 85) {
+        label = "Highly Safe Travel";
+        suggestions = [
+          "Continue adherence to crew instructions and safety briefings",
+          "Share good practices with fellow travelers",
+        ];
+      } else if (percent >= 70) {
+        label = "Safe Travel";
+        suggestions = [
+          "Strengthen compliance during turbulence and exit-row rules",
+          "Improve baggage stowage and situational awareness",
+        ];
+      } else if (percent >= 50) {
+        label = "Moderately Safe";
+        suggestions = [
+          "Revisit safety briefing and seat-belt discipline",
+          "Avoid restricted items and follow screening protocols",
+        ];
+      } else if (percent >= 30) {
+        label = "Risky";
+        suggestions = [
+          "Prioritize seat-belt use and crew compliance",
+          "Learn emergency exit locations and procedures",
+        ];
+      } else {
+        label = "Unsafe";
+        suggestions = [
+          "Strictly follow safety guidance; seek assistance from crew",
+          "Avoid behaviors that increase personal and public risk",
+        ];
+      }
     } else {
-      label = "Needs Immediate Improvement";
-      suggestions = [
-        "Address patient safety risks urgently, including falls and medication errors",
-        "Implement basic controls: hand hygiene, personal protective equipment, time-outs, and checklists",
-        "Create a 90-day QI roadmap with leadership accountability",
-      ];
+      // Healthcare Quality Improvement oriented bands (organizational)
+      if (percent >= 90) {
+        label = "Exemplary Quality Improvement";
+        suggestions = [
+          "Sustain gains with quarterly Plan–Do–Study–Act cycles and executive reviews",
+          "Embed run charts and control charts in clinical dashboards",
+          "Advance to outcome measures such as readmissions, length of stay, and patient safety events",
+        ];
+      } else if (percent >= 75) {
+        label = "Strong Quality Improvement";
+        suggestions = [
+          "Standardize high-impact processes such as medication reconciliation and hand hygiene",
+          "Close gaps via targeted Plan–Do–Study–Act cycles and clinical audits",
+          "Strengthen incident reporting and root-cause analysis follow-through",
+        ];
+      } else if (percent >= 50) {
+        label = "Developing Quality Improvement";
+        suggestions = [
+          "Formalize standard operating procedures, assign process owners, and set measurable key performance indicators",
+          "Launch staff training and competency checks for critical procedures",
+        ];
+      } else if (percent >= 25) {
+        label = "Early Quality Improvement";
+        suggestions = [
+          "Establish a Quality Improvement committee and routine huddles",
+          "Adopt baseline documentation including policies, pathways, and checklists",
+          "Start monthly audits on patient safety and infection control",
+        ];
+      } else {
+        label = "Needs Immediate Improvement";
+        suggestions = [
+          "Address patient safety risks urgently, including falls and medication errors",
+          "Implement basic controls: hand hygiene, personal protective equipment, time-outs, and checklists",
+          "Create a 90-day QI roadmap with leadership accountability",
+        ];
+      }
     }
   }
   // Gap-driven suggestions based on metric responses (ids not selected are gaps)

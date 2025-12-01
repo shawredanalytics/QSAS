@@ -13,7 +13,7 @@
       </section>
 
       <section class="card info">
-        <h3>Available Service Checklists</h3>
+        <h3>Available Checklists</h3>
         <div id="cardsMount" class="cards-grid"></div>
         <div id="cardsEmpty" class="empty" hidden>No service checklists published yet.</div>
       </section>
@@ -42,6 +42,17 @@
           return map[key] || s || '';
         }
         function deriveCategory(raw){ return normalizeCategoryLabel(raw); }
+        function displayCategory(cat){
+          const m = {
+            'Industry & Offices': 'Food & Beverages',
+            'Offices & Corporate': 'Consumer Goods',
+            'Quality of Environment': 'Governmental Services',
+            'Schools': 'Communication Services',
+            'Colleges & Universities': 'Communication Services',
+            'Work Life Balance': 'Infrastructure & Real Estate',
+          };
+          return m[cat] || cat;
+        }
         function categoryColor(cat){
           const map = {
             'Hospitals & Healthcare': '#FFF7ED',
@@ -80,7 +91,7 @@
           categories.forEach(cat => {
             const items = [];
             const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
-            const title = document.createElement('div'); title.className='item-title'; title.textContent = cat;
+            const title = document.createElement('div'); title.className='item-title'; title.textContent = displayCategory(cat);
             const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = 'No checklists yet';
             const actions = document.createElement('div'); actions.className='actions';
             // No checklist actions — customer-centric lists will be added under each category later
