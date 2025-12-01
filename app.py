@@ -129,9 +129,9 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     <style>{css}</style>
     {assets_js}
     {version_js}
+    {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
     <script>{storage_js}</script>
     <script>{branding_js}</script>
-    {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
   </head>
   <body>
     {body}
