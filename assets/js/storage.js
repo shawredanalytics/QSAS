@@ -487,6 +487,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality of Environment — Compliance with Prevention & Control of Air Pollution Act, 1981
+    addBaselineIfMissing(
+      "Compliance with Prevention & Control of Air Pollution Act, 1981",
+      "Self assessment to review organizational compliance with the Air (Prevention and Control of Pollution) Act, 1981 and related rules/guidelines.",
+      "Quality of Environment",
+      [
+        { name: "Consent to Establish/Operate (CTE/CTO) obtained and valid", points: 10 },
+        { name: "Emission sources inventoried; applicable standards identified", points: 10 },
+        { name: "Stack/duct monitoring performed per schedule; reports filed", points: 10 },
+        { name: "Ambient air monitoring conducted where mandated", points: 10 },
+        { name: "Air pollution control equipment operated and maintained", points: 10 },
+        { name: "Logs of APC equipment performance and maintenance kept", points: 10 },
+        { name: "Fuel quality and usage records maintained (e.g., sulfur content)", points: 10 },
+        { name: "Complaints/public grievances recorded and addressed", points: 10 },
+        { name: "Regulatory reporting to SPCB/CPCB completed on time", points: 10 },
+        { name: "Emergency response SOPs for air incidents; drills conducted", points: 10 }
+      ]
+    );
+
     // New: Quality of Climate Initiatives — Quality of Climate Policy adopted by an Industry
     addBaselineIfMissing(
       "Quality of Climate Policy adopted by an Industry",
