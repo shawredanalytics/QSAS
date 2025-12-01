@@ -525,6 +525,28 @@ function ensureDefaults() {
       ]
     );
 
+    // Restore: QuXAT Quality Transformation — Organization Quality Transformation Tool (ISO 9001:2015 | QMS)
+    (function(){
+      const qmsId = addBaselineIfMissing(
+        "Organization Quality Transformation Tool - ISO 9001:2015 | Quality Management System (QMS)",
+        "Self assessment checklist to prepare an organization for ISO 9001:2015 QMS using QSAS format — policy, processes, documented information, customer focus, risk/opportunity, supplier control, KPIs, internal audit, and management review.",
+        "QuXAT Quality Transformation",
+        [
+          { name: "Quality policy established, communicated, and reviewed", points: 10 },
+          { name: "Context/Process map with inputs/outputs/owners/interactions", points: 10 },
+          { name: "Documented information control — procedures & records retained", points: 10 },
+          { name: "Customer requirements captured; satisfaction measured", points: 10 },
+          { name: "Risk & opportunity identified; actions tracked and closed", points: 10 },
+          { name: "Competence/awareness/training maintained for roles", points: 10 },
+          { name: "Supplier & outsourced service controls evaluated", points: 10 },
+          { name: "KPIs defined; monitoring & measurement performed", points: 10 },
+          { name: "Internal audits executed; nonconformities with CAPA", points: 10 },
+          { name: "Management review conducted; decisions/actions recorded", points: 10 }
+        ]
+      );
+      try { if (qmsId) publishChecklist(qmsId); } catch(e){}
+    })();
+
     // New: Quality of Climate Initiatives — Quality of Climate Policy adopted by an Industry
     addBaselineIfMissing(
       "Quality of Climate Policy adopted by an Industry",

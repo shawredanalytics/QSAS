@@ -83,22 +83,7 @@
         function isServiceCategory(cat){ const c = deriveCategory(cat) || cat; return c !== 'Foods & Consumables'; }
 
         function renderCards(){
-          const allowedCats = new Set(['Hospitals & Healthcare','Pharmacy & Pharmaceuticals','Colleges & Universities','Schools']);
-          const lists = getChecklists().filter(c => {
-            if (c.published === false) return false;
-            const cat = deriveCategory(c.category) || c.category;
-            if (!allowedCats.has(cat)) return false;
-            if (cat === 'Hospitals & Healthcare') {
-              return c.name === 'Quality of Healthcare Services Provided by a Hospital' || c.name === 'Quality of Diagnostic Services provided by a Diagnostic Lab';
-            }
-            if (cat === 'Pharmacy & Pharmaceuticals') {
-              return c.name === 'Quality Check of Pharmacy Products Provided by a Pharmacy';
-            }
-            if (cat === 'Colleges & Universities' || cat === 'Schools') {
-              return c.name === 'Compliance of communication services with ISO 9001 (Quality Management)';
-            }
-            return false;
-          });
+          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
           cardsMount.innerHTML='';
           const categoriesRaw = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
           let categories = categoriesRaw.length ? categoriesRaw : ['Hospitals & Healthcare','Schools','Colleges & Universities','Industrial & Manufacturing','Offices & Corporate','Public & Community Organizations','Travel & Transportation'];
@@ -107,10 +92,7 @@
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });
           categories.forEach(cat => {
-            let items = (cat === 'Hospitals & Healthcare' || cat === 'Pharmacy & Pharmaceuticals' || cat === 'Colleges & Universities' || cat === 'Schools') ? (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name))) : [];
-            if (cat === 'Colleges & Universities' || cat === 'Schools') {
-              items = items.filter(c => c.name === 'Compliance of communication services with ISO 9001 (Quality Management)');
-            }
+            const items = (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
             const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
             const title = document.createElement('div'); title.className='item-title'; title.textContent = displayCategory(cat);
             const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
@@ -126,19 +108,8 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false && ((deriveCategory(c.category) || c.category) === 'Hospitals & Healthcare' || (deriveCategory(c.category) || c.category) === 'Pharmacy & Pharmaceuticals' || (deriveCategory(c.category) || c.category) === 'Colleges & Universities' || (deriveCategory(c.category) || c.category) === 'Schools') && (
-            c.name === 'Quality of Healthcare Services Provided by a Hospital' ||
-            c.name === 'Quality of Diagnostic Services provided by a Diagnostic Lab' ||
-            c.name === 'Quality Check of Pharmacy Products Provided by a Pharmacy' ||
-            c.name === 'Compliance of communication services with ISO 9001 (Quality Management)'
-          ));
-          if (!lists.length) {
-            existingMount.innerHTML = '';
-            const note = document.createElement('p'); note.className = 'hint';
-            note.textContent = 'No customer‑centric checklists have been published yet under Hospitals & Healthcare.';
-            existingMount.appendChild(note);
-            return;
-          }
+          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
+          if (!lists.length) { existingMount.innerHTML = ''; cardsEmpty.hidden = false; return; }
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
           const thead = document.createElement('thead'); const trh = document.createElement('tr');
           ['Category','Checklist','Description','Metrics','Action'].forEach(t => { const th = document.createElement('th'); th.textContent = t; th.style.textAlign = 'left'; th.style.padding = '8px'; th.style.borderBottom = '1px solid #e5e7eb'; trh.appendChild(th); });

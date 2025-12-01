@@ -190,15 +190,6 @@
           const kpiGrid = document.getElementById('kpiGrid');
           let lists = [];
           try { lists = (getChecklists() || []).filter(c => c.published !== false); } catch(e) { lists = []; }
-          const ALLOWED_CATS = new Set([
-            'Hospitals & Healthcare',
-            'Schools',
-            'Colleges & Universities',
-            'Industrial & Manufacturing',
-            'Offices & Corporate',
-            'Public & Community Organizations',
-          ]);
-          lists = lists.filter(c => ALLOWED_CATS.has(deriveCategory(c)));
 
         // Distinct pastel colors per known category for strong separation
         function categoryColor(cat) {
@@ -249,8 +240,8 @@
 
         // Build unique categories from defaults plus any published checklists (derived if missing)
         const categories = Array.from(new Set([
-          ...DEFAULT_CATEGORIES.filter(c => ALLOWED_CATS.has(c)),
-          ...lists.map(deriveCategory).filter(cat => ALLOWED_CATS.has(cat)),
+          ...DEFAULT_CATEGORIES,
+          ...lists.map(deriveCategory).filter(Boolean),
         ]));
 
         function renderTable() {
