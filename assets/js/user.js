@@ -262,7 +262,6 @@
     "Foods & Consumables",
     "Pharmacy & Pharmaceuticals",
     "Work Life Balance",
-    "QuXAT Quality Transformation",
   ];
 
   // Light pastel color per category for visual differentiation
@@ -278,7 +277,6 @@
       'Foods & Consumables': '#FDF2F8',
       'Pharmacy & Pharmaceuticals': '#EEF2FF',
       'Work Life Balance': '#FAF5FF',
-      'QuXAT Quality Transformation': '#E6FFFA',
     };
     const m = map[String(cat || '').trim()];
     if (m) return m;
@@ -350,7 +348,6 @@
       "foods & consumables": "Foods & Consumables",
       "pharmacy & pharmaceuticals": "Pharmacy & Pharmaceuticals",
       "work life balance": "Work Life Balance",
-      "quxat quality transformation": "QuXAT Quality Transformation",
     };
     const key = s.toLowerCase();
     return map[key] || s || "";

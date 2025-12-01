@@ -231,7 +231,7 @@ def render_sidebar_once():
         except Exception:
             st.caption("QSAS Portal v3")
         # Primary navigation at the top (ordered)
-        go_transform = st.button("QuXAT Quality Transformation", use_container_width=True)
+        # Transform page removed
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
 
         # Visual separation, admin actions moved to the bottom area
@@ -250,10 +250,7 @@ def render_sidebar_once():
         go_reports = st.button("QuXAT Reports", use_container_width=True)
 
     # Organizational page removed
-    if go_transform:
-        st.session_state["section"] = "QuXAT Quality Transformation"
-        _set_query_section("QuXAT Quality Transformation")
-        st.rerun()
+    # Transform page removed
     if go_admin:
         st.session_state["section"] = "Admin"
         _set_query_section("Admin")
@@ -443,8 +440,11 @@ elif section == "Organizational Self Assessment":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=3800, scrolling=False)
 elif section == "QuXAT Quality Transformation":
-    html_tx = build_embedded_page("quality-transformation.html")
-    st.components.v1.html(html_tx, height=2400, scrolling=True)
+    # Page removed — redirect to Advisory Services
+    _set_query_section("QuXAT Advisory Services")
+    st.session_state["section"] = "QuXAT Advisory Services"
+    html_adv = build_embedded_page("advisory.html")
+    st.components.v1.html(html_adv, height=3800, scrolling=False)
 elif section == "Quality based Self Check of Products & Services":
     # Page removed — redirect to Organizational Self Assessment
     _set_query_section("Organizational Self Assessment")
