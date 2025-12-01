@@ -506,6 +506,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality of Climate Initiatives — Industry compliance with EMS (ISO 14001)
+    addBaselineIfMissing(
+      "Industry compliance with Environmental Management System (EMS) - ISO 14001",
+      "Self assessment to evaluate implementation of ISO 14001 EMS requirements across policy, planning, support, operation, performance evaluation, and improvement.",
+      "Quality of Climate Initiatives",
+      [
+        { name: "Environmental policy approved, communicated, and reviewed", points: 10 },
+        { name: "Environmental aspects/impacts identified; significant aspects controlled", points: 10 },
+        { name: "Legal and other requirements identified and complied", points: 10 },
+        { name: "Objectives and targets set; programs defined", points: 10 },
+        { name: "Roles, responsibilities, and competence established", points: 10 },
+        { name: "Awareness and communication processes implemented", points: 10 },
+        { name: "Operational controls and emergency preparedness documented", points: 10 },
+        { name: "Monitoring and measurement; internal audits performed", points: 10 },
+        { name: "Nonconformity and corrective actions tracked", points: 10 },
+        { name: "Management review conducted with actions and decisions", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
