@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import os
 import requests
+APP_VERSION = "3.1.0"
 
 ROOT = Path(__file__).parent
 
