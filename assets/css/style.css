@@ -39,6 +39,8 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .site-footer { border-top: 1px solid var(--border); color: var(--muted); text-align: center; }
 .site-footer a { color: var(--primary); text-decoration: none; border-bottom: 1px solid transparent; }
 .site-footer a:hover { border-bottom-color: var(--primary); }
+/* Hide footer across all pages as requested */
+.site-footer { display: none !important; }
 
 .container { max-width: 960px; margin: 8px auto; padding: 0 16px; }
 .container { margin-bottom: 0; }
