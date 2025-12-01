@@ -478,85 +478,12 @@ elif section == "Certificate":
     st.session_state["section"] = "Home"
     html_index = build_embedded_page("index.html")
     st.components.v1.html(html_index, height=4200, scrolling=False)
-else:  # Admin
-    # Render the embedded Admin page at the very top (no extra Streamlit headers)
-    if mode == "Local iframe":
-        st.components.v1.html(
-            '<iframe src="http://localhost:8000/admin.html" style="width:100%; height:100vh; border:none;"></iframe>',
-            height=1800,
-            scrolling=False,
-        )
-    else:
-        # Inject admin credentials and optional auto-login into embedded Admin page
-        js_bootstrap = """
-        (function(){{
-          try {{
-            const K={{u:'qsas_portal_username',p:'qsas_portal_password'}};
-            const u={u};
-            const p={p};
-            if (u) localStorage.setItem(K.u, u);
-            if (p) localStorage.setItem(K.p, p);
-          }} catch(e) {{}}
-          if ({auto_login}) {{
-            window.addEventListener('load', function(){{
-              try {{
-                const form = document.getElementById('loginForm');
-                const uEl = document.getElementById('adminUsername');
-                const pEl = document.getElementById('adminPassword');
-                if (uEl) uEl.value = {u};
-                if (pEl) pEl.value = {p};
-                if (form) form.dispatchEvent(new Event('submit', {{ bubbles: true, cancelable: true }}));
-              }} catch(e) {{}}
-            }});
-          }}
-        }})();
-        """.format(u=repr(admin_username), p=repr(admin_password), auto_login=str(bool(admin_auto_login)).lower())
-        # Handle GitHub sync via query params
-        qp2 = _get_query_params()
-        sync = qp2.get("sync")
-        payload_b64 = qp2.get("payload")
-        if isinstance(sync, list):
-            sync = sync[0] if sync else None
-        if isinstance(payload_b64, list):
-            payload_b64 = payload_b64[0] if payload_b64 else None
-        sync_msg = ""
-        if sync == "grid" and payload_b64:
-            try:
-                data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
-                ok = _github_put_json("data/grid_registrations.json", data_json, message="QSAS: sync grid registrations")
-                if not ok:
-                    ok2, code2 = _github_put_gist_json(data_json, filename="grid_registrations.json")
-                    sync_msg = "ok" if ok2 else f"error:{code2}"
-                else:
-                    try:
-                        _github_put_json("data/qsas_grid_registrations_backup.json", data_json, message="QSAS: update registrations backup")
-                    except Exception:
-                        pass
-                    sync_msg = "ok"
-            except Exception:
-                sync_msg = "error"
-        elif sync == "certs" and payload_b64:
-            try:
-                data_json = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
-                ok = _github_put_json("data/cert_issuances.json", data_json, message="QSAS: sync cert issuances")
-                if not ok:
-                    ok2, code2 = _github_put_gist_json(data_json, filename="cert_issuances.json")
-                    sync_msg = "ok" if ok2 else f"error:{code2}"
-                else:
-                    sync_msg = "ok"
-            except Exception:
-                sync_msg = "error"
-        # Bootstrap approved registrations from GitHub to localStorage for consistent cross-device data
-        gh_regs = []
-        try:
-            gh_regs = _github_get_json("data/grid_registrations.json", default=[])
-            if not gh_regs:
-                gh_regs = _github_get_gist_json(default=[])
-        except Exception:
-            gh_regs = _github_get_gist_json(default=[])
-        gh_boot = f"(function(){{try{{localStorage.setItem('qsas_grid_registrations'," + json.dumps(json.dumps(gh_regs)) + ");" + (f"localStorage.setItem('qsas_sync_result','{sync_msg}');" if sync_msg else "") + "}}catch(e){{}}}})();"
-        html_admin = build_embedded_page("admin.html", bootstrap_js=js_bootstrap + "\n" + gh_boot)
-        st.components.v1.html(html_admin, height=2200, scrolling=True)
+else:
+    # Default fallback: Advisory Services
+    _set_query_section("QuXAT Advisory Services")
+    st.session_state["section"] = "QuXAT Advisory Services"
+    html_adv = build_embedded_page("advisory.html")
+    st.components.v1.html(html_adv, height=3800, scrolling=False)
 def _github_repo():
     return str(st.secrets.get("GITHUB_REPO") or "shawredanalytics/QSAS")
 
