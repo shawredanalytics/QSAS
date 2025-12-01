@@ -550,6 +550,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Hospitals & Healthcare — Quality of Healthcare Services Provided by a Hospital
+    addBaselineIfMissing(
+      "Quality of Healthcare Services Provided by a Hospital",
+      "Comprehensive self assessment of hospital service quality across patient safety, clinical effectiveness, patient experience, access and continuity.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Patient identification and consent processes consistently followed", points: 10 },
+        { name: "Medication safety: reconciliation, labeling, high-alert protocols", points: 10 },
+        { name: "Safe surgery checklist practiced (time‑out/briefing/debriefing)", points: 10 },
+        { name: "Clinical documentation completeness and timeliness", points: 10 },
+        { name: "Incident reporting, root‑cause analysis, CAPA tracking", points: 10 },
+        { name: "Infection prevention: hand hygiene, isolation, sterilization", points: 10 },
+        { name: "Emergency readiness: drills (code blue, fire), equipment checks", points: 10 },
+        { name: "Access and continuity: appointment/bed management and referrals", points: 10 },
+        { name: "Patient experience: feedback collection and service recovery", points: 10 },
+        { name: "Outcome monitoring: readmission, LOS, adverse events", points: 10 }
+      ]
+    );
+
     // New: Hospital Medical Tourism Readiness
     addBaselineIfMissing(
       "Hospital - Medical Tourism Readiness",
