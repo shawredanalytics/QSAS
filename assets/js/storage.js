@@ -487,6 +487,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality of Climate Initiatives — Quality of Climate Policy adopted by an Industry
+    addBaselineIfMissing(
+      "Quality of Climate Policy adopted by an Industry",
+      "Self assessment to evaluate an organization’s climate policy, governance, targets, disclosures, and implementation actions.",
+      "Quality of Climate Initiatives",
+      [
+        { name: "Climate policy documented, approved, and disclosed", points: 10 },
+        { name: "Governance: leadership accountability and roles defined", points: 10 },
+        { name: "Targets: science‑based/sector‑aligned GHG reduction goals", points: 10 },
+        { name: "Inventory: scope 1/2/3 mapped with baseline year", points: 10 },
+        { name: "Action plan: energy efficiency and renewables roadmap", points: 10 },
+        { name: "Adaptation/resilience measures documented (risk assessment)", points: 10 },
+        { name: "Supplier/Value chain engagement on climate", points: 10 },
+        { name: "Disclosures: periodic reporting (e.g., TCFD/CDP)", points: 10 },
+        { name: "Training and awareness for employees", points: 10 },
+        { name: "Review & improvement: annual management review of progress", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
