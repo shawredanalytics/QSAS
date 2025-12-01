@@ -48,6 +48,7 @@
             'offices & corporate': 'Offices & Corporate',
             'travel & transportation': 'Travel & Transportation',
             'quality of environment': 'Quality of Environment',
+            'quality of climate initiatives': 'Quality of Climate Initiatives',
           };
           const key = s.toLowerCase();
           return map[key] || s || '';
@@ -66,6 +67,7 @@
             'Pharmacy & Pharmaceuticals': '#EEF2FF',
             'Work Life Balance': '#FAF5FF',
             'Quality of Environment': '#F7FEE7',
+            'Quality of Climate Initiatives': '#E6FFFA',
           };
           const m = map[String(cat||'').trim()];
           if (m) return m;
@@ -82,10 +84,10 @@
 
 
         function renderCards(){
-          const allowed = new Set(['Work Life Balance','Quality of Environment']);
+          const allowed = new Set(['Work Life Balance','Quality of Environment','Quality of Climate Initiatives']);
           const lists = getChecklists().filter(c => c.published !== false && allowed.has(deriveCategory(c.category) || c.category));
           cardsMount.innerHTML='';
-          const categories = ['Work Life Balance','Quality of Environment'];
+          const categories = ['Work Life Balance','Quality of Environment','Quality of Climate Initiatives'];
           cardsEmpty.hidden = categories.length > 0;
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || c.category; if (byCat.has(cat)) byCat.get(cat).push(c); });
@@ -106,7 +108,7 @@
         }
 
         function renderExisting(){
-          const allowed = new Set(['Work Life Balance','Quality of Environment']);
+          const allowed = new Set(['Work Life Balance','Quality of Environment','Quality of Climate Initiatives']);
           const lists = getChecklists().filter(c => c.published !== false && allowed.has(deriveCategory(c.category) || c.category));
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
           const thead = document.createElement('thead'); const trh = document.createElement('tr');
