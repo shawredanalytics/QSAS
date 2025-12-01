@@ -563,6 +563,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Communication Services — Compliance with ISO 9001 (Quality Management)
+    addBaselineIfMissing(
+      "Compliance of communication services with ISO 9001 (Quality Management)",
+      "Self assessment for communication service providers to evaluate ISO 9001 QMS implementation across policy, processes, customer focus, performance evaluation, and improvement.",
+      "Colleges & Universities",
+      [
+        { name: "Quality policy approved, communicated, and reviewed", points: 10 },
+        { name: "Process map defined; inputs/outputs/owners documented", points: 10 },
+        { name: "Customer requirements capture and satisfaction measurement", points: 10 },
+        { name: "Documented procedures under control; records retained", points: 10 },
+        { name: "Risk-based thinking implemented; actions tracked", points: 10 },
+        { name: "Competence, awareness, and training maintained", points: 10 },
+        { name: "Supplier/outsourced service controls evaluated", points: 10 },
+        { name: "Monitoring, measurement, and KPIs for service quality", points: 10 },
+        { name: "Internal audits conducted; CAPA effectiveness verified", points: 10 },
+        { name: "Management review decisions and continual improvement", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
