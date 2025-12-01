@@ -116,7 +116,8 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     except Exception:
         pass
     assets_js = f"<script>window.QSAS_ASSETS = {assets_map!r};</script>"
-    version_js = f"<script>window.QSAS_VERSION = '{APP_VERSION}';</script>"
+    ver = str(globals().get("APP_VERSION", os.environ.get("QSAS_VERSION") or "3"))
+    version_js = f"<script>window.QSAS_VERSION = '{ver}';</script>"
     # Compose embedded HTML
     composed = f"""
 <!DOCTYPE html>
