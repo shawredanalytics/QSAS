@@ -569,6 +569,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Hospitals & Healthcare — Quality of Diagnostic Services provided by a Diagnostic Lab
+    addBaselineIfMissing(
+      "Quality of Diagnostic Services provided by a Diagnostic Lab",
+      "Self assessment of medical laboratory diagnostic service quality across specimen integrity, QC/EQA, report validation, turnaround time, data integrity, and customer service.",
+      "Hospitals & Healthcare",
+      [
+        { name: "Specimen collection SOPs followed; ID verification documented", points: 10 },
+        { name: "Specimen labeling traceability (two identifiers, time)", points: 10 },
+        { name: "Specimen transport integrity; cold chain maintained where required", points: 10 },
+        { name: "Internal QC recorded and reviewed; corrective actions documented", points: 10 },
+        { name: "External quality assessment/proficiency testing participation", points: 10 },
+        { name: "Equipment calibration and preventive maintenance up to date", points: 10 },
+        { name: "Result validation SOPs; critical values communicated promptly", points: 10 },
+        { name: "Turnaround time targets defined and met; delays analyzed", points: 10 },
+        { name: "LIS/data integrity controls: access, backups, audit trails", points: 10 },
+        { name: "Customer service: feedback capture, complaint resolution logs", points: 10 }
+      ]
+    );
+
     // New: Hospital Medical Tourism Readiness
     addBaselineIfMissing(
       "Hospital - Medical Tourism Readiness",
