@@ -98,7 +98,7 @@
             const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
             const actions = document.createElement('div'); actions.className='actions';
             items.forEach(c => {
-              const a = document.createElement('a'); a.href='#'; a.className='btn btn-primary'; a.textContent='Start Customer Self Check';
+              const a = document.createElement('a'); a.href='#'; a.className='btn btn-primary'; a.textContent=String(c.name || 'Start Customer Self Check');
               a.onclick = (ev)=>{ ev.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent(deriveCategory(c.category) || c.category)}&checklist=${encodeURIComponent(c.id)}&customer=1`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(e){ try{ const w2=window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); }catch(_){} } };
               actions.appendChild(a);
             });
