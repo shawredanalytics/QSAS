@@ -449,6 +449,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality of Environment — Quality of Drinking Water
+    addBaselineIfMissing(
+      "Quality of Drinking Water",
+      "Self assessment checklist to review drinking water safety and taste (source, filtration, testing, storage, and hygiene).",
+      "Quality of Environment",
+      [
+        { name: "Source water clear; no unusual odor/taste", points: 10 },
+        { name: "Periodic testing of TDS/pH/hardness (lab or kit)", points: 10 },
+        { name: "TDS within desired range (e.g., 50–300 mg/L)", points: 10 },
+        { name: "pH within 6.5–8.5", points: 10 },
+        { name: "Microbial safety ensured (boiling/UV/RO) and spot tests", points: 10 },
+        { name: "Filter cartridges replaced per schedule", points: 10 },
+        { name: "RO/UV system serviced; remineralization considered for RO", points: 10 },
+        { name: "Storage containers cleaned weekly and covered", points: 10 },
+        { name: "Separate clean tap for drinking; avoid cross‑contamination", points: 10 },
+        { name: "Delivery cans/bottles verified (sealed, vendor hygiene)", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
