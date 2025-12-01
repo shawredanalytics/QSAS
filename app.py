@@ -222,7 +222,7 @@ def _no_persist_bootstrap_js() -> str:
 def render_sidebar_once():
     # Initialize section
     if "section" not in st.session_state:
-        st.session_state["section"] = "Product based Quality Check"
+        st.session_state["section"] = "Organizational Self Assessment"
 
     with st.sidebar:
         st.subheader("Navigation")
@@ -231,7 +231,6 @@ def render_sidebar_once():
         except Exception:
             st.caption("QSAS Portal v3")
         # Primary navigation at the top (ordered)
-        go_product = st.button("Quality of Life - Self Assessment", use_container_width=True)
         go_services = st.button("Quality based Self Check of Products & Services", use_container_width=True)
         go_home = st.button("QuXAT Organizational Self Assessment", use_container_width=True)
         go_transform = st.button("QuXAT Quality Transformation", use_container_width=True)
@@ -252,10 +251,6 @@ def render_sidebar_once():
         st.subheader("Reports")
         go_reports = st.button("QuXAT Reports", use_container_width=True)
 
-    if go_product:
-        st.session_state["section"] = "Product based Quality Check"
-        _set_query_section("Product based Quality Check")
-        st.rerun()
     if go_services:
         st.session_state["section"] = "Quality based Self Check of Products & Services"
         _set_query_section("Quality based Self Check of Products & Services")
@@ -280,10 +275,7 @@ def render_sidebar_once():
         st.session_state["section"] = "QuXAT Reports"
         _set_query_section("QuXAT Reports")
         st.rerun()
-    if go_product:
-        st.session_state["section"] = "Product based Quality Check"
-        _set_query_section("Product based Quality Check")
-        st.rerun()
+    # removed Product based Quality Check navigation
 
 _sync_section_from_query()
 render_sidebar_once()
@@ -400,10 +392,10 @@ def build_home_hero_html():
     return html
 
 if section == "Home":
-    _set_query_section("Product based Quality Check")
-    st.session_state["section"] = "Product based Quality Check"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
+    _set_query_section("Organizational Self Assessment")
+    st.session_state["section"] = "Organizational Self Assessment"
+    html_index = build_embedded_page("index.html", bootstrap_js="window.QSAS_PAGE='organizational';")
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -450,7 +442,7 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     html_reports = build_embedded_page("reports.html")
     st.components.v1.html(html_reports, height=3600, scrolling=False)
-elif section in ("Product based Quality Check", "Quality of Life - Self Assessment"):
+elif section == "Quality of Life - Self Assessment":
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Organizational Self Assessment":
