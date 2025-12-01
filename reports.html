@@ -37,6 +37,14 @@
           </div>
         </aside>
         <div>
+      <section id="scorePanel" class="card" hidden>
+        <h3>QuXAT Self Assessment Score — ISO 9001:2015</h3>
+        <p>An organization can undertake assessment in compliance to Quality and Safety Systems based on the ISO 9001: 2015 standards and obtain a self assessment report based on the compliance score obtained in the QuXAT Self Assessment Score card.</p>
+        <div class="actions" style="margin-top:8px;">
+          <a href="user.html" class="btn btn-primary" target="_blank">Start Self Assessment</a>
+          <a href="gap-assessment.html?plan=ISO9001" class="btn" target="_blank">Download QSAS Score Card</a>
+        </div>
+      </section>
       <section id="labsPanel" class="card">
         <h3>Diagnostic Laboratories — Reports</h3>
         <section class="card info">
@@ -221,8 +229,11 @@
           renderTable(hospTable, hospEmpty, hosp);
         }
 
-        tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
-        tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
+        const scorePanel = document.getElementById('scorePanel');
+        const quxatScoreBtn = document.getElementById('quxatScoreBtn');
+        tabLabs.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; quxatScoreBtn.className='btn'; });
+        tabHosp.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; quxatScoreBtn.className='btn'; });
+        quxatScoreBtn.addEventListener('click', () => { scorePanel.hidden = false; labsPanel.hidden = true; hospPanel.hidden = true; tabLabs.className='btn'; tabHosp.className='btn'; quxatScoreBtn.className='btn btn-primary'; });
         refresh();
 
         const ISO_METRICS = [
