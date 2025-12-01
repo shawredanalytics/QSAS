@@ -430,6 +430,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Quality of Environment — Quality of Air to Breathe
+    addBaselineIfMissing(
+      "Quality of Air to Breathe",
+      "Self assessment checklist to review indoor air quality factors for healthier living environments (PM levels, ventilation, filtration, humidity, and pollution controls).",
+      "Quality of Environment",
+      [
+        { name: "Outdoor AQI checked daily; activity adjusted on poor days", points: 10 },
+        { name: "Indoor PM2.5 below safe threshold (e.g., \u2264 35 \u00b5g/m\u00b3)", points: 10 },
+        { name: "Indoor PM10 below safe threshold (e.g., \u2264 50 \u00b5g/m\u00b3)", points: 10 },
+        { name: "CO2 levels generally \u2264 1000 ppm (adequate ventilation)", points: 10 },
+        { name: "Relative humidity maintained between 30% and 60%", points: 10 },
+        { name: "HEPA purifier present for key rooms; filters maintained", points: 10 },
+        { name: "Windows/vents used to promote cross ventilation when feasible", points: 10 },
+        { name: "No indoor smoking; incense/strong VOC sources minimized", points: 10 },
+        { name: "Regular cleaning to control dust; damp/mold spots remediated", points: 10 },
+        { name: "Kitchen/bath exhaust fans functional; pollutant sources controlled", points: 10 }
+      ]
+    );
+
     addBaselineIfMissing(
       "How Safe was your recent Air Travel ?",
       "Passenger self assessment of safety behaviors and compliance during a recent air journey.",
