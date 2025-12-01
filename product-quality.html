@@ -29,7 +29,7 @@
       
 
       <section class="card">
-        <h3>Existing Product Checklists</h3>
+        <h3>Existing Quality of Life - Self Assessment Checklists</h3>
         <div id="existingProdLists" class="table-container"></div>
       </section>
     </main>
@@ -106,7 +106,8 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Work Life Balance');
+          const allowed = new Set(['Work Life Balance','Quality of Environment']);
+          const lists = getChecklists().filter(c => c.published !== false && allowed.has(deriveCategory(c.category) || c.category));
           const table = document.createElement('table'); table.className = 'qsas-table'; table.style.width = '100%'; table.style.borderCollapse = 'collapse';
           const thead = document.createElement('thead'); const trh = document.createElement('tr');
           ['Category','Checklist','Description','Metrics','Action'].forEach(t => { const th = document.createElement('th'); th.textContent = t; th.style.textAlign = 'left'; th.style.padding = '8px'; th.style.borderBottom = '1px solid #e5e7eb'; trh.appendChild(th); });
