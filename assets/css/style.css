@@ -44,6 +44,8 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 
 .container { max-width: 960px; margin: 8px auto; padding: 0 16px; }
 .container { margin-bottom: 0; }
+main.container { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+body > :last-child { margin-bottom: 0 !important; }
 /* Admin full-width option */
 .container.wide { max-width: 100%; }
 /* Remove extra bottom space */
@@ -64,6 +66,7 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
   box-shadow: 0 6px 18px rgba(10,46,90,0.08);
 }
 .card:last-child { margin-bottom: 0; }
+main.container .card:last-child { margin-bottom: 8px; }
 @media (max-width: 640px) { .card { padding: 12px; } }
 
 /* Vibrant highlight card for selected checklist header */
