@@ -66,4 +66,25 @@
       try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { window.scrollTo(0, 0); }
     });
   } catch {}
+
+  // Global version banner (appears on all pages)
+  try {
+    if (!document.getElementById('qsasVersionBanner')) {
+      const container = document.querySelector('main.container') || document.body;
+      const wrap = document.createElement('section');
+      wrap.id = 'qsasVersionBanner';
+      wrap.className = 'card accent-slate';
+      const row = document.createElement('div'); row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '12px';
+      const img = document.createElement('img'); img.alt = 'QuXAT'; img.style.height = '28px'; img.style.borderRadius = '6px';
+      img.src = 'assets/QuXAT%20Logo%20Facebook.png'; img.onerror = () => { img.onerror = null; img.src = '/assets/QuXAT%20Logo%20Facebook.png'; };
+      const title = document.createElement('div'); title.style.fontWeight = '700'; title.textContent = `QuXAT QSAS — Ver ${String(window.QSAS_VERSION || '3')}`;
+      const sub = document.createElement('div'); sub.className = 'hint';
+      const d = new Date(); const dateStr = d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+      sub.textContent = `Quality & Safety Self Assessment • ${dateStr}`;
+      row.append(img, title);
+      wrap.append(row, sub);
+      // Insert near top (after existing logo/hero if present)
+      if (container.firstChild) { container.insertBefore(wrap, container.firstChild.nextSibling); } else { container.appendChild(wrap); }
+    }
+  } catch {}
 })();

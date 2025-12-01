@@ -116,6 +116,7 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     except Exception:
         pass
     assets_js = f"<script>window.QSAS_ASSETS = {assets_map!r};</script>"
+    version_js = f"<script>window.QSAS_VERSION = '{APP_VERSION}';</script>"
     # Compose embedded HTML
     composed = f"""
 <!DOCTYPE html>
@@ -126,6 +127,7 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     <title>QuXAT Embedded</title>
     <style>{css}</style>
     {assets_js}
+    {version_js}
     <script>{storage_js}</script>
     <script>{branding_js}</script>
     {f"<script>{bootstrap_js}</script>" if bootstrap_js else ""}
