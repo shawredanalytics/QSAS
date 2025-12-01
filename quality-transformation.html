@@ -35,9 +35,29 @@
           </div>
         </div>
       </section>
+
+      <section class="card">
+        <h3>Organization Quality Transformation Tool — ISO 9001:2015 | QMS</h3>
+        <p class="hint">Use this QSAS‑format self‑assessment to baseline readiness for ISO 9001:2015 and receive corrective actions aligned to the standard.</p>
+        <div class="actions">
+          <a id="openQmsBtn" href="#" class="btn btn-primary">Open QMS Readiness</a>
+        </div>
+      </section>
     </main>
+    <script src="assets/js/storage.js"></script>
     <script>
-      (function(){ try { /* placeholder for future interactive tools */ } catch(e){} })();
+      (function(){
+        try {
+          const lists = (getChecklists() || []);
+          const target = lists.find(c => String(c.name).trim() === 'Organization Quality Transformation Tool - ISO 9001:2015 | Quality Management System (QMS)' && String(c.category).trim() === 'QuXAT Quality Transformation');
+          const btn = document.getElementById('openQmsBtn');
+          if (target && btn) {
+            btn.onclick = (e) => { e.preventDefault(); const url = `/?section=User+Assessment&category=${encodeURIComponent('QuXAT Quality Transformation')}&checklist=${encodeURIComponent(target.id)}`; try { const w = top.open(url,'_blank'); w&&w.focus&&w.focus(); } catch(err) { try { const w2 = window.open(url,'_blank'); w2&&w2.focus&&w2.focus(); } catch(_){} } };
+          } else if (btn) {
+            btn.className = 'btn'; btn.textContent = 'Checklist not found'; btn.disabled = true;
+          }
+        } catch(e) {}
+      })();
     </script>
   </body>
   </html>
