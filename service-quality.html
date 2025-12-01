@@ -83,7 +83,7 @@
         function isServiceCategory(cat){ const c = deriveCategory(cat) || cat; return c !== 'Foods & Consumables'; }
 
         function renderCards(){
-          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category));
+          const lists = getChecklists().filter(c => c.published !== false && isServiceCategory(c.category) && (c.name === 'Quality of Healthcare Services Provided by a Hospital' || deriveCategory(c.category) !== 'Hospitals & Healthcare'));
           cardsMount.innerHTML='';
           const categoriesRaw = Array.from(new Set(lists.map(c => deriveCategory(c.category) || 'Uncategorized'))).sort((a,b)=>a.localeCompare(b));
           let categories = categoriesRaw.length ? categoriesRaw : ['Hospitals & Healthcare','Schools','Colleges & Universities','Industrial & Manufacturing','Offices & Corporate','Public & Community Organizations','Travel & Transportation'];
@@ -108,7 +108,7 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Hospitals & Healthcare');
+          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Hospitals & Healthcare' && c.name === 'Quality of Healthcare Services Provided by a Hospital');
           if (!lists.length) {
             existingMount.innerHTML = '';
             const note = document.createElement('p'); note.className = 'hint';
