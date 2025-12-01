@@ -411,6 +411,25 @@ function ensureDefaults() {
       ]
     );
 
+    // New: Pharmacy & Pharmaceuticals — Quality Check of Pharmacy Products Provided by a Pharmacy
+    addBaselineIfMissing(
+      "Quality Check of Pharmacy Products Provided by a Pharmacy",
+      "Self assessment to verify pharmacy product quality and compliance across packaging, labeling, prescription control, storage, traceability, and customer safety information.",
+      "Pharmacy & Pharmaceuticals",
+      [
+        { name: "Outer packaging intact; tamper‑evident seals unbroken", points: 10 },
+        { name: "Expiry date valid; manufacturing/batch details present", points: 10 },
+        { name: "Brand/generic name, strength, dosage clearly labeled", points: 10 },
+        { name: "MRP, license, and vendor details visible on bill/pack", points: 10 },
+        { name: "Schedule drugs dispensed against valid prescription", points: 10 },
+        { name: "Controlled substances record maintained per regulations", points: 10 },
+        { name: "Cold chain/storage conditions maintained and logged", points: 10 },
+        { name: "Recall/alerts monitored; suspect items quarantined", points: 10 },
+        { name: "Customer counseling and adverse reaction info provided", points: 10 },
+        { name: "Traceability: invoice, batch/lot retained for returns/complaints", points: 10 }
+      ]
+    );
+
     // New: Work Life Balance — Quality of Life Self Assessment
     addBaselineIfMissing(
       "Work Life Balance - Self Assessment",

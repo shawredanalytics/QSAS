@@ -96,7 +96,7 @@
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || 'Uncategorized'; byCat.get(cat).push(c); });
           categories.forEach(cat => {
-            const items = cat === 'Hospitals & Healthcare' ? (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name))) : [];
+            const items = (cat === 'Hospitals & Healthcare' || cat === 'Pharmacy & Pharmaceuticals') ? (byCat.get(cat) || []).sort((a,b)=>String(a.name).localeCompare(String(b.name))) : [];
             const card = document.createElement('div'); card.className='card info'; card.style.background=categoryColor(cat); card.style.border='1px solid #e5e7eb';
             const title = document.createElement('div'); title.className='item-title'; title.textContent = displayCategory(cat);
             const sub = document.createElement('div'); sub.className='item-sub'; sub.textContent = items.length ? `${items.length} checklist${items.length>1?'s':''} available` : 'No checklists yet';
@@ -112,9 +112,10 @@
         }
 
         function renderExisting(){
-          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Hospitals & Healthcare' && (
+          const lists = getChecklists().filter(c => c.published !== false && ((deriveCategory(c.category) || c.category) === 'Hospitals & Healthcare' || (deriveCategory(c.category) || c.category) === 'Pharmacy & Pharmaceuticals') && (
             c.name === 'Quality of Healthcare Services Provided by a Hospital' ||
-            c.name === 'Quality of Diagnostic Services provided by a Diagnostic Lab'
+            c.name === 'Quality of Diagnostic Services provided by a Diagnostic Lab' ||
+            c.name === 'Quality Check of Pharmacy Products Provided by a Pharmacy'
           ));
           if (!lists.length) {
             existingMount.innerHTML = '';
