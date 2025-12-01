@@ -33,11 +33,12 @@
       <div class="grid sidebar">
         <aside class="card vtabs">
           <div class="vtabs-list">
+            <button id="quxatScoreBtn" class="btn">QuXAT Score</button>
             <label>
-              QuXAT Score
-              <select id="quxatScoreSelect" class="btn">
+              Gap Assessment
+              <select id="gapAssessmentSelect" class="btn">
                 <option value="">Select…</option>
-                <option value="ISO9001">Gap Assessment — ISO 9001:2015</option>
+                <option value="ISO9001">ISO 9001:2015</option>
               </select>
             </label>
           </div>
@@ -236,10 +237,14 @@
         }
 
         const scorePanel = document.getElementById('scorePanel');
-        const quxatScoreSelect = document.getElementById('quxatScoreSelect');
-        tabLabs.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
-        tabHosp.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
-        quxatScoreSelect.addEventListener('change', () => { const v = quxatScoreSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
+        const quxatScoreBtn = document.getElementById('quxatScoreBtn');
+        const gapAssessmentSelect = document.getElementById('gapAssessmentSelect');
+        function showScore(){ scorePanel.hidden = false; labsPanel.hidden = true; hospPanel.hidden = true; tabLabs.className='btn'; tabHosp.className='btn'; quxatScoreBtn.className='btn btn-primary'; }
+        tabLabs.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; quxatScoreBtn.className='btn'; });
+        tabHosp.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; quxatScoreBtn.className='btn'; });
+        quxatScoreBtn.addEventListener('click', showScore);
+        gapAssessmentSelect.addEventListener('change', () => { const v = gapAssessmentSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
+        try { const p = new URLSearchParams(location.search).get('panel'); if (p === 'score') showScore(); } catch(e) {}
         refresh();
 
         const ISO_METRICS = [

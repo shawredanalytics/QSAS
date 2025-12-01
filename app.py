@@ -231,8 +231,24 @@ def render_sidebar_once():
         except Exception:
             st.caption("QSAS Portal v3")
         # Primary navigation
-        choice = st.selectbox("QuXAT Score", ["Select…", "Gap Assessment — ISO 9001:2015"], index=0)
-        if choice == "Gap Assessment — ISO 9001:2015":
+        quxat_score = st.button("QuXAT Score", type="primary", use_container_width=True)
+        if quxat_score:
+            try:
+                try:
+                    st.query_params.clear()
+                except Exception:
+                    pass
+                st.query_params["section"] = "QuXAT Reports"
+                st.query_params["panel"] = "score"
+            except Exception:
+                try:
+                    st.experimental_set_query_params(section="QuXAT Reports", panel="score")
+                except Exception:
+                    pass
+            st.session_state["section"] = "QuXAT Reports"
+
+        gap_choice = st.selectbox("Gap Assessment", ["Select…", "ISO 9001:2015"], index=0)
+        if gap_choice == "ISO 9001:2015":
             try:
                 try:
                     st.query_params.clear()
