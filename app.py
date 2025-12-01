@@ -240,29 +240,16 @@ def render_sidebar_once():
         except Exception:
             st.markdown("<hr>", unsafe_allow_html=True)
 
-        st.subheader("Admin")
-        go_admin = st.button("QSAS Admin Portal", use_container_width=True)
-        try:
-            st.divider()
-        except Exception:
-            st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("Reports")
-        go_reports = st.button("QuXAT Reports", use_container_width=True)
+        # Admin and Reports buttons removed
 
     # Organizational page removed
     # Transform page removed
-    if go_admin:
-        st.session_state["section"] = "Admin"
-        _set_query_section("Admin")
-        st.rerun()
+    # Admin removed
     if go_advisory:
         st.session_state["section"] = "QuXAT Advisory Services"
         _set_query_section("QuXAT Advisory Services")
         st.rerun()
-    if go_reports:
-        st.session_state["section"] = "QuXAT Reports"
-        _set_query_section("QuXAT Reports")
-        st.rerun()
+    # Reports removed
     # removed Product based Quality Check navigation
 
 _sync_section_from_query()
@@ -474,10 +461,10 @@ elif section == "Gap Assessment":
     html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
 elif section == "Certificate":
-    _set_query_section("Home")
-    st.session_state["section"] = "Home"
-    html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=4200, scrolling=False)
+    _set_query_section("QuXAT Advisory Services")
+    st.session_state["section"] = "QuXAT Advisory Services"
+    html_adv = build_embedded_page("advisory.html")
+    st.components.v1.html(html_adv, height=3800, scrolling=False)
 else:
     # Default fallback: Advisory Services
     _set_query_section("QuXAT Advisory Services")
