@@ -388,7 +388,7 @@
   // Render Industry Categories → Eligible Organizations table
   function renderIndustryInfoTable() {
     if (!industryTableMount) return;
-    const EXCLUDED_CATS = new Set(['Work Life Balance','Foods & Consumables','Pharmacy & Pharmaceuticals']);
+    const EXCLUDED_CATS = new Set(['Work Life Balance','Quality of Environment','Foods & Consumables','Pharmacy & Pharmaceuticals']);
     const lists = getChecklists().filter(c => c.published !== false && !EXCLUDED_CATS.has(deriveCategory(c.category)));
     const catSet = new Set(lists.map(c => deriveCategory(c.category)).filter(Boolean));
     let categories = catSet.size ? Array.from(catSet).sort() : DEFAULT_CATEGORIES;
@@ -704,7 +704,7 @@
   });
 
   function renderChecklistButtons() {
-    const EXCLUDED_CATS = new Set(['Work Life Balance','Foods & Consumables','Pharmacy & Pharmaceuticals']);
+    const EXCLUDED_CATS = new Set(['Work Life Balance','Quality of Environment','Foods & Consumables','Pharmacy & Pharmaceuticals']);
     let lists = getChecklists().filter(c => c.published !== false && !EXCLUDED_CATS.has(deriveCategory(c.category)));
     if (currentCategory) {
       lists = lists.filter(c => {

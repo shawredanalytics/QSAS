@@ -47,6 +47,7 @@
             'colleges & universities': 'Colleges & Universities',
             'offices & corporate': 'Offices & Corporate',
             'travel & transportation': 'Travel & Transportation',
+            'quality of environment': 'Quality of Environment',
           };
           const key = s.toLowerCase();
           return map[key] || s || '';
@@ -64,6 +65,7 @@
             'Foods & Consumables': '#FDF2F8',
             'Pharmacy & Pharmaceuticals': '#EEF2FF',
             'Work Life Balance': '#FAF5FF',
+            'Quality of Environment': '#F7FEE7',
           };
           const m = map[String(cat||'').trim()];
           if (m) return m;
@@ -80,10 +82,11 @@
 
 
         function renderCards(){
-          const lists = getChecklists().filter(c => c.published !== false && (deriveCategory(c.category) || c.category) === 'Work Life Balance');
+          const allowed = new Set(['Work Life Balance','Quality of Environment']);
+          const lists = getChecklists().filter(c => c.published !== false && allowed.has(deriveCategory(c.category) || c.category));
           cardsMount.innerHTML='';
-          cardsEmpty.hidden = lists.length > 0;
-          const categories = ['Work Life Balance'];
+          const categories = ['Work Life Balance','Quality of Environment'];
+          cardsEmpty.hidden = categories.length > 0;
           const byCat = new Map(); categories.forEach(cat => byCat.set(cat, []));
           lists.forEach(c => { const cat = deriveCategory(c.category) || c.category; if (byCat.has(cat)) byCat.get(cat).push(c); });
           categories.forEach(cat => {
