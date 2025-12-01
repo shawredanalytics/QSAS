@@ -231,7 +231,7 @@ def render_sidebar_once():
         except Exception:
             st.caption("QSAS Portal v3")
         # Primary navigation at the top (ordered)
-        go_services = st.button("Quality based Self Check of Products & Services", use_container_width=True)
+        # Services page removed
         go_home = st.button("QuXAT Organizational Self Assessment", use_container_width=True)
         go_transform = st.button("QuXAT Quality Transformation", use_container_width=True)
         go_advisory = st.button("QuXAT Advisory Services", use_container_width=True)
@@ -251,10 +251,7 @@ def render_sidebar_once():
         st.subheader("Reports")
         go_reports = st.button("QuXAT Reports", use_container_width=True)
 
-    if go_services:
-        st.session_state["section"] = "Quality based Self Check of Products & Services"
-        _set_query_section("Quality based Self Check of Products & Services")
-        st.rerun()
+    # Services page removed
     if go_home:
         st.session_state["section"] = "Organizational Self Assessment"
         _set_query_section("Organizational Self Assessment")
@@ -452,8 +449,11 @@ elif section == "QuXAT Quality Transformation":
     html_tx = build_embedded_page("quality-transformation.html")
     st.components.v1.html(html_tx, height=2400, scrolling=True)
 elif section == "Quality based Self Check of Products & Services":
-    html_srv = build_embedded_page("service-quality.html")
-    st.components.v1.html(html_srv, height=2600, scrolling=True)
+    # Page removed — redirect to Organizational Self Assessment
+    _set_query_section("Organizational Self Assessment")
+    st.session_state["section"] = "Organizational Self Assessment"
+    html_index = build_embedded_page("index.html", bootstrap_js="window.QSAS_PAGE='organizational';")
+    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")
