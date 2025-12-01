@@ -46,6 +46,13 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .container.wide { max-width: 100%; }
 /* Remove extra bottom space */
 .container.user { padding-bottom: 0; }
+@media (max-width: 640px) {
+  .container { padding: 0 12px; }
+  .hero-title { font-size: 1.6rem; }
+  .hero-subtitle { font-size: 0.98rem; padding: 0 4px; }
+  .hero { padding: 32px 0 28px; }
+  .hero-logo { height: 120px; }
+}
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -55,6 +62,7 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
   box-shadow: 0 6px 18px rgba(10,46,90,0.08);
 }
 .card:last-child { margin-bottom: 0; }
+@media (max-width: 640px) { .card { padding: 12px; } }
 
 /* Vibrant highlight card for selected checklist header */
 .highlight-card { 
@@ -76,6 +84,10 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .qsas-table thead th { background: #F8FAFF; }
 .card.accent-amber .qsas-table thead th { background: #FFF7ED; }
 .card.accent-violet .qsas-table thead th { background: #F5F3FF; }
+/* Mobile-friendly table: wrap in horizontal scroll */
+.table-container, .table-wrap { overflow-x: auto; }
+.qsas-table { width: 100%; min-width: 560px; }
+@media (max-width: 640px) { .qsas-table { min-width: 480px; } }
 .hero-card {
   background: linear-gradient(135deg, #f0f6ff, #fff5f7);
   border-color: #e1e7f5;
@@ -148,6 +160,8 @@ body.admin .brand-logo { background: transparent; border: none; padding: 0; }
 .card.info p { color: var(--muted); }
 
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions .btn { min-width: 120px; }
+@media (max-width: 640px) { .actions { gap: 6px; } .btn { padding: 9px 12px; } }
 .btn {
   display: inline-block;
   padding: 10px 14px;
@@ -313,6 +327,12 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 .certificate-score { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
 .certificate-score .score-value { font-size: 2.25rem; font-weight: 700; color: var(--primary); }
 .certificate-score .score-extra { display: grid; gap: 6px; }
+@media (max-width: 640px) {
+  .certificate-row { grid-template-columns: 1fr; }
+  .certificate-title { font-size: 1.1rem; }
+  .certificate-logo { height: 48px; }
+  .certificate-score .score-value { font-size: 1.9rem; }
+}
 
 /* Animations */
 .score-value.animate { animation: pop 300ms ease-out; }
@@ -397,6 +417,7 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
 .domain-desc { color: var(--muted); }
 @media (max-width: 860px) {
   .domain-table .domain-row { grid-template-columns: 1fr; }
+  .brand-logo { height: 96px; }
 }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 .kpi-card { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: 0 6px 18px rgba(10,46,90,0.06); display: grid; gap: 6px; }
