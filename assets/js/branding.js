@@ -69,6 +69,10 @@
 
   // Global version banner (appears on all pages)
   try {
+    if (String(window.QSAS_PAGE || '').toLowerCase() === 'organizational') {
+      // Skip global version banner on Organizational Self Assessment page
+      return;
+    }
     const verText = `QSAS Portal — ver ${String(window.QSAS_VERSION || '3')}`;
     let wrap = document.getElementById('qsasVersionBanner');
     if (!wrap) {

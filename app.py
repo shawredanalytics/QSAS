@@ -449,7 +449,7 @@ elif section in ("Product based Quality Check", "Quality of Life - Self Assessme
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
 elif section == "Organizational Self Assessment":
-    html_index = build_embedded_page("index.html")
+    html_index = build_embedded_page("index.html", bootstrap_js="window.QSAS_PAGE='organizational';")
     st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "Quality based Self Check of Products & Services":
     html_srv = build_embedded_page("service-quality.html")
