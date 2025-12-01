@@ -602,6 +602,7 @@ function ensureDefaults() {
       ]
     );
 
+
     addBaselineIfMissing(
       "How Safe is your Medical Diagnostic Laboratory ?",
       "Safety and quality readiness checklist for hospital-based medical diagnostic laboratories covering biosafety, QC/EQA, traceability, and emergency preparedness.",
@@ -1034,39 +1035,7 @@ function classifyScore(score, total, opts = {}) {
       ];
     }
   } else {
-    if (cat === "QuXAT Quality Transformation") {
-      if (percent >= 85) {
-        label = "QMS Ready — Advanced";
-        suggestions = [
-          "Sustain documented processes; deepen data‑driven reviews",
-          "Broaden supplier controls and optimize KPI dashboards",
-        ];
-      } else if (percent >= 70) {
-        label = "QMS Ready — Solid";
-        suggestions = [
-          "Strengthen risk/opportunity actions and internal audit cadence",
-          "Close documentation gaps and ensure record retention",
-        ];
-      } else if (percent >= 50) {
-        label = "QMS Developing";
-        suggestions = [
-          "Define process owners and standard procedures",
-          "Create KPI set; start monthly management reviews",
-        ];
-      } else if (percent >= 30) {
-        label = "QMS Early";
-        suggestions = [
-          "Draft quality policy and minimum procedures",
-          "Set up risk register and corrective action tracking",
-        ];
-      } else {
-        label = "QMS Critical";
-        suggestions = [
-          "Establish basic document control and process maps",
-          "Plan a 90‑day QMS activation with audits and reviews",
-        ];
-      }
-    } else {
+    {
     // Product quality categories — consumer-friendly labeling
     if (cat === "Foods & Consumables") {
       if (percent >= 85) {
