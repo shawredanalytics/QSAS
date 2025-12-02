@@ -173,6 +173,7 @@ def render_quxat_home():
     st.markdown(
         """
         <style>
+        .stImage img{display:block;margin:0 auto;}
         .qHero{background:linear-gradient(90deg,#fce7f3 0%,#e0f2fe 35%,#ecfccb 70%,#f5f3ff 100%);border:1px solid #e7ecf5;border-radius:12px;padding:22px;box-shadow:0 8px 22px rgba(10,46,90,.08) inset;margin-bottom:12px}
         .qRow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
         @media(max-width:860px){.qRow{grid-template-columns:1fr}}
