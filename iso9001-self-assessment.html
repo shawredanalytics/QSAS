@@ -30,15 +30,15 @@
         <h3>Assessment Checklist</h3>
         
 
-        <div class="card info accent-amber" id="instructions" style="margin-top:8px;">
-          <h3>How to complete this checklist</h3>
+        <details class="card info accent-amber collapsible" id="instructions" style="margin-top:8px;">
+          <summary>How to complete this checklist</summary>
           <ul class="list" style="margin-top:8px;">
             <li>Tick each practice that is implemented and sustained in your organization.</li>
             <li>Leave unticked if partially implemented or not in place — these appear as improvement actions.</li>
-            <li>Your QuXAT Score updates live in the bar at the bottom and in the score card shown below.</li>
+            <li>Your QuXAT Score updates live in the score card and summary below.</li>
             <li>Use the corrective actions section to plan and track improvement work.</li>
           </ul>
-        </div>
+        </details>
 
         <div id="itemsList" class="list checklist colorful"></div>
         <div class="score-row">
@@ -72,12 +72,16 @@
             </div>
           </div>
         </div>
-        <h3 style="margin-top:12px;">Relevant Corrective Actions</h3>
-        <ul id="actionsList" class="list"></ul>
+        <details class="collapsible" id="actionsDetails">
+          <summary id="actionsSummaryTitle">Relevant Corrective Actions</summary>
+          <ul id="actionsList" class="list"></ul>
+        </details>
       </section>
       <section id="sugs" class="card info accent-violet" hidden>
-        <h3>Suggested Improvements</h3>
-        <ul id="sugList" class="list"></ul>
+        <details class="collapsible" id="sugsDetails">
+          <summary id="sugsSummaryTitle">Suggested Improvements</summary>
+          <ul id="sugList" class="list"></ul>
+        </details>
       </section>
     </main>
 
@@ -112,6 +116,7 @@
         const scoreSelectedCount = document.getElementById('scoreSelectedCount');
         const certificateSubtitle = document.getElementById('certificateSubtitle');
         const actionsList = document.getElementById('actionsList');
+        const actionsSummaryTitle = document.getElementById('actionsSummaryTitle');
 
         const metrics = ISO_ITEMS.map((t, i) => ({ id: 'm'+i, name: t, points: Math.round(100 / ISO_ITEMS.length) }));
         const selected = new Set();
@@ -171,6 +176,8 @@
             const interpLi = document.createElement('li'); interpLi.textContent = interpretation; actionsList.appendChild(interpLi);
             const topMissing = (missing||[]).slice(0, 10);
             topMissing.forEach(s => { const li = document.createElement('li'); li.textContent = s; actionsList.appendChild(li); });
+            // Update summary titles with counts
+            try { actionsSummaryTitle.textContent = 'Relevant Corrective Actions (' + String(topMissing.length) + ')'; } catch(e){}
           } catch(e){}
         }
 
@@ -183,6 +190,7 @@
           if (missing.length){
             sugBox.hidden = false; sugList.innerHTML = '';
             missing.slice(0, 12).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
+            try { const el = document.getElementById('sugsSummaryTitle'); el && (el.textContent = 'Suggested Improvements (' + String(missing.length) + ')'); } catch(e){}
           } else { sugBox.hidden = true; sugList.innerHTML = ''; }
           try { window.__qsasLatest = { ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name) }; } catch(e) {}
           renderScoreCard(cls, score, (window.__qsasLatest||{}).selectedItems||[], missing);

@@ -227,6 +227,10 @@ main.container .card:last-child { margin-bottom: 8px; }
 .checklist.colorful li:nth-child(3n+2) { background: #e9fff3; }
 .checklist.colorful li:nth-child(3n+3) { background: #f3eaff; }
 
+/* Collapsible sections */
+.collapsible summary { font-weight: 600; cursor: pointer; padding: 6px 0; }
+.collapsible[open] summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+
 .checklist li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; }
 .checklist input[type=checkbox] { transform: scale(1.2); }
 /* Larger radios for easier selection */
