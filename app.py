@@ -354,6 +354,20 @@ def render_self_assessment():
     else:
         label = "Needs Immediate Improvement"
     st.markdown(f"<div class='saCard'><div class='scoreVal'>{score} / 100<span class='badge'>{label} ({score}%)</span></div><div style='color:#6b778c'>Selected practices: {selected} of {len(items)}</div></div>", unsafe_allow_html=True)
+    # Status card: Show QuXAT Score and classification clearly
+    status_desc = (
+        "Well‑established quality and safety practices with continual improvement." if score >= 90 else
+        "Strong systems in place; focus on audits and PDSA cycles to close minor gaps." if score >= 75 else
+        "Developing stage — formalize procedures, owners and KPIs with regular reviews." if score >= 50 else
+        "Early stage — establish governance, documentation and routine audits." if score >= 25 else
+        "Immediate improvement required — address safety‑critical gaps and define a 90‑day plan."
+    )
+    st.markdown(
+        f"<div class='saCard'><div class='qTitle'>QuXAT Score Status</div>"
+        f"<div style='margin-top:6px'>Your QuXAT Score: <strong>{score}/100</strong> — Classification: <span class='badge'>{label}</span></div>"
+        f"<div style='margin-top:6px;color:#6b778c'>{status_desc}</div></div>",
+        unsafe_allow_html=True,
+    )
     missing = [items[i] for i in range(len(items)) if not st.session_state.get(f"sa_{i}", False)]
     interp = (
         "Maintain standardization, periodic audits, and continuous improvement cycles." if score >= 90 else
