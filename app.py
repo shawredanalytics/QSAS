@@ -437,8 +437,6 @@ elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=3600, scrolling=False)
 elif section == "QuXAT Score Home":
     _safe_embed("quxat-score.html", height=2200, scrolling=False)
-elif section == "Quality of Life - Self Assessment":
-    _safe_embed("product-quality.html", height=2600, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")
