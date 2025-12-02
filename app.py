@@ -234,7 +234,7 @@ def _no_persist_bootstrap_js() -> str:
 def render_sidebar_once():
     # Initialize section
     if "section" not in st.session_state:
-        st.session_state["section"] = "Quality of Life - Self Assessment"
+        st.session_state["section"] = "QuXAT Score Home"
 
     with st.sidebar:
         st.subheader("Navigation")
@@ -401,9 +401,9 @@ def build_home_hero_html():
     return html
 
 if section == "Home":
-    _set_query_section("Quality of Life - Self Assessment")
-    st.session_state["section"] = "Quality of Life - Self Assessment"
-    _safe_embed("product-quality.html", height=2600, scrolling=True)
+    _set_query_section("QuXAT Score Home")
+    st.session_state["section"] = "QuXAT Score Home"
+    _safe_embed("quxat-score.html", height=2200, scrolling=False)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -461,7 +461,7 @@ elif section == "Gap Assessment":
     """ % (repr(plan))
     _safe_embed("gap-assessment.html", height=3800, scrolling=False, bootstrap_js=js_bootstrap)
 else:
-    # Default fallback: Quality of Life
-    _set_query_section("Quality of Life - Self Assessment")
-    st.session_state["section"] = "Quality of Life - Self Assessment"
-    _safe_embed("product-quality.html", height=2600, scrolling=True)
+    # Default fallback: QuXAT Score Home
+    _set_query_section("QuXAT Score Home")
+    st.session_state["section"] = "QuXAT Score Home"
+    _safe_embed("quxat-score.html", height=2200, scrolling=False)
