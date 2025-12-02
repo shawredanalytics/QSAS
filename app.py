@@ -154,6 +154,30 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
         except Exception:
             pass
 
+def render_quxat_home():
+    st.title("QuXAT Score — fast, credible, actionable")
+    st.write("Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.")
+    cta = st.button("Start Self Assessment", type="primary", use_container_width=True)
+    if cta:
+        _set_query_section("Self Assessment")
+        st.session_state["section"] = "Self Assessment"
+        try:
+            st.rerun()
+        except Exception:
+            pass
+    st.subheader("At a glance")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("**1. Assess**\n\nTick implemented practices across essential domains.")
+    with col2:
+        st.markdown("**2. Score**\n\nYour QuXAT Score updates live; classification is transparent.")
+    with col3:
+        st.markdown("**3. Improve**\n\nGet relevant suggestions and corrective actions to close gaps.")
+    st.subheader("How it works")
+    st.markdown("- Practical metrics — a concise checklist focused on high‑impact processes.\n- 100‑point score — each ‘Yes’ contributes equally; results group into maturity bands.\n- Guided actions — unticked practices appear as suggestions with corrective actions.")
+    st.subheader("Why it matters")
+    st.markdown("- Compliance readiness — demonstrate evidence and audit‑readiness.\n- Operational safety — reduce risk by strengthening safety‑critical practices.\n- Continuous improvement — track progress over time and sustain improvements.")
+
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
 # Hide Streamlit's default 3-dots app menu on the top-right
@@ -418,7 +442,7 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=1400, scrolling=True)
 elif section == "QuXAT Score Home":
-    _safe_embed("quxat-score.html", height=1200, scrolling=True)
+    render_quxat_home()
 elif section == "Self Assessment":
     _safe_embed("iso9001-self-assessment.html", height=1400, scrolling=True)
 else:
