@@ -44,14 +44,6 @@
           </div>
         </aside>
         <div>
-      <section id="scorePanel" class="card" hidden>
-        <h3>QuXAT Self Assessment Score — ISO 9001:2015</h3>
-        <p>An organization can undertake assessment in compliance to Quality and Safety Systems based on the ISO 9001: 2015 standards and obtain a self assessment report based on the compliance score obtained in the QuXAT Self Assessment Score card.</p>
-        <div class="actions" style="margin-top:8px;">
-          <a href="user.html" class="btn btn-primary" target="_blank">Start Self Assessment</a>
-          <a href="gap-assessment.html?plan=ISO9001" class="btn" target="_blank">Download QSAS Score Card</a>
-        </div>
-      </section>
       <section id="labsPanel" class="card">
         <h3>Diagnostic Laboratories — Reports</h3>
         <section class="card info">
@@ -236,15 +228,12 @@
           renderTable(hospTable, hospEmpty, hosp);
         }
 
-        const scorePanel = document.getElementById('scorePanel');
         const quxatScoreBtn = document.getElementById('quxatScoreBtn');
         const gapAssessmentSelect = document.getElementById('gapAssessmentSelect');
-        function showScore(){ scorePanel.hidden = false; labsPanel.hidden = true; hospPanel.hidden = true; tabLabs.className='btn'; tabHosp.className='btn'; quxatScoreBtn.className='btn btn-primary'; }
-        tabLabs.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; quxatScoreBtn.className='btn'; });
-        tabHosp.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; quxatScoreBtn.className='btn'; });
+        tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
+        tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
         quxatScoreBtn.addEventListener('click', () => { try { window.open('/?section=QuXAT%20Score%20Home', '_blank'); } catch(e) { location.href='/?section=QuXAT%20Score%20Home'; } });
         gapAssessmentSelect.addEventListener('change', () => { const v = gapAssessmentSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
-        try { const p = new URLSearchParams(location.search).get('panel'); if (p === 'score') showScore(); } catch(e) {}
         refresh();
 
         const ISO_METRICS = [

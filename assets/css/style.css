@@ -151,9 +151,6 @@ main.container .card:last-child { margin-bottom: 8px; }
 
 /* CTA button */
 .cta-row { display:flex; justify-content:center; margin-top: 12px; }
-.btn { display:inline-block; border-radius: 10px; padding: 10px 16px; font-weight: 600; text-decoration:none; transition: transform .12s ease, box-shadow .12s ease; }
-.btn-primary { background:#1f5eea; color:#fff; box-shadow: 0 8px 22px rgba(31,94,234,0.18); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(31,94,234,0.22); }
 
 /* Subtle animations */
 @keyframes fadeInUp { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: translateY(0);} }

@@ -424,18 +424,6 @@ elif section == "User Assessment":
     """.format(cat=repr(cat), chk=repr(chk))
     html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_user, height=2200, scrolling=True)
-elif section == "Healthcare Quality Grid":
-    # Page removed — redirect to Home
-    _set_query_section("Home")
-    st.session_state["section"] = "Home"
-    html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=6000, scrolling=True)
-elif section == "Register for the Healthcare Quality Grid":
-    # Page removed — redirect to Home
-    _set_query_section("Home")
-    st.session_state["section"] = "Home"
-    html_index = build_embedded_page("index.html")
-    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "QuXAT Advisory Services":
     html_adv = build_embedded_page("advisory.html")
     st.components.v1.html(html_adv, height=2200, scrolling=False)
@@ -448,24 +436,6 @@ elif section == "QuXAT Score Home":
 elif section == "Quality of Life - Self Assessment":
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
-elif section == "Organizational Self Assessment":
-    # Page removed — redirect to Quality of Life
-    _set_query_section("Quality of Life - Self Assessment")
-    st.session_state["section"] = "Quality of Life - Self Assessment"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
-elif section == "QuXAT Quality Transformation":
-    # Page removed — redirect to Quality of Life
-    _set_query_section("Quality of Life - Self Assessment")
-    st.session_state["section"] = "Quality of Life - Self Assessment"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
-elif section == "Quality based Self Check of Products & Services":
-    # Page removed — redirect to Organizational Self Assessment
-    _set_query_section("Organizational Self Assessment")
-    st.session_state["section"] = "Organizational Self Assessment"
-    html_index = build_embedded_page("index.html", bootstrap_js="window.QSAS_PAGE='organizational';")
-    st.components.v1.html(html_index, height=6000, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")
@@ -488,194 +458,9 @@ elif section == "Gap Assessment":
     """ % (repr(plan))
     html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
     st.components.v1.html(html_gap, height=3800, scrolling=False)
-elif section == "Certificate":
-    _set_query_section("Quality of Life - Self Assessment")
-    st.session_state["section"] = "Quality of Life - Self Assessment"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
 else:
     # Default fallback: Quality of Life
     _set_query_section("Quality of Life - Self Assessment")
     st.session_state["section"] = "Quality of Life - Self Assessment"
     html_prod = build_embedded_page("product-quality.html")
     st.components.v1.html(html_prod, height=2600, scrolling=True)
-def _github_repo():
-    return str(st.secrets.get("GITHUB_REPO") or "shawredanalytics/QSAS")
-
-def _github_token():
-    return str(st.secrets.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN") or "")
-
-def _gh_headers():
-    tok = _github_token()
-    h = {"Accept": "application/vnd.github+json"}
-    if tok:
-        h["Authorization"] = f"Bearer {tok}"
-    return h
-
-def _github_get_json(path: str, default=None):
-    try:
-        owner_repo = _github_repo()
-        url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
-        r = requests.get(url, headers=_gh_headers(), timeout=15)
-        if r.status_code == 200:
-            data = r.json()
-            content_b64 = data.get("content") or ""
-            content = base64.b64decode(content_b64).decode("utf-8")
-            return json.loads(content)
-        return default
-    except Exception:
-        return default
-
-def _github_default_branch():
-    try:
-        owner_repo = _github_repo()
-        url = f"https://api.github.com/repos/{owner_repo}"
-        r = requests.get(url, headers=_gh_headers(), timeout=15)
-        if r.status_code == 200:
-            return r.json().get("default_branch") or "main"
-    except Exception:
-        pass
-    return "main"
-
-def _github_gist_id():
-    try:
-        return str(st.secrets.get("GITHUB_GIST_ID") or os.environ.get("GITHUB_GIST_ID") or "")
-    except Exception:
-        return ""
-
-def _github_get_gist_json(default=None):
-    gid = _github_gist_id()
-    if not gid:
-        return default
-    try:
-        url = f"https://api.github.com/gists/{gid}"
-        r = requests.get(url, headers=_gh_headers(), timeout=15)
-        if r.status_code == 200:
-            data = r.json()
-            files = data.get("files") or {}
-            # Prefer a file named grid_registrations.json
-            file = files.get("grid_registrations.json") or next(iter(files.values()), None)
-            if file and file.get("content"):
-                return json.loads(file["content"])
-        return default
-    except Exception:
-        return default
-
-def _github_put_gist_json(payload: dict):
-    gid = _github_gist_id()
-    if not gid:
-        return False, "no_gist"
-    try:
-        url = f"https://api.github.com/gists/{gid}"
-        body = {
-            "files": {
-                "grid_registrations.json": {"content": json.dumps(payload, ensure_ascii=False, indent=2)}
-            }
-        }
-        r = requests.patch(url, headers=_gh_headers(), json=body, timeout=20)
-        return (r.status_code in (200, 201)), r.status_code
-    except Exception:
-        return False, "exception"
-
-def _github_put_json(path: str, payload: dict, message: str = "QSAS: sync grid registrations"):
-    owner_repo = _github_repo()
-    url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
-    # Get SHA if file exists
-    sha = None
-    try:
-        r0 = requests.get(url, headers=_gh_headers(), timeout=15)
-        if r0.status_code == 200:
-            sha = r0.json().get("sha")
-    except Exception:
-        pass
-    content = json.dumps(payload, ensure_ascii=False, indent=2)
-    body = {
-        "message": message,
-        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
-        "branch": _github_default_branch(),
-    }
-    if sha:
-        body["sha"] = sha
-    r = requests.put(url, headers=_gh_headers(), json=body, timeout=20)
-    return r.status_code in (200, 201)
- 
-def _load_nabl_labs():
-    try:
-        xlsx_path = ROOT / "data" / "NABL Accredited Labs 2025.xlsx"
-        if not xlsx_path.exists():
-            return []
-        # Try pandas first
-        try:
-            import pandas as pd  # type: ignore
-            df = pd.read_excel(str(xlsx_path))
-            records = []
-            for _, row in df.iterrows():
-                def pick(*names):
-                    for n in names:
-                        if n in df.columns and pd.notna(row[n]):
-                            return str(row[n])
-                    return ""
-                name = pick("Laboratory Name", "Lab Name", "Organization", "Name")
-                state = pick("State", "STATE")
-                district = pick("District", "DISTRICT")
-                city = pick("City", "Town", "CITY")
-                country = pick("Country") or "India"
-                email = pick("Email", "EMAIL")
-                reg_code = pick("Lab Code", "Code", "Accession No")
-                records.append({
-                    "orgName": name,
-                    "orgType": "Diagnostic Laboratory",
-                    "orgCountry": country,
-                    "orgState": state,
-                    "orgDistrict": district,
-                    "orgCity": city,
-                    "email": email,
-                    "regCode": reg_code or "NABL-LAB",
-                    "accreditations": ["NABL Accreditation"],
-                    "status": "approved",
-                    "selectedMetrics": [],
-                })
-            return records
-        except Exception:
-            pass
-        # Fallback to openpyxl
-        try:
-            from openpyxl import load_workbook  # type: ignore
-            wb = load_workbook(filename=str(xlsx_path), read_only=True)
-            ws = wb.active
-            headers = [str(c.value).strip() if c.value is not None else "" for c in next(ws.iter_rows(min_row=1, max_row=1))]
-            def get(row, *names):
-                for n in names:
-                    if n in headers:
-                        idx = headers.index(n)
-                        val = row[idx].value
-                        return str(val) if val is not None else ""
-                return ""
-            records = []
-            for row in ws.iter_rows(min_row=2):
-                name = get(row, "Laboratory Name", "Lab Name", "Organization", "Name")
-                state = get(row, "State", "STATE")
-                district = get(row, "District", "DISTRICT")
-                city = get(row, "City", "Town", "CITY")
-                country = get(row, "Country") or "India"
-                email = get(row, "Email", "EMAIL")
-                reg_code = get(row, "Lab Code", "Code", "Accession No")
-                records.append({
-                    "orgName": name,
-                    "orgType": "Diagnostic Laboratory",
-                    "orgCountry": country,
-                    "orgState": state,
-                    "orgDistrict": district,
-                    "orgCity": city,
-                    "email": email,
-                    "regCode": reg_code or "NABL-LAB",
-                    "accreditations": ["NABL Accreditation"],
-                    "status": "approved",
-                    "selectedMetrics": [],
-                })
-            return records
-        except Exception:
-            return []
-    except Exception:
-        return []
-APP_VERSION = "3"
