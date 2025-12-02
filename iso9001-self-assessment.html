@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ISO 9001:2015 — QuXAT Self Assessment</title>
+    <title>QuXAT Self Assessment</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -20,8 +20,8 @@
 
     <section class="hero">
       <div class="hero-inner">
-        <h1 class="hero-title">ISO 9001:2015 — QuXAT Self Assessment</h1>
-        <p class="hero-subtitle">Self‑assess your organization’s Quality Management System against ISO 9001:2015. View a QuXAT Self‑Assessment Score and download a score card.</p>
+        <h1 class="hero-title">QuXAT Self Assessment</h1>
+        <p class="hero-subtitle">Self‑assess your organization’s quality practices, view a QuXAT Self‑Assessment Score, and download a score card.</p>
       </div>
     </section>
 
@@ -167,7 +167,7 @@
           const phone = '916301237212';
           const latest = window.__qsasLatest || { ids: Array.from(selected) };
           const cnt = Array.isArray(latest.ids) ? latest.ids.length : (selected.size || 0);
-          const msg = 'Hello QuXAT Advisory Team, I need assistance for ISO 9001:2015 self assessment. Selected items: ' + cnt + '.';
+          const msg = 'Hello QuXAT Advisory Team, I need assistance for a self assessment. Selected items: ' + cnt + '.';
           alert('We will open WhatsApp to contact +91 6301237212. If WhatsApp is not installed, the web WhatsApp page will open.');
           const protoUrl = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(msg);
           const webUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
@@ -180,7 +180,7 @@
 
         function downloadScore(){
           const d = window.__qsasLatest || { ids: [], score: 0, cls: { label:'', percent:0 }, selectedItems: [], org: (orgInput&&orgInput.value)||'', email: (emailInput&&emailInput.value)||'' };
-          const title = 'QuXAT Self Assessment Score Card — ISO 9001:2015';
+          const title = 'QuXAT Self Assessment Score Card';
           try {
             const { jsPDF } = window.jspdf || {};
             if (jsPDF) {
@@ -198,7 +198,6 @@
               doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Organization', m, y); y += 18; doc.setFont('helvetica','normal'); doc.setFontSize(12);
               doc.text('Name:', m, y); doc.text(String(d.org||'-'), m+90, y); y += 16;
               doc.text('Email:', m, y); doc.text(String(d.email||'-'), m+90, y); y += 16;
-              doc.text('Standard:', m, y); doc.text('ISO 9001:2015', m+90, y); y += 16;
               doc.text('Date:', m, y); doc.text(new Date().toLocaleString(), m+90, y); y += 12;
               doc.setDrawColor(229,231,235); doc.setLineWidth(0.8); doc.line(m, y+6, m+mw, y+6); y += 18;
               const boxY = y; const boxH = 78; doc.setDrawColor(71,116,226); doc.setFillColor(246,249,255); doc.rect(m, boxY, mw, boxH, 'FD');
