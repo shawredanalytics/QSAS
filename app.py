@@ -285,6 +285,10 @@ def render_quxat_home():
         st.markdown("<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
 
 def render_self_assessment():
+    try:
+        st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
     st.markdown("""
     <style>
     .saCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,46,90,.06);margin-bottom:12px}
