@@ -211,6 +211,59 @@ def render_quxat_home():
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Practical metrics</div><div class='qSub'>Concise checklist focused on high‑impact processes.</div></div><div class='qCard'><div class='qTitle'>100‑point score</div><div class='qSub'>Each ‘Yes’ contributes equally; grouped into maturity bands.</div></div><div class='qCard'><div class='qTitle'>Guided actions</div><div class='qSub'>Unticked practices appear as suggestions with actions.</div></div></div>", unsafe_allow_html=True)
     st.subheader("Why it matters")
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
+
+    st.subheader("Clients")
+    clients_list = [
+        "Apollo Hospitals - Kakinada — Andhra Pradesh",
+        "Gayathri Vidya Parishad – Medical College, Visakhapatnam — Andhra Pradesh",
+        "Satya Scans & Diagnostics — Kakinada, Andhra Pradesh",
+        "Aparna Hospital and Scan Centre — Nalgonda, Telangana",
+        "Dolphin Diagnostic Services — Visakhapatnam, Andhra Pradesh",
+        "Orange Diagnostics — Vijayawada, Andhra Pradesh",
+        "Quality Care Lab — Kakinada, Andhra Pradesh",
+        "Satya Scans & Diagnostics — Rajahmundary, Andhra Pradesh",
+        "RK Scans & Diagnostics — Guntur, Andhra Pradesh",
+        "Viltis Diagnostics — Tirupathi",
+        "Dr Raghu Diagnostic Centre — Vizianagaram, Andhra Pradesh",
+        "Star Prime Diagnostic Laboratory — Visakhapatnam, Andhra Pradesh",
+        "Siddhartha Medical College — Vijayawada, Andhra Pradesh",
+        "Shraddha Global Hospital — Hyderabad, Telangana",
+        "Surya Diagnostics — Hyderabad, Telangana",
+        "Sai Vijaya Diagnostics — Ongole, Andhra Pradesh",
+        "Reliance Gadimoga – Health Centre — Kakinada, Andhra Pradesh",
+        "Sigma Diagnostics — Hyderabad, Telangana",
+        "Apple Scans & Diagnostics — Ongole, Andhra Pradesh",
+        "Swathi Imaging & Diagnostics — Kakinada, Andhra Pradesh",
+        "Refracto Eye Hospital — Nizamabad, Telangana",
+        "Refracto Eye Hospital — Suchitra, Hyderabad, Telangana",
+        "AMRL Diagnostic Laboratory — Srinagar, Jammu & Kashmir",
+        "KIMS Hospitals — Ananthapur, Visakhapatnam",
+        "Medithics Diagnostic Laboratory — Kolkata, West Bengal",
+        "Vision Hospitals — Kakinada",
+        "Apollo Hospitals - Kakinada — Kakinada",
+        "Shraddha Global – Diagnostic Laboratory — Hyderabad, Telangana",
+        "Gospel Diagnostics — Guntur, Andhra Pradesh",
+        "Aswini Diagnostics — Vijayawada, Andhra Pradesh",
+        "AIMS Hospital — Ongole, Andhra Pradesh",
+        "Sunshine Diagnostics — Kadapa, Andhra Pradesh",
+        "NIMRA Medical College Hospital — Vijayawada, Andhra Pradesh",
+        "Star Prime Diagnostic Laboratory — MVP Colony, Visakhapatnam, Andhra Pradesh",
+        "Unoclinix Diagnostic Laboratory — Visakhapatnam, Andhra Pradesh",
+        "Fastmed Diagnostics — Visakhapatnam, Andhra Pradesh",
+        "Dr. Elite Diagnostic Laboratory — Gopalpatnam, Visakhapatnam, Andhra Pradesh",
+        "Dr. Elite Diagnostic Laboratory — Dwarakanagar, Visakhapatnam, Andhra Pradesh",
+        "Dr. Elite Diagnostic Laboratory — Maharanipeta, Visakhapatnam, Andhra Pradesh",
+        "Dr. Elite Diagnostic Laboratory — Anakapalli, Visakhapatnam, Andhra Pradesh",
+        "Eyecon Care Hospital — Vijayawada, Andhra Pradesh",
+        "Galla Group of Hospitals — Tirupathi",
+        "Rohini Diagnostic Laboratory — Rajahmundary, Andhra Pradesh",
+        "Dolphin Diagnostic Services – Khammam — Khammam, Telangana",
+        "Sreelatha Hospital — Nalgonda, Telangana",
+        "Refracto Eye Hospital — Kondapur, Hyderabad",
+    ]
+    chips_html = "<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:center'>" + \
+        "".join([f"<span class='pill'>{c}</span>" for c in clients_list]) + "</div>"
+    st.markdown(chips_html, unsafe_allow_html=True)
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
