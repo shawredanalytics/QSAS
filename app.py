@@ -213,6 +213,7 @@ def render_quxat_home():
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
     st.subheader("Selected Clients")
     up = st.file_uploader("Upload client list", type=["docx","txt","csv"], accept_multiple_files=False)
+    paste = st.text_area("Or paste client names (comma or newline separated)", value="", height=120)
     clients = st.session_state.get("clients", [])
     if up is not None:
         name = (up.name or "").lower()
@@ -241,6 +242,19 @@ def render_quxat_home():
             except Exception:
                 st.info("Please upload a .txt or .csv list if .docx is not supported.")
         st.session_state["clients"] = clients
+    elif paste.strip():
+        try:
+            raw = paste.strip()
+            items = []
+            for line in raw.splitlines():
+                parts = [p.strip() for p in line.replace(";",", ").split(",")]
+                for p in parts:
+                    if p and p not in items:
+                        items.append(p)
+            clients = items
+            st.session_state["clients"] = clients
+        except Exception:
+            pass
     if not clients:
         clients = ["City Hospital","Metro Labs","GreenCare Clinic","Sunrise Diagnostics","Pioneer Health"]
     chips = "".join([f"<span class='pill' style='margin:4px 6px; display:inline-block;'>{c}</span>" for c in clients[:36]])
