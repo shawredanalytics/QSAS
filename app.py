@@ -163,6 +163,29 @@ def render_quxat_home():
         st.image("assets/QuXAT Logo Facebook.png", width=160)
     st.title("QuXAT Score — fast, credible, actionable")
     st.write("Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.")
+    st.markdown(
+        """
+        <style>
+        .qHero{background:linear-gradient(90deg,#fce7f3 0%,#e0f2fe 35%,#ecfccb 70%,#f5f3ff 100%);border:1px solid #e7ecf5;border-radius:12px;padding:22px;box-shadow:0 8px 22px rgba(10,46,90,.08) inset;margin-bottom:12px}
+        .qRow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+        @media(max-width:860px){.qRow{grid-template-columns:1fr}}
+        .qCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(10,46,90,.06)}
+        .qIcon{font-size:22px;margin-right:8px}
+        .qTitle{font-weight:600}
+        .qSub{color:#6b778c}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div class="qHero">
+          <div style="text-align:center;font-weight:600;font-size:18px;margin-bottom:6px">Get a credible view of quality and safety maturity</div>
+          <div style="text-align:center;color:#6b778c">Answer a concise checklist and see your QuXAT Score with guided actions</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     cta = st.button("Start Self Assessment", type="primary", use_container_width=True)
     if cta:
         _set_query_section("Self Assessment")
@@ -174,15 +197,15 @@ def render_quxat_home():
     st.subheader("At a glance")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("**1. Assess**\n\nTick implemented practices across essential domains.")
+        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>✅</span>Assess</div><div class='qSub'>Tick implemented practices across essential domains.</div></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("**2. Score**\n\nYour QuXAT Score updates live; classification is transparent.")
+        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>📊</span>Score</div><div class='qSub'>See a clear QuXAT Score with transparent classification.</div></div>", unsafe_allow_html=True)
     with col3:
-        st.markdown("**3. Improve**\n\nGet relevant suggestions and corrective actions to close gaps.")
+        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>🔧</span>Improve</div><div class='qSub'>Act on relevant suggestions and corrective actions.</div></div>", unsafe_allow_html=True)
     st.subheader("How it works")
-    st.markdown("- Practical metrics — a concise checklist focused on high‑impact processes.\n- 100‑point score — each ‘Yes’ contributes equally; results group into maturity bands.\n- Guided actions — unticked practices appear as suggestions with corrective actions.")
+    st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Practical metrics</div><div class='qSub'>Concise checklist focused on high‑impact processes.</div></div><div class='qCard'><div class='qTitle'>100‑point score</div><div class='qSub'>Each ‘Yes’ contributes equally; grouped into maturity bands.</div></div><div class='qCard'><div class='qTitle'>Guided actions</div><div class='qSub'>Unticked practices appear as suggestions with actions.</div></div></div>", unsafe_allow_html=True)
     st.subheader("Why it matters")
-    st.markdown("- Compliance readiness — demonstrate evidence and audit‑readiness.\n- Operational safety — reduce risk by strengthening safety‑critical practices.\n- Continuous improvement — track progress over time and sustain improvements.")
+    st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
