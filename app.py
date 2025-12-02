@@ -143,6 +143,17 @@ def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
 """
     return composed
 
+def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str = ""):
+    try:
+        html = build_embedded_page(html_rel, bootstrap_js=bootstrap_js)
+        st.components.v1.html(html, height=height, scrolling=scrolling)
+    except Exception:
+        try:
+            st.error("Unable to load page. Please reload.")
+            st.components.v1.html("<html><body><div>Loading…</div></body></html>", height=600, scrolling=True)
+        except Exception:
+            pass
+
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
 # Hide Streamlit's default 3-dots app menu on the top-right
@@ -392,8 +403,7 @@ def build_home_hero_html():
 if section == "Home":
     _set_query_section("Quality of Life - Self Assessment")
     st.session_state["section"] = "Quality of Life - Self Assessment"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
+    _safe_embed("product-quality.html", height=2600, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -420,20 +430,15 @@ elif section == "User Assessment":
       }} catch(e) {{}}
     }})();
     """.format(cat=repr(cat), chk=repr(chk))
-    html_user = build_embedded_page("user.html", bootstrap_js=js_bootstrap)
-    st.components.v1.html(html_user, height=2200, scrolling=True)
+    _safe_embed("user.html", height=2200, scrolling=True, bootstrap_js=js_bootstrap)
 elif section == "QuXAT Advisory Services":
-    html_adv = build_embedded_page("advisory.html")
-    st.components.v1.html(html_adv, height=2200, scrolling=False)
+    _safe_embed("advisory.html", height=2200, scrolling=False)
 elif section == "QuXAT Reports":
-    html_reports = build_embedded_page("reports.html")
-    st.components.v1.html(html_reports, height=3600, scrolling=False)
+    _safe_embed("reports.html", height=3600, scrolling=False)
 elif section == "QuXAT Score Home":
-    html_score = build_embedded_page("quxat-score.html")
-    st.components.v1.html(html_score, height=2200, scrolling=False)
+    _safe_embed("quxat-score.html", height=2200, scrolling=False)
 elif section == "Quality of Life - Self Assessment":
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
+    _safe_embed("product-quality.html", height=2600, scrolling=True)
 elif section == "Gap Assessment":
     qp = _get_query_params()
     raw_plan = qp.get("plan")
@@ -454,11 +459,9 @@ elif section == "Gap Assessment":
       } catch(e) {}
     })();
     """ % (repr(plan))
-    html_gap = build_embedded_page("gap-assessment.html", bootstrap_js=js_bootstrap)
-    st.components.v1.html(html_gap, height=3800, scrolling=False)
+    _safe_embed("gap-assessment.html", height=3800, scrolling=False, bootstrap_js=js_bootstrap)
 else:
     # Default fallback: Quality of Life
     _set_query_section("Quality of Life - Self Assessment")
     st.session_state["section"] = "Quality of Life - Self Assessment"
-    html_prod = build_embedded_page("product-quality.html")
-    st.components.v1.html(html_prod, height=2600, scrolling=True)
+    _safe_embed("product-quality.html", height=2600, scrolling=True)
