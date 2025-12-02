@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   </head>
   <body>
     <header class="site-header logo-only">
@@ -22,6 +23,9 @@
       <div class="hero-inner">
         <h1 class="hero-title" id="gapTitle">Gap Assessment</h1>
         <p class="hero-subtitle" id="gapSub">Obtain Expert Quality Accreditation / Certification guidance to achieve and sustain organizations Quality Accreditations / Certifications. Choose a gap assessment process to understand the gaps to be complied to obtain Quality Accreditations/Certifications. Contact the concerned advisory team for advisory support and guidance.</p>
+        <div class="actions" style="justify-content:center; margin-top: 10px;">
+          <button id="goQuxatScoreBtn" class="btn btn-primary">QuXAT Score</button>
+        </div>
       </div>
     </section>
 
@@ -29,29 +33,49 @@
       <section class="card">
         <h3 id="planHeader">Plan</h3>
         <p class="hint" id="planDesc"></p>
+        <div class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:8px; margin-bottom:8px;">
+          <label class="card"><div class="item-title">Organization Name</div><input type="text" id="orgInput" placeholder="e.g., City Hospital" /></label>
+          <label class="card"><div class="item-title">Contact Email</div><input type="email" id="emailInput" placeholder="e.g., user@example.com" /></label>
+        </div>
+        <div class="card info" id="liveInline" style="margin-top:8px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <strong>Live Score</strong>
+            <span id="liveScoreInline">0 / 100</span>
+            <span id="liveClassInline" class="badge">—</span>
+            <span id="livePercentInline" class="badge">0%</span>
+          </div>
+        </div>
         <div id="gapList" class="list checklist"></div>
         <div class="score-row">
           <div class="actions">
             <button id="resetBtn" class="btn btn-warning">Reset Selection</button>
             <button id="downloadReportBtn" class="btn btn-slate">Download Gap Assessment Report</button>
+            <button id="downloadScoreBtn" class="btn btn-primary">Download QSAS Score Card</button>
             <button id="whatsappBtn" class="btn btn-success">Contact Advisory Team</button>
           </div>
         </div>
-        <div class="card certificate">
-          <div class="certificate-body">
-            <div class="certificate-rows">
-              <div class="certificate-row"><span class="label">Selected Items</span><span id="selCount">0</span></div>
-              <div class="certificate-row"><span class="label">Preparedness Score</span><span id="prepScore">0</span></div>
-              <div class="certificate-row"><span class="label">Classification</span><span id="prepClass">—</span></div>
-            </div>
-          </div>
-        </div>
+        
         <div id="sugs" class="card info" hidden>
           <h3>Suggested Improvements</h3>
           <ul id="sugList" class="list"></ul>
         </div>
       </section>
     </main>
+
+    <div id="liveScoreBar" class="score-bar" aria-live="polite">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <strong>Live Score</strong>
+          <span id="liveScoreText">0 / 100</span>
+          <span id="liveClass" class="badge">—</span>
+        </div>
+        <div style="flex:1; max-width:360px;">
+          <div style="height:8px; border:1px solid var(--border); border-radius:8px; background:#F1F5F9; overflow:hidden;">
+            <div id="liveProgress" style="height:100%; width:0%; background:var(--primary);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="assets/js/storage.js"></script>
     <script>
@@ -185,12 +209,28 @@
         const selCount = document.getElementById('selCount');
         const prepScore = document.getElementById('prepScore');
         const prepClass = document.getElementById('prepClass');
+        const liveScoreText = document.getElementById('liveScoreText');
+        const liveClass = document.getElementById('liveClass');
+        const liveProgress = document.getElementById('liveProgress');
+        const liveScoreInline = document.getElementById('liveScoreInline');
+        const liveClassInline = document.getElementById('liveClassInline');
+        const livePercentInline = document.getElementById('livePercentInline');
+        const orgInput = document.getElementById('orgInput');
+        const emailInput = document.getElementById('emailInput');
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
 
         const metrics = plan.items.map((t, i) => ({ id: 'm'+i, name: t, points: Math.round(100 / plan.items.length) }));
         const selected = new Set();
+        try {
+          const prevOrg = localStorage.getItem('qsas_gap_org') || '';
+          const prevEmail = localStorage.getItem('qsas_gap_email') || '';
+          if (orgInput) orgInput.value = prevOrg;
+          if (emailInput) emailInput.value = prevEmail;
+          orgInput && orgInput.addEventListener('input', () => { try { localStorage.setItem('qsas_gap_org', orgInput.value || ''); } catch(e){} });
+          emailInput && emailInput.addEventListener('input', () => { try { localStorage.setItem('qsas_gap_email', emailInput.value || ''); } catch(e){} });
+        } catch(e){}
 
         function renderList(){
           list.innerHTML = '';
@@ -211,21 +251,34 @@
           const per = metrics.length ? Math.round(100 / metrics.length) : 0;
           const score = Math.round(ids.length * per);
           const cls = classifyScore(score, 100, { metrics, selectedIds: ids });
-          selCount.textContent = String(ids.length);
-          prepScore.textContent = String(score);
-          prepClass.textContent = cls.label || '—';
+          if (selCount) selCount.textContent = String(ids.length);
+          if (prepScore) prepScore.textContent = String(score);
+          if (prepClass) prepClass.textContent = cls.label || '—';
+          // live bar
+          try {
+            liveScoreText.textContent = String(score) + ' / 100';
+            liveClass.textContent = cls.label || '—';
+            liveClass.className = 'badge';
+            liveProgress.style.width = String(Math.max(0, Math.min(100, cls.percent || score))) + '%';
+            liveScoreInline.textContent = String(score) + ' / 100';
+            liveClassInline.textContent = cls.label || '—';
+            liveClassInline.className = 'badge';
+            livePercentInline.textContent = String(cls.percent || score) + '%';
+          } catch(e) {}
           if (Array.isArray(cls.suggestions) && cls.suggestions.length){
             sugBox.hidden = false; sugList.innerHTML = '';
             cls.suggestions.slice(0,8).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
           } else { sugBox.hidden = true; sugList.innerHTML = ''; }
-          try { window.__gapLatest = { plan: plan.title, ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name) }; } catch(e) {}
+          try { window.__gapLatest = { plan: plan.title, ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name), org: (orgInput && orgInput.value)||'', email: (emailInput && emailInput.value)||'' }; } catch(e) {}
         }
 
         resetBtn.addEventListener('click', () => { selected.clear(); renderList(); update(); });
 
         function openWhatsApp(planTitle){
           const phone = '916301237212';
-          const msg = `Hello QuXAT Advisory Team, I need assistance for ${planTitle}. Selected items: ${selCount.textContent}.`;
+          const latest = window.__gapLatest || { ids: Array.from(selected) };
+          const cnt = Array.isArray(latest.ids) ? latest.ids.length : (selected.size || 0);
+          const msg = `Hello QuXAT Advisory Team, I need assistance for ${planTitle}. Selected items: ${cnt}.`;
           alert('We will open WhatsApp to contact +91 6301237212. If WhatsApp is not installed, the web WhatsApp page will open.');
           const protoUrl = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(msg);
           const webUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
@@ -236,7 +289,7 @@
         }
 
         function downloadReport(){
-          const d = window.__gapLatest || { plan: plan.title, ids: [], score: 0, cls: { label:'', percent:0, suggestions:[] }, selectedItems: [] };
+          const d = window.__gapLatest || { plan: plan.title, ids: Array.from(selected), score: 0, cls: { label:'', percent:0, suggestions:[] }, selectedItems: metrics.filter(m=>selected.has(m.id)).map(m=>m.name) };
           const title = 'Gap Assessment Report';
           try {
             const { jsPDF } = window.jspdf || {};
@@ -291,6 +344,39 @@
           } catch(e) {}
         }
         document.getElementById('downloadReportBtn').addEventListener('click', downloadReport);
+        // Navigate to Streamlit QuXAT Score Home
+        try { document.getElementById('goQuxatScoreBtn').addEventListener('click', function(){ try { window.top.location.href = '/?section=QuXAT%20Score%20Home'; } catch(e){ window.location.href='/?section=QuXAT%20Score%20Home'; } }); } catch(e){}
+        document.getElementById('downloadScoreBtn').addEventListener('click', function(){
+          const d = window.__gapLatest || { plan: plan.title, ids: Array.from(selected), score: 0, cls: { label:'', percent:0, suggestions:[] }, selectedItems: metrics.filter(m=>selected.has(m.id)).map(m=>m.name), org: (orgInput&&orgInput.value)||'', email: (emailInput&&emailInput.value)||'' };
+          const title = 'QuXAT Self Assessment Score Card';
+          try {
+            const { jsPDF } = window.jspdf || {};
+            if (jsPDF) {
+              const doc = new jsPDF({ unit:'pt', format:'a4' });
+              const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight(); const m = 40; const mw = pw - 2*m; let y = m;
+              const write = (t, opts={}) => { const lines = doc.splitTextToSize(String(t||''), mw); const lh = Number(opts.lh||16); lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y+=lh; }); };
+              doc.setFont('helvetica','bold'); doc.setFontSize(18); write(title, { lh: 22 });
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              write('Plan: ' + String(d.plan||''));
+              write('Organization: ' + String(d.org||''));
+              write('Email: ' + String(d.email||''));
+              write('Date: ' + new Date().toLocaleString());
+              write('Selected Items: ' + String(d.ids.length));
+              write('Score: ' + String(d.score) + ' / 100');
+              write('Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)');
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Selected:', { lh: 18 });
+              doc.setFont('helvetica','normal'); doc.setFontSize(12); (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24).forEach(it=>write('- ' + String(it)));
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Suggested Improvements:', { lh: 18 });
+              doc.setFont('helvetica','normal'); doc.setFontSize(12); (Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).slice(0,24).forEach(s=>write('- ' + String(s)));
+              doc.save('qsas_score_card.pdf'); return;
+            }
+          } catch(e) {}
+          // Fallback to text
+          try {
+            const lines = [title,'Plan: ' + String(d.plan||''),'Organization: ' + String(d.org||''),'Email: ' + String(d.email||''),'Date: ' + new Date().toLocaleString(),'Selected Items: ' + String(d.ids.length),'Score: ' + String(d.score),'Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)','Selected:'].concat((Array.isArray(d.selectedItems)?d.selectedItems:[]).map(x=>'- '+x)).concat(['Suggested Improvements:']).concat((Array.isArray(d.cls.suggestions)?d.cls.suggestions:[]).map(x=>'- '+x));
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'qsas_score_card.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+          } catch(e) {}
+        });
         document.getElementById('whatsappBtn').addEventListener('click', () => openWhatsApp(plan.title));
         renderList(); update();
       })();
