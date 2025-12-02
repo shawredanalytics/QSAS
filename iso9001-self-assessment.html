@@ -30,13 +30,14 @@
         <h3>Organization Details</h3>
         
 
-        <div class="card info" id="liveInline" style="margin-top:8px;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <strong>Live Score</strong>
-            <span id="liveScoreInline">0 / 100</span>
-            <span id="liveClassInline" class="badge">—</span>
-            <span id="livePercentInline" class="badge">0%</span>
-          </div>
+        <div class="card info" id="instructions" style="margin-top:8px;">
+          <h3>How to complete this checklist</h3>
+          <ul class="list" style="margin-top:8px;">
+            <li>Tick each practice that is implemented and sustained in your organization.</li>
+            <li>Leave unticked if partially implemented or not in place — these appear as improvement actions.</li>
+            <li>Your QuXAT Score updates live in the bar at the bottom and in the score card shown below.</li>
+            <li>Use the corrective actions section to plan and track improvement work.</li>
+          </ul>
         </div>
 
         <div id="itemsList" class="list checklist"></div>
@@ -97,9 +98,6 @@
         const liveScoreText = document.getElementById('liveScoreText');
         const liveClass = document.getElementById('liveClass');
         const liveProgress = document.getElementById('liveProgress');
-        const liveScoreInline = document.getElementById('liveScoreInline');
-        const liveClassInline = document.getElementById('liveClassInline');
-        const livePercentInline = document.getElementById('livePercentInline');
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
@@ -163,9 +161,6 @@
             liveScoreText.textContent = String(score) + ' / 100';
             liveClass.textContent = cls.label; liveClass.className = 'badge';
             liveProgress.style.width = String(Math.max(0, Math.min(100, cls.percent))) + '%';
-            liveScoreInline.textContent = String(score) + ' / 100';
-            liveClassInline.textContent = cls.label; liveClassInline.className = 'badge';
-            livePercentInline.textContent = String(cls.percent) + '%';
           } catch(e) {}
           const missing = metrics.filter(m => !ids.includes(m.id)).map(m => m.name);
           if (missing.length){
