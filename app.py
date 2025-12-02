@@ -418,7 +418,7 @@ elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=3600, scrolling=False)
 elif section == "QuXAT Score Home":
     _safe_embed("quxat-score.html", height=2200, scrolling=False)
-elif section == "ISO9001 Self Assessment":
+elif section == "Self Assessment":
     _safe_embed("iso9001-self-assessment.html", height=3400, scrolling=False)
 else:
     # Default fallback: QuXAT Score Home
