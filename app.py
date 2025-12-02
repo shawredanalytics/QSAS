@@ -212,6 +212,23 @@ def render_quxat_home():
     st.subheader("Why it matters")
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
 
+    st.subheader("Who benefits")
+    st.markdown("<div class='qRow'>"
+                "<div class='qCard'><div class='qTitle'>Hospitals</div><div class='qSub'>Multi‑specialty, tertiary care and day‑care centers</div></div>"
+                "<div class='qCard'><div class='qTitle'>Diagnostic Laboratories</div><div class='qSub'>Pathology, biochemistry, microbiology, molecular</div></div>"
+                "<div class='qCard'><div class='qTitle'>Imaging Centers</div><div class='qSub'>CT, MRI, X‑ray, ultrasound and nuclear medicine</div></div>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='qRow'>"
+                "<div class='qCard'><div class='qTitle'>Clinics</div><div class='qSub'>Out‑patient and specialty clinics</div></div>"
+                "<div class='qCard'><div class='qTitle'>Eye Hospitals</div><div class='qSub'>Ophthalmology hospitals and vision centers</div></div>"
+                "<div class='qCard'><div class='qTitle'>Medical Colleges</div><div class='qSub'>Teaching hospitals and academic departments</div></div>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='qRow'>"
+                "<div class='qCard'><div class='qTitle'>Blood Banks</div><div class='qSub'>Collection, processing and transfusion services</div></div>"
+                "<div class='qCard'><div class='qTitle'>Dental & Day‑Surgery</div><div class='qSub'>Dental clinics and ambulatory care centers</div></div>"
+                "<div class='qCard'><div class='qTitle'>Home Health</div><div class='qSub'>Home care, nursing and tele‑health providers</div></div>"
+                "</div>", unsafe_allow_html=True)
+
     st.subheader("Clients")
     clients_data = [
         ("Apollo Hospitals - Kakinada", "Kakinada", "Andhra Pradesh"),
