@@ -67,7 +67,9 @@ body > :last-child { margin-bottom: 0 !important; }
   box-shadow: 0 6px 18px rgba(10,46,90,0.08);
 }
 .card:last-child { margin-bottom: 0; }
-main.container .card:last-child { margin-bottom: 8px; }
+main.container .card:last-child { margin-bottom: 0; }
+main.container > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+main.container.wide > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
 @media (max-width: 640px) { .card { padding: 12px; } }
 
 /* Vibrant highlight card for selected checklist header */

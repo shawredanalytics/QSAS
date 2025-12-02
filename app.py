@@ -385,7 +385,7 @@ def build_home_hero_html():
 if section == "Home":
     _set_query_section("QuXAT Score Home")
     st.session_state["section"] = "QuXAT Score Home"
-    _safe_embed("quxat-score.html", height=2200, scrolling=False)
+    _safe_embed("quxat-score.html", height=1200, scrolling=True)
 elif section == "User Assessment":
     # Render the embedded User page at the very top (no extra Streamlit headers)
     # Pass through deep-link parameters (category/checklist) to the embedded page via localStorage
@@ -414,15 +414,15 @@ elif section == "User Assessment":
     """.format(cat=repr(cat), chk=repr(chk))
     _safe_embed("user.html", height=2200, scrolling=True, bootstrap_js=js_bootstrap)
 elif section == "QuXAT Advisory Services":
-    _safe_embed("advisory.html", height=2200, scrolling=False)
+    _safe_embed("advisory.html", height=1200, scrolling=True)
 elif section == "QuXAT Reports":
-    _safe_embed("reports.html", height=3600, scrolling=False)
+    _safe_embed("reports.html", height=1400, scrolling=True)
 elif section == "QuXAT Score Home":
-    _safe_embed("quxat-score.html", height=2200, scrolling=False)
+    _safe_embed("quxat-score.html", height=1200, scrolling=True)
 elif section == "Self Assessment":
-    _safe_embed("iso9001-self-assessment.html", height=3400, scrolling=False)
+    _safe_embed("iso9001-self-assessment.html", height=1400, scrolling=True)
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
     st.session_state["section"] = "QuXAT Score Home"
-    _safe_embed("quxat-score.html", height=2200, scrolling=False)
+    _safe_embed("quxat-score.html", height=1200, scrolling=True)
