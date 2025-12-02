@@ -283,6 +283,61 @@ def render_quxat_home():
         for (name, city) in items:
             chips.append(f"<span class='pill' style='background:{bg};margin:4px 6px;display:inline-block'>{name} — {city}</span>")
         st.markdown("<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
+
+def render_self_assessment():
+    st.markdown("""
+    <style>
+    .saCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,46,90,.06);margin-bottom:12px}
+    .saGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media(max-width:860px){.saGrid{grid-template-columns:1fr}}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef3ff;border:1px solid #e7ecf5}
+    .scoreVal{font-size:2rem;font-weight:700;color:#1f5eea}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #e7ecf5;margin-left:6px}
+    </style>
+    """, unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Self Assessment</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Tick implemented practices and see your score with guided actions</div>", unsafe_allow_html=True)
+    items = [
+        "Quality Policy approved, communicated, and reviewed",
+        "QMS scope defined; context of the organization documented",
+        "Process map with inputs/outputs, owners, and interactions",
+        "Documented procedures and records under control",
+        "Risk‑based thinking implemented (risk register and actions)",
+        "Competence, awareness, and training records maintained",
+        "Customer requirements handling and satisfaction measurement",
+        "Supplier/outsourced process controls and evaluations",
+        "Monitoring and measurement of process performance (KPIs)",
+        "Internal audit program executed with findings and CAPA",
+        "Management review performed with decisions and actions",
+        "Nonconformity and corrective action procedure practiced",
+    ]
+    cols = st.columns(3)
+    for i, text in enumerate(items):
+        col = cols[i % 3]
+        with col:
+            st.checkbox(text, key=f"sa_{i}")
+    selected = sum(1 for i in range(len(items)) if st.session_state.get(f"sa_{i}", False))
+    score = round((selected / len(items)) * 100) if items else 0
+    if score >= 90:
+        label = "Exemplary"
+    elif score >= 75:
+        label = "Strong"
+    elif score >= 50:
+        label = "Developing"
+    elif score >= 25:
+        label = "Early"
+    else:
+        label = "Needs Immediate Improvement"
+    st.markdown(f"<div class='saCard'><div class='scoreVal'>{score} / 100<span class='badge'>{label} ({score}%)</span></div><div style='color:#6b778c'>Selected practices: {selected} of {len(items)}</div></div>", unsafe_allow_html=True)
+    missing = [items[i] for i in range(len(items)) if not st.session_state.get(f"sa_{i}", False)]
+    interp = (
+        "Maintain standardization, periodic audits, and continuous improvement cycles." if score >= 90 else
+        "Target improvements via internal audits and PDSA cycles; close minor gaps." if score >= 75 else
+        "Formalize procedures, assign process owners, and define KPIs with reviews." if score >= 50 else
+        "Establish governance, documentation, and routine audits to build a baseline." if score >= 25 else
+        "Address safety‑critical gaps immediately and implement a 90‑day remediation plan."
+    )
+    st.markdown(f"<div class='saCard'><div class='saGrid'><div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div><div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div><div><a href='https://wa.me/916301237212?text=Hello%20QuXAT%20Advisory%20Team%2C%20I%20need%20assistance%20for%20self%20assessment.' target='_blank' style='text-decoration:none'><div class='pill' style='background:#eafff3'>Contact Advisory Team</div></a></div></div></div>", unsafe_allow_html=True)
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
@@ -551,7 +606,7 @@ elif section == "QuXAT Reports":
 elif section == "QuXAT Score Home":
     render_quxat_home()
 elif section == "Self Assessment":
-    _safe_embed("iso9001-self-assessment.html", height=1400, scrolling=True)
+    render_self_assessment()
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
