@@ -422,6 +422,52 @@ def render_self_assessment():
     from urllib.parse import quote
     wa_url = f"https://wa.me/{phone}?text=" + quote(msg)
 
+    # QuXAT Score Card with logo and unique ID + download button
+    from datetime import datetime
+    now = datetime.now()
+    id_digits = now.strftime('%Y%m%d%H%M%S')
+    suffix = chr(65 + (now.microsecond % 26)) + chr(65 + ((now.microsecond // 26) % 26))
+    score_id = id_digits + suffix  # 16-char alphanumeric
+    logo_b64 = ''
+    try:
+        with open('assets/QuXAT Logo Facebook.png', 'rb') as lf:
+            import base64 as _b64
+            logo_b64 = _b64.b64encode(lf.read()).decode('ascii')
+    except Exception:
+        logo_b64 = ''
+    card_html = f"""
+    <!doctype html>
+    <html><head><meta charset='utf-8'><title>QuXAT Score Card</title>
+    <style>
+    body{{font-family:Arial,Segoe UI,system-ui; color:#0f172a; margin:24px}}
+    .wrap{{border:1px solid #e7ecf5; border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(10,46,90,.06)}}
+    .head{{display:flex; align-items:center; gap:12px;}}
+    .logo{{height:48px}}
+    .title{{font-weight:700; font-size:18px}}
+    .row{{margin-top:8px}}
+    .badge{{display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; border:1px solid #e7ecf5}}
+    </style></head><body>
+    <div class='wrap'>
+      <div class='head'>
+        {('<img class="logo" src="data:image/png;base64,' + logo_b64 + '"/>') if logo_b64 else ''}
+        <div class='title'>QuXAT Self Assessment Score Card</div>
+      </div>
+      <div class='row'><strong>Score ID:</strong> {score_id}</div>
+      <div class='row'><strong>Healthcare Organization:</strong> {org or '-'} &nbsp; | &nbsp; <strong>Email:</strong> {email or '-'}</div>
+      <div class='row'><strong>Date:</strong> {now.strftime('%Y-%m-%d %H:%M:%S')}</div>
+      <div class='row'><strong>Score:</strong> {score}/100 &nbsp; | &nbsp; <strong>Classification:</strong> <span class='badge'>{label}</span></div>
+      <div class='row'><strong>Selected Practices:</strong> {selected} of {len(items)}</div>
+    </div>
+    </body></html>
+    """
+    st.download_button(
+        label="Download QuXAT Score Card",
+        data=card_html.encode('utf-8'),
+        file_name=f"quxat_score_card_{score_id}.html",
+        mime="text/html",
+        use_container_width=True,
+    )
+
     st.markdown(
         f"<div class='saCard'><div class='saGrid'>"
         f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
