@@ -27,7 +27,7 @@
 
     <main class="container wide">
       <section class="card">
-        <h3>Organization Details</h3>
+        <h3>Assessment Checklist</h3>
         
 
         <div class="card info" id="instructions" style="margin-top:8px;">
@@ -61,20 +61,7 @@
       </section>
     </main>
 
-    <div id="liveScoreBar" class="score-bar" aria-live="polite">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <strong>Live Score</strong>
-          <span id="liveScoreText">0 / 100</span>
-          <span id="liveClass" class="badge">—</span>
-        </div>
-        <div style="flex:1; max-width:360px;">
-          <div style="height:8px; border:1px solid var(--border); border-radius:8px; background:#F1F5F9; overflow:hidden;">
-            <div id="liveProgress" style="height:100%; width:0%; background:var(--primary);"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    
 
     <script src="assets/js/storage.js"></script>
     <script>
@@ -95,9 +82,6 @@
         ];
 
         const list = document.getElementById('itemsList');
-        const liveScoreText = document.getElementById('liveScoreText');
-        const liveClass = document.getElementById('liveClass');
-        const liveProgress = document.getElementById('liveProgress');
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
@@ -157,11 +141,7 @@
           const ids = Array.from(selected);
           const score = metrics.length ? Math.round((ids.length / metrics.length) * 100) : 0;
           const cls = classify(score);
-          try {
-            liveScoreText.textContent = String(score) + ' / 100';
-            liveClass.textContent = cls.label; liveClass.className = 'badge';
-            liveProgress.style.width = String(Math.max(0, Math.min(100, cls.percent))) + '%';
-          } catch(e) {}
+          // Live score bar removed; inline score card is updated below
           const missing = metrics.filter(m => !ids.includes(m.id)).map(m => m.name);
           if (missing.length){
             sugBox.hidden = false; sugList.innerHTML = '';
