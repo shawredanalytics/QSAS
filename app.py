@@ -337,7 +337,34 @@ def render_self_assessment():
         "Establish governance, documentation, and routine audits to build a baseline." if score >= 25 else
         "Address safety‑critical gaps immediately and implement a 90‑day remediation plan."
     )
-    st.markdown(f"<div class='saCard'><div class='saGrid'><div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div><div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div><div><a href='https://wa.me/916301237212?text=Hello%20QuXAT%20Advisory%20Team%2C%20I%20need%20assistance%20for%20self%20assessment.' target='_blank' style='text-decoration:none'><div class='pill' style='background:#eafff3'>Contact Advisory Team</div></a></div></div></div>", unsafe_allow_html=True)
+    st.markdown("<div class='saCard'>", unsafe_allow_html=True)
+    in_cols = st.columns(2)
+    with in_cols[0]:
+        org = st.text_input("Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
+    with in_cols[1]:
+        email = st.text_input("Designated Email", value=st.session_state.get("sa_email", ""), key="sa_email")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    phone = "916301237212"
+    msg = (
+        f"Request for Verified Certificate\n"
+        f"Organization: {org or '-'}\n"
+        f"Email: {email or '-'}\n"
+        f"QuXAT Score: {score}/100 ({label})\n"
+        f"Selected practices: {selected}/{len(items)}\n"
+        f"Please assist with verification."
+    )
+    from urllib.parse import quote
+    wa_url = f"https://wa.me/{phone}?text=" + quote(msg)
+
+    st.markdown(
+        f"<div class='saCard'><div class='saGrid'>"
+        f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
+        f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
+        f"<div><a href='{wa_url}' target='_blank' style='text-decoration:none'><div class='pill' style='background:#eafff3'>Register for Verified Certificate</div></a></div>"
+        f"</div></div>",
+        unsafe_allow_html=True,
+    )
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
