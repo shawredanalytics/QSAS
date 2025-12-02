@@ -28,10 +28,7 @@
     <main class="container wide">
       <section class="card">
         <h3>Organization Details</h3>
-        <div class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:8px; margin-bottom:8px;">
-          <label class="card"><div class="item-title">Organization Name</div><input type="text" id="orgInput" placeholder="e.g., City Hospital" /></label>
-          <label class="card"><div class="item-title">Contact Email</div><input type="email" id="emailInput" placeholder="e.g., user@example.com" /></label>
-        </div>
+        
 
         <div class="card info" id="liveInline" style="margin-top:8px;">
           <div style="display:flex; align-items:center; gap:12px;">
@@ -103,8 +100,6 @@
         const liveScoreInline = document.getElementById('liveScoreInline');
         const liveClassInline = document.getElementById('liveClassInline');
         const livePercentInline = document.getElementById('livePercentInline');
-        const orgInput = document.getElementById('orgInput');
-        const emailInput = document.getElementById('emailInput');
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
@@ -177,18 +172,11 @@
             sugBox.hidden = false; sugList.innerHTML = '';
             missing.slice(0, 12).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
           } else { sugBox.hidden = true; sugList.innerHTML = ''; }
-          try { window.__qsasLatest = { ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name), org: (orgInput && orgInput.value)||'', email: (emailInput && emailInput.value)||'' }; } catch(e) {}
+          try { window.__qsasLatest = { ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name) }; } catch(e) {}
           renderScoreCard(cls, score, (window.__qsasLatest||{}).selectedItems||[], missing);
         }
 
-        try {
-          const prevOrg = localStorage.getItem('qsas_iso_org') || '';
-          const prevEmail = localStorage.getItem('qsas_iso_email') || '';
-          if (orgInput) orgInput.value = prevOrg;
-          if (emailInput) emailInput.value = prevEmail;
-          orgInput && orgInput.addEventListener('input', () => { try { localStorage.setItem('qsas_iso_org', orgInput.value || ''); } catch(e){} });
-          emailInput && emailInput.addEventListener('input', () => { try { localStorage.setItem('qsas_iso_email', emailInput.value || ''); } catch(e){} });
-        } catch(e){}
+        // No organization or email fields
 
         resetBtn.addEventListener('click', () => { selected.clear(); render(); update(); });
 
