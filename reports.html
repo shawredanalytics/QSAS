@@ -242,7 +242,7 @@
         function showScore(){ scorePanel.hidden = false; labsPanel.hidden = true; hospPanel.hidden = true; tabLabs.className='btn'; tabHosp.className='btn'; quxatScoreBtn.className='btn btn-primary'; }
         tabLabs.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; quxatScoreBtn.className='btn'; });
         tabHosp.addEventListener('click', () => { scorePanel.hidden = true; labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; quxatScoreBtn.className='btn'; });
-        quxatScoreBtn.addEventListener('click', () => { try { window.open('/?section=Home', '_blank'); } catch(e) { location.href='/?section=Home'; } });
+        quxatScoreBtn.addEventListener('click', () => { try { window.open('/?section=QuXAT%20Score%20Home', '_blank'); } catch(e) { location.href='/?section=QuXAT%20Score%20Home'; } });
         gapAssessmentSelect.addEventListener('change', () => { const v = gapAssessmentSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
         try { const p = new URLSearchParams(location.search).get('panel'); if (p === 'score') showScore(); } catch(e) {}
         refresh();

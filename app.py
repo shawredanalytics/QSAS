@@ -239,13 +239,13 @@ def render_sidebar_once():
                     st.query_params.clear()
                 except Exception:
                     pass
-                st.query_params["section"] = "Home"
+                st.query_params["section"] = "QuXAT Score Home"
             except Exception:
                 try:
-                    st.experimental_set_query_params(section="Home")
+                    st.experimental_set_query_params(section="QuXAT Score Home")
                 except Exception:
                     pass
-            st.session_state["section"] = "Home"
+            st.session_state["section"] = "QuXAT Score Home"
 
         gap_choice = st.selectbox("Gap Assessment", ["Select…", "ISO 9001:2015"], index=0)
         if gap_choice == "ISO 9001:2015":
