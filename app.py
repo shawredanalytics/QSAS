@@ -268,7 +268,8 @@ def render_sidebar_once():
     # removed Product based Quality Check navigation
 
 _sync_section_from_query()
-render_sidebar_once()
+if "section" not in st.session_state:
+    st.session_state["section"] = "QuXAT Score Home"
 section = st.session_state.get("section", "Home")
 # Redirect removed pages to Home
 if section in ("Healthcare Quality Grid", "Register for the Healthcare Quality Grid"):
