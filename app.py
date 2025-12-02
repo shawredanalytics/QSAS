@@ -361,10 +361,18 @@ def render_self_assessment():
         f"<div class='saCard'><div class='saGrid'>"
         f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
         f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
-        f"<div><a href='{wa_url}' target='_blank' style='text-decoration:none'><div class='pill' style='background:#eafff3'>Register for Verified Certificate</div></a></div>"
+        f"<div><div class='pill' style='background:#eafff3'>Register for Verified Certificate</div><div style='margin-top:8px;color:#6b778c'>Use the button below to proceed</div></div>"
         f"</div></div>",
         unsafe_allow_html=True,
     )
+
+    if st.button("Register for Verified Certificate", type="primary", use_container_width=True):
+        valid_email = bool(email and "@" in email and "." in email)
+        if not (org and org.strip()) or not valid_email:
+            st.warning("Please enter Organization Name and a valid Designated Email to proceed with verification.")
+        else:
+            st.success("Preparing WhatsApp message…")
+            st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
