@@ -46,7 +46,6 @@
         <div class="score-row">
           <div class="actions">
             <button id="resetBtn" class="btn btn-warning">Reset Selection</button>
-            <button id="downloadScoreBtn" class="btn btn-primary">Download QSAS Score Card</button>
             <button id="whatsappBtn" class="btn btn-success">Contact Advisory Team</button>
           </div>
         </div>
@@ -55,6 +54,12 @@
           <h3>Suggested Improvements</h3>
           <ul id="sugList" class="list"></ul>
         </div>
+      </section>
+      <section class="card" id="scoreCard">
+        <h3>QuXAT Score</h3>
+        <div id="scoreSummary" class="list" style="margin-top:8px;"></div>
+        <h3 style="margin-top:12px;">Relevant Corrective Actions</h3>
+        <ul id="actionsList" class="list"></ul>
       </section>
     </main>
 
@@ -103,7 +108,8 @@
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
-        const downloadScoreBtn = document.getElementById('downloadScoreBtn');
+        const scoreSummary = document.getElementById('scoreSummary');
+        const actionsList = document.getElementById('actionsList');
 
         const metrics = ISO_ITEMS.map((t, i) => ({ id: 'm'+i, name: t, points: Math.round(100 / ISO_ITEMS.length) }));
         const selected = new Set();
@@ -132,6 +138,28 @@
           });
         }
 
+        function renderScoreCard(cls, score, selectedItems, missing){
+          try {
+            const summary = [
+              'Score: ' + String(score) + ' / 100',
+              'Classification: ' + String(cls.label) + ' (' + String(cls.percent) + '%)'
+            ];
+            scoreSummary.innerHTML = '';
+            summary.forEach(t => { const li = document.createElement('li'); const d = document.createElement('div'); d.className='item-title'; d.textContent=t; li.appendChild(d); scoreSummary.appendChild(li); });
+            actionsList.innerHTML = '';
+            const interpretation = (function(){
+              if (score >= 90) return 'Maintain standardization, periodic audits, and continuous improvement cycles.';
+              if (score >= 75) return 'Target improvements via internal audits and PDSA cycles; close minor gaps.';
+              if (score >= 50) return 'Formalize procedures, assign process owners, and define KPIs with reviews.';
+              if (score >= 25) return 'Establish governance, documentation, and routine audits to build a baseline.';
+              return 'Address safety‑critical gaps immediately and implement a 90‑day remediation plan.';
+            })();
+            const interpLi = document.createElement('li'); interpLi.textContent = interpretation; actionsList.appendChild(interpLi);
+            const topMissing = (missing||[]).slice(0, 10);
+            topMissing.forEach(s => { const li = document.createElement('li'); li.textContent = s; actionsList.appendChild(li); });
+          } catch(e){}
+        }
+
         function update(){
           const ids = Array.from(selected);
           const score = metrics.length ? Math.round((ids.length / metrics.length) * 100) : 0;
@@ -150,6 +178,7 @@
             missing.slice(0, 12).forEach(s => { const li = document.createElement('li'); li.textContent = s; sugList.appendChild(li); });
           } else { sugBox.hidden = true; sugList.innerHTML = ''; }
           try { window.__qsasLatest = { ids, score, cls, selectedItems: metrics.filter(m=>ids.includes(m.id)).map(m=>m.name), org: (orgInput && orgInput.value)||'', email: (emailInput && emailInput.value)||'' }; } catch(e) {}
+          renderScoreCard(cls, score, (window.__qsasLatest||{}).selectedItems||[], missing);
         }
 
         try {
@@ -178,56 +207,7 @@
         }
         document.getElementById('whatsappBtn').addEventListener('click', openWhatsApp);
 
-        function downloadScore(){
-          const d = window.__qsasLatest || { ids: [], score: 0, cls: { label:'', percent:0 }, selectedItems: [], org: (orgInput&&orgInput.value)||'', email: (emailInput&&emailInput.value)||'' };
-          const title = 'QuXAT Self Assessment Score Card';
-          try {
-            const { jsPDF } = window.jspdf || {};
-            if (jsPDF) {
-              const doc = new jsPDF({ unit:'pt', format:'a4' });
-              const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight();
-              const m = 40; const mw = pw - 2*m; let y = m;
-              doc.setDrawColor(51,65,85); doc.setLineWidth(1.2); doc.rect(m-6, m-6, pw - 2*(m-6), ph - 2*(m-6));
-              const logo = (window.QSAS_ASSETS && (window.QSAS_ASSETS['assets/QuXAT Logo Facebook.png'] || window.QSAS_ASSETS['assets/QuXAT%20Logo%20Facebook.png'])) || '';
-              if (logo) { try { doc.addImage(logo, 'PNG', m, y, 120, 60); } catch(e) {} }
-              doc.setFont('helvetica','bold'); doc.setFontSize(26);
-              const cx = m + mw/2; doc.text(title, cx, y + 28, { align:'center', maxWidth: mw });
-              doc.setFont('helvetica','italic'); doc.setFontSize(13); doc.text('Certificate of Self Assessment', cx, y + 44, { align:'center' });
-              doc.setFont('helvetica','normal'); doc.setFontSize(12); y += 86;
-              const write = (t, lh=16) => { const lines = doc.splitTextToSize(String(t||''), mw); lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y+=lh; }); };
-              doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Organization', m, y); y += 18; doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              doc.text('Name:', m, y); doc.text(String(d.org||'-'), m+90, y); y += 16;
-              doc.text('Email:', m, y); doc.text(String(d.email||'-'), m+90, y); y += 16;
-              doc.text('Date:', m, y); doc.text(new Date().toLocaleString(), m+90, y); y += 12;
-              doc.setDrawColor(229,231,235); doc.setLineWidth(0.8); doc.line(m, y+6, m+mw, y+6); y += 18;
-              const boxY = y; const boxH = 78; doc.setDrawColor(71,116,226); doc.setFillColor(246,249,255); doc.rect(m, boxY, mw, boxH, 'FD');
-              doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.text('QuXAT Self Assessment Score', cx, boxY+26, { align:'center' });
-              doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              doc.text('Score: ' + String(d.score) + ' / 100', m+16, boxY+50);
-              doc.text('Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)', m+260, boxY+50);
-              y = boxY + boxH + 18;
-              doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Selected Practices', m, y); y += 14; doc.setDrawColor(229,231,235); doc.line(m, y, m+mw, y); y += 10; doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24).forEach(it=>{ const lines = doc.splitTextToSize('• ' + String(it), mw); lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y += 16; }); });
-              doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Suggested Improvements', m, y); y += 14; doc.setDrawColor(229,231,235); doc.line(m, y, m+mw, y); y += 10; doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              const missing = ISO_ITEMS.filter(t=>!(Array.isArray(d.selectedItems)?d.selectedItems:[]).includes(t));
-              missing.slice(0,24).forEach(s=>{ const lines = doc.splitTextToSize('• ' + String(s), mw); lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y += 16; }); });
-              y += 8;
-              let sy = y + 10; doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Prepared By', m, sy); sy += 20; doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              doc.text('Name: ______________________________', m, sy); sy += 18; doc.text('Designation: ________________________', m, sy); sy += 18; doc.text('Signature: __________________________', m, sy); sy += 18; doc.text('Date: _______________________________', m, sy);
-              sy += 30; doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Approved By', m, sy); sy += 20; doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              doc.text('Name: ______________________________', m, sy); sy += 18; doc.text('Designation: ________________________', m, sy); sy += 18; doc.text('Signature: __________________________', m, sy); sy += 18; doc.text('Date: _______________________________', m, sy);
-              const seal = (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/QuXAT_Round_Seal.png']) || '';
-              if (seal) { try { doc.addImage(seal, 'PNG', m + mw - 120, ph - m - 120, 96, 96); } catch(e) {} }
-              doc.save('qsas_iso9001_score_card.pdf'); return;
-            }
-          } catch(e) {}
-          // Fallback to text
-          try {
-            const lines = [title,'Organization: ' + String(d.org||''),'Email: ' + String(d.email||''),'Date: ' + new Date().toLocaleString(),'Selected Items: ' + String(d.ids.length),'Score: ' + String(d.score),'Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)','Selected:'].concat((Array.isArray(d.selectedItems)?d.selectedItems:[]).map(x=>'- '+x)).concat(['Suggested Improvements:']).concat(ISO_ITEMS.filter(t=>!(Array.isArray(d.selectedItems)?d.selectedItems:[]).includes(t)).map(x=>'- '+x));
-            const blob = new Blob([lines.join('\n')], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'qsas_iso9001_score_card.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
-          } catch(e) {}
-        }
-        downloadScoreBtn.addEventListener('click', downloadScore);
+        // Removed download functionality; score card shown inline below.
 
         render(); update();
       })();
