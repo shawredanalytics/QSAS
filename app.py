@@ -460,13 +460,64 @@ def render_self_assessment():
     </div>
     </body></html>
     """
-    st.download_button(
-        label="Download QuXAT Score Card",
-        data=card_html.encode('utf-8'),
-        file_name=f"quxat_score_card_{score_id}.html",
-        mime="text/html",
-        use_container_width=True,
-    )
+    valid_email = bool(email and "@" in email and "." in email)
+    if not (org and org.strip()) or not valid_email:
+        st.warning("Enter Healthcare Organization Name and a valid Email to enable score card download.")
+        enable_download = False
+    else:
+        enable_download = True
+
+    clicked = False
+    if enable_download:
+        clicked = st.download_button(
+            label="Download QuXAT Score Card",
+            data=card_html.encode('utf-8'),
+            file_name=f"quxat_score_card_{score_id}.html",
+            mime="text/html",
+            use_container_width=True,
+        )
+
+    if clicked:
+        try:
+            import smtplib, ssl
+            from email.message import EmailMessage
+            smtp_host = os.environ.get("SMTP_HOST", "")
+            smtp_port = int(os.environ.get("SMTP_PORT", "0") or 0)
+            smtp_user = os.environ.get("SMTP_USER", "")
+            smtp_pass = os.environ.get("SMTP_PASS", "")
+            msg = EmailMessage()
+            msg["Subject"] = f"QuXAT Score Card Generated — {score_id}"
+            msg["From"] = smtp_user or "no-reply@quxat.com"
+            msg["To"] = "quxat.team@gmail.com"
+            body = (
+                f"QuXAT Score Card Generated\n\n"
+                f"Score ID: {score_id}\n"
+                f"Healthcare Organization: {org}\n"
+                f"Email: {email}\n"
+                f"Score: {score}/100 ({label})\n"
+                f"Selected practices: {selected}/{len(items)}\n"
+                f"Date: {now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            )
+            msg.set_content(body)
+            if smtp_host and smtp_port and smtp_user and smtp_pass:
+                context = ssl.create_default_context()
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+                    server.login(smtp_user, smtp_pass)
+                    server.send_message(msg)
+                st.success("Score card details emailed to the advisory team.")
+            else:
+                st.info("Email server not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in environment to enable auto email.")
+        except Exception:
+            st.warning("Could not send email automatically. Please ensure SMTP settings are configured.")
+
+        try:
+            wa_msg = (
+                f"QuXAT Score Card Generated%0AID: {score_id}%0AHealthcare Organization: {quote(org)}%0AEmail: {quote(email)}%0AScore: {score}/100 ({label})"
+            )
+            wa_link = f"https://wa.me/916301237212?text={wa_msg}"
+            st.markdown(f"[Notify Advisory Team on WhatsApp]({wa_link})")
+        except Exception:
+            pass
 
     st.markdown(
         f"<div class='saCard'><div class='saGrid'>"
