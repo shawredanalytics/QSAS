@@ -252,25 +252,6 @@ def render_sidebar_once():
             except Exception:
                 pass
 
-        gap_choice = st.selectbox("Gap Assessment", ["Select…", "ISO 9001:2015"], index=0)
-        if gap_choice == "ISO 9001:2015":
-            try:
-                try:
-                    st.query_params.clear()
-                except Exception:
-                    pass
-                st.query_params["section"] = "Gap Assessment"
-                st.query_params["plan"] = "ISO9001"
-            except Exception:
-                try:
-                    st.experimental_set_query_params(section="Gap Assessment", plan="ISO9001")
-                except Exception:
-                    pass
-            st.session_state["section"] = "Gap Assessment"
-            try:
-                st.rerun()
-            except Exception:
-                pass
 
         # Visual separation, admin actions moved to the bottom area
         try:
@@ -437,27 +418,6 @@ elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=3600, scrolling=False)
 elif section == "QuXAT Score Home":
     _safe_embed("quxat-score.html", height=2200, scrolling=False)
-elif section == "Gap Assessment":
-    qp = _get_query_params()
-    raw_plan = qp.get("plan")
-    plan = None
-    if isinstance(raw_plan, list):
-        plan = raw_plan[0] if raw_plan else None
-    elif isinstance(raw_plan, str):
-        plan = raw_plan
-    js_bootstrap = """
-    (function(){
-      try {
-        // Clear any previous plan to avoid stale reads
-        try { localStorage.removeItem('qsas_gap_plan'); } catch(e) {}
-        var plan = %s;
-        // Expose boot plan for iframe scripts as a direct variable to avoid storage timing issues
-        try { window.QSAS_BOOT_PLAN = plan; } catch(e) {}
-        if (plan) localStorage.setItem('qsas_gap_plan', String(plan));
-      } catch(e) {}
-    })();
-    """ % (repr(plan))
-    _safe_embed("gap-assessment.html", height=3800, scrolling=False, bootstrap_js=js_bootstrap)
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
