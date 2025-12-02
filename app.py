@@ -211,6 +211,40 @@ def render_quxat_home():
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Practical metrics</div><div class='qSub'>Concise checklist focused on high‑impact processes.</div></div><div class='qCard'><div class='qTitle'>100‑point score</div><div class='qSub'>Each ‘Yes’ contributes equally; grouped into maturity bands.</div></div><div class='qCard'><div class='qTitle'>Guided actions</div><div class='qSub'>Unticked practices appear as suggestions with actions.</div></div></div>", unsafe_allow_html=True)
     st.subheader("Why it matters")
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
+    st.subheader("Selected Clients")
+    up = st.file_uploader("Upload client list", type=["docx","txt","csv"], accept_multiple_files=False)
+    clients = st.session_state.get("clients", [])
+    if up is not None:
+        name = (up.name or "").lower()
+        if name.endswith(".txt") or name.endswith(".csv"):
+            try:
+                txt = up.getvalue().decode("utf-8", errors="ignore")
+                items = []
+                for line in txt.splitlines():
+                    parts = [p.strip() for p in line.replace(";",", ").split(",")]
+                    for p in parts:
+                        if p and p not in items:
+                            items.append(p)
+                clients = items
+            except Exception:
+                clients = []
+        elif name.endswith(".docx"):
+            try:
+                import docx
+                doc = docx.Document(up)
+                items = []
+                for p in doc.paragraphs:
+                    t = (p.text or "").strip()
+                    if t and t not in items:
+                        items.append(t)
+                clients = items
+            except Exception:
+                st.info("Please upload a .txt or .csv list if .docx is not supported.")
+        st.session_state["clients"] = clients
+    if not clients:
+        clients = ["City Hospital","Metro Labs","GreenCare Clinic","Sunrise Diagnostics","Pioneer Health"]
+    chips = "".join([f"<span class='pill' style='margin:4px 6px; display:inline-block;'>{c}</span>" for c in clients[:36]])
+    st.markdown(f"<div style='text-align:center;'>{chips}</div>", unsafe_allow_html=True)
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
