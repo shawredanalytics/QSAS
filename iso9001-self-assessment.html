@@ -134,8 +134,7 @@
 
         function update(){
           const ids = Array.from(selected);
-          const per = metrics.length ? Math.round(100 / metrics.length) : 0;
-          const score = Math.round(ids.length * per);
+          const score = metrics.length ? Math.round((ids.length / metrics.length) * 100) : 0;
           const cls = classify(score);
           try {
             liveScoreText.textContent = String(score) + ' / 100';
