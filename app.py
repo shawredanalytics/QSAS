@@ -361,7 +361,6 @@ def render_self_assessment():
         f"<div class='saCard'><div class='saGrid'>"
         f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
         f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
-        f"<div><div class='pill' style='background:#eafff3'>Register for Verified Certificate</div><div style='margin-top:8px;color:#6b778c'>Use the button below to proceed</div></div>"
         f"</div></div>",
         unsafe_allow_html=True,
     )
