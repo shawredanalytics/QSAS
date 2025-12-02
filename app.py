@@ -368,6 +368,24 @@ def render_self_assessment():
         f"<div style='margin-top:6px;color:#6b778c'>{status_desc}</div></div>",
         unsafe_allow_html=True,
     )
+    # Classification guide for users
+    st.markdown(
+        """
+        <div class='saCard'>
+          <div class='qTitle'>Classification Guide</div>
+          <div class='saGrid' style='margin-top:8px'>
+            <div><span class='pill' style='background:#e9fff3'>Exemplary</span><div style='margin-top:6px;color:#6b778c'>Score ≥ 90</div></div>
+            <div><span class='pill' style='background:#fce7f3'>Strong</span><div style='margin-top:6px;color:#6b778c'>Score ≥ 75</div></div>
+            <div><span class='pill' style='background:#fff7ed'>Developing</span><div style='margin-top:6px;color:#6b778c'>Score ≥ 50</div></div>
+          </div>
+          <div class='saGrid' style='margin-top:8px'>
+            <div><span class='pill' style='background:#eef3ff'>Early</span><div style='margin-top:6px;color:#6b778c'>Score ≥ 25</div></div>
+            <div><span class='pill' style='background:#f5f3ff'>Needs Immediate Improvement</span><div style='margin-top:6px;color:#6b778c'>Score &lt; 25</div></div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     missing = [items[i] for i in range(len(items)) if not st.session_state.get(f"sa_{i}", False)]
     interp = (
         "Maintain standardization, periodic audits, and continuous improvement cycles." if score >= 90 else
