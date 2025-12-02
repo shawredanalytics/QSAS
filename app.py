@@ -158,11 +158,18 @@ def render_quxat_home():
     try:
         c1, c2, c3 = st.columns([1,2,1])
         with c2:
-            st.image("assets/QuXAT Logo Facebook.png", width=160)
+            st.image("assets/QuXAT Logo Facebook.png", use_column_width=True)
     except Exception:
-        st.image("assets/QuXAT Logo Facebook.png", width=160)
-    st.title("QuXAT Score — fast, credible, actionable")
-    st.write("Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.")
+        st.image("assets/QuXAT Logo Facebook.png")
+    st.markdown(
+        """
+        <div style="text-align:center;">
+          <div style="font-size:2.0rem;font-weight:700;letter-spacing:.2px;">QuXAT Score — fast, credible, actionable</div>
+          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.markdown(
         """
         <style>
