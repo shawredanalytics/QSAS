@@ -50,8 +50,28 @@
 
       </section>
       <section class="card accent-blue" id="scoreCard">
-        <h3>QuXAT Score</h3>
-        <div id="scoreSummary" class="list" style="margin-top:8px;"></div>
+        <div id="qualityCard" class="certificate">
+          <div class="certificate-header">
+            <img class="certificate-logo" alt="QuXAT" src="assets/QuXAT%20Logo%20Facebook.png" />
+            <div>
+              <div class="certificate-title">QuXAT Self Assessment Score</div>
+              <div id="certificateSubtitle" class="certificate-subtitle">Live scorecard</div>
+            </div>
+          </div>
+          <div class="certificate-body">
+            <div class="certificate-score">
+              <div id="scoreValue" class="score-value">0</div>
+              <div class="score-extra">
+                <span id="scoreBadge" class="badge">—</span>
+                <span id="scorePercent" class="pill">0%</span>
+              </div>
+            </div>
+            <div class="certificate-rows">
+              <div class="certificate-row"><span class="label">Date</span><span id="scoreDate"></span></div>
+              <div class="certificate-row"><span class="label">Selected Practices</span><span id="scoreSelectedCount">0</span></div>
+            </div>
+          </div>
+        </div>
         <h3 style="margin-top:12px;">Relevant Corrective Actions</h3>
         <ul id="actionsList" class="list"></ul>
       </section>
@@ -85,7 +105,12 @@
         const sugBox = document.getElementById('sugs');
         const sugList = document.getElementById('sugList');
         const resetBtn = document.getElementById('resetBtn');
-        const scoreSummary = document.getElementById('scoreSummary');
+        const scoreValue = document.getElementById('scoreValue');
+        const scoreBadge = document.getElementById('scoreBadge');
+        const scorePercent = document.getElementById('scorePercent');
+        const scoreDate = document.getElementById('scoreDate');
+        const scoreSelectedCount = document.getElementById('scoreSelectedCount');
+        const certificateSubtitle = document.getElementById('certificateSubtitle');
         const actionsList = document.getElementById('actionsList');
 
         const metrics = ISO_ITEMS.map((t, i) => ({ id: 'm'+i, name: t, points: Math.round(100 / ISO_ITEMS.length) }));
@@ -117,12 +142,24 @@
 
         function renderScoreCard(cls, score, selectedItems, missing){
           try {
-            const summary = [
-              'Score: ' + String(score) + ' / 100',
-              'Classification: ' + String(cls.label) + ' (' + String(cls.percent) + '%)'
-            ];
-            scoreSummary.innerHTML = '';
-            summary.forEach(t => { const li = document.createElement('li'); const d = document.createElement('div'); d.className='item-title'; d.textContent=t; li.appendChild(d); scoreSummary.appendChild(li); });
+            // Update core score visuals
+            scoreValue.textContent = String(score);
+            scoreValue.classList.add('animate'); setTimeout(()=>scoreValue.classList.remove('animate'), 320);
+            scorePercent.textContent = String(cls.percent) + '%';
+            certificateSubtitle.textContent = 'Classification: ' + String(cls.label);
+            const badgeMap = {
+              'Exemplary': 'badge-exemplary',
+              'Strong': 'badge-strong',
+              'Developing': 'badge-developing',
+              'Early': 'badge-early',
+              'Needs Immediate Improvement': 'badge-needs-improvement'
+            };
+            scoreBadge.textContent = String(cls.label);
+            scoreBadge.className = 'badge ' + (badgeMap[cls.label] || '');
+            scoreDate.textContent = new Date().toLocaleString();
+            scoreSelectedCount.textContent = String(Array.isArray(selectedItems) ? selectedItems.length : 0);
+
+            // Actions and improvements
             actionsList.innerHTML = '';
             const interpretation = (function(){
               if (score >= 90) return 'Maintain standardization, periodic audits, and continuous improvement cycles.';
