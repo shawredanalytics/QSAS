@@ -33,7 +33,6 @@
       <div class="grid sidebar">
         <aside class="card vtabs">
           <div class="vtabs-list">
-            <button id="quxatScoreBtn" class="btn">QuXAT Score</button>
             <label>
               Gap Assessment
               <select id="gapAssessmentSelect" class="btn">
@@ -228,11 +227,9 @@
           renderTable(hospTable, hospEmpty, hosp);
         }
 
-        const quxatScoreBtn = document.getElementById('quxatScoreBtn');
         const gapAssessmentSelect = document.getElementById('gapAssessmentSelect');
         tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
         tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
-        quxatScoreBtn.addEventListener('click', () => { try { window.open('/?section=QuXAT%20Score%20Home', '_blank'); } catch(e) { location.href='/?section=QuXAT%20Score%20Home'; } });
         gapAssessmentSelect.addEventListener('change', () => { const v = gapAssessmentSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
         refresh();
 
