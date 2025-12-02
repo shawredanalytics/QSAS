@@ -213,57 +213,76 @@ def render_quxat_home():
     st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
 
     st.subheader("Clients")
-    clients_list = [
-        "Apollo Hospitals - Kakinada — Andhra Pradesh",
-        "Gayathri Vidya Parishad – Medical College, Visakhapatnam — Andhra Pradesh",
-        "Satya Scans & Diagnostics — Kakinada, Andhra Pradesh",
-        "Aparna Hospital and Scan Centre — Nalgonda, Telangana",
-        "Dolphin Diagnostic Services — Visakhapatnam, Andhra Pradesh",
-        "Orange Diagnostics — Vijayawada, Andhra Pradesh",
-        "Quality Care Lab — Kakinada, Andhra Pradesh",
-        "Satya Scans & Diagnostics — Rajahmundary, Andhra Pradesh",
-        "RK Scans & Diagnostics — Guntur, Andhra Pradesh",
-        "Viltis Diagnostics — Tirupathi",
-        "Dr Raghu Diagnostic Centre — Vizianagaram, Andhra Pradesh",
-        "Star Prime Diagnostic Laboratory — Visakhapatnam, Andhra Pradesh",
-        "Siddhartha Medical College — Vijayawada, Andhra Pradesh",
-        "Shraddha Global Hospital — Hyderabad, Telangana",
-        "Surya Diagnostics — Hyderabad, Telangana",
-        "Sai Vijaya Diagnostics — Ongole, Andhra Pradesh",
-        "Reliance Gadimoga – Health Centre — Kakinada, Andhra Pradesh",
-        "Sigma Diagnostics — Hyderabad, Telangana",
-        "Apple Scans & Diagnostics — Ongole, Andhra Pradesh",
-        "Swathi Imaging & Diagnostics — Kakinada, Andhra Pradesh",
-        "Refracto Eye Hospital — Nizamabad, Telangana",
-        "Refracto Eye Hospital — Suchitra, Hyderabad, Telangana",
-        "AMRL Diagnostic Laboratory — Srinagar, Jammu & Kashmir",
-        "KIMS Hospitals — Ananthapur, Visakhapatnam",
-        "Medithics Diagnostic Laboratory — Kolkata, West Bengal",
-        "Vision Hospitals — Kakinada",
-        "Apollo Hospitals - Kakinada — Kakinada",
-        "Shraddha Global – Diagnostic Laboratory — Hyderabad, Telangana",
-        "Gospel Diagnostics — Guntur, Andhra Pradesh",
-        "Aswini Diagnostics — Vijayawada, Andhra Pradesh",
-        "AIMS Hospital — Ongole, Andhra Pradesh",
-        "Sunshine Diagnostics — Kadapa, Andhra Pradesh",
-        "NIMRA Medical College Hospital — Vijayawada, Andhra Pradesh",
-        "Star Prime Diagnostic Laboratory — MVP Colony, Visakhapatnam, Andhra Pradesh",
-        "Unoclinix Diagnostic Laboratory — Visakhapatnam, Andhra Pradesh",
-        "Fastmed Diagnostics — Visakhapatnam, Andhra Pradesh",
-        "Dr. Elite Diagnostic Laboratory — Gopalpatnam, Visakhapatnam, Andhra Pradesh",
-        "Dr. Elite Diagnostic Laboratory — Dwarakanagar, Visakhapatnam, Andhra Pradesh",
-        "Dr. Elite Diagnostic Laboratory — Maharanipeta, Visakhapatnam, Andhra Pradesh",
-        "Dr. Elite Diagnostic Laboratory — Anakapalli, Visakhapatnam, Andhra Pradesh",
-        "Eyecon Care Hospital — Vijayawada, Andhra Pradesh",
-        "Galla Group of Hospitals — Tirupathi",
-        "Rohini Diagnostic Laboratory — Rajahmundary, Andhra Pradesh",
-        "Dolphin Diagnostic Services – Khammam — Khammam, Telangana",
-        "Sreelatha Hospital — Nalgonda, Telangana",
-        "Refracto Eye Hospital — Kondapur, Hyderabad",
+    clients_data = [
+        ("Apollo Hospitals - Kakinada", "Kakinada", "Andhra Pradesh"),
+        ("Gayathri Vidya Parishad – Medical College", "Visakhapatnam", "Andhra Pradesh"),
+        ("Satya Scans & Diagnostics", "Kakinada", "Andhra Pradesh"),
+        ("Aparna Hospital and Scan Centre", "Nalgonda", "Telangana"),
+        ("Dolphin Diagnostic Services", "Visakhapatnam", "Andhra Pradesh"),
+        ("Orange Diagnostics", "Vijayawada", "Andhra Pradesh"),
+        ("Quality Care Lab", "Kakinada", "Andhra Pradesh"),
+        ("Satya Scans & Diagnostics", "Rajahmundry", "Andhra Pradesh"),
+        ("RK Scans & Diagnostics", "Guntur", "Andhra Pradesh"),
+        ("Viltis Diagnostics", "Tirupati", "Andhra Pradesh"),
+        ("Dr Raghu Diagnostic Centre", "Vizianagaram", "Andhra Pradesh"),
+        ("Star Prime Diagnostic Laboratory", "Visakhapatnam", "Andhra Pradesh"),
+        ("Siddhartha Medical College", "Vijayawada", "Andhra Pradesh"),
+        ("Shraddha Global Hospital", "Hyderabad", "Telangana"),
+        ("Surya Diagnostics", "Hyderabad", "Telangana"),
+        ("Sai Vijaya Diagnostics", "Ongole", "Andhra Pradesh"),
+        ("Reliance Gadimoga – Health Centre", "Kakinada", "Andhra Pradesh"),
+        ("Sigma Diagnostics", "Hyderabad", "Telangana"),
+        ("Apple Scans & Diagnostics", "Ongole", "Andhra Pradesh"),
+        ("Swathi Imaging & Diagnostics", "Kakinada", "Andhra Pradesh"),
+        ("Refracto Eye Hospital", "Nizamabad", "Telangana"),
+        ("Refracto Eye Hospital", "Suchitra, Hyderabad", "Telangana"),
+        ("AMRL Diagnostic Laboratory", "Srinagar", "Jammu & Kashmir"),
+        ("KIMS Hospitals", "Ananthapur & Visakhapatnam", "Andhra Pradesh"),
+        ("Medithics Diagnostic Laboratory", "Kolkata", "West Bengal"),
+        ("Vision Hospitals", "Kakinada", "Andhra Pradesh"),
+        ("Apollo Hospitals - Kakinada", "Kakinada", "Andhra Pradesh"),
+        ("Shraddha Global – Diagnostic Laboratory", "Hyderabad", "Telangana"),
+        ("Gospel Diagnostics", "Guntur", "Andhra Pradesh"),
+        ("Aswini Diagnostics", "Vijayawada", "Andhra Pradesh"),
+        ("AIMS Hospital", "Ongole", "Andhra Pradesh"),
+        ("Sunshine Diagnostics", "Kadapa", "Andhra Pradesh"),
+        ("NIMRA Medical College Hospital", "Vijayawada", "Andhra Pradesh"),
+        ("Star Prime Diagnostic Laboratory", "MVP Colony, Visakhapatnam", "Andhra Pradesh"),
+        ("Unoclinix Diagnostic Laboratory", "Visakhapatnam", "Andhra Pradesh"),
+        ("Fastmed Diagnostics", "Visakhapatnam", "Andhra Pradesh"),
+        ("Dr. Elite Diagnostic Laboratory", "Gopalpatnam, Visakhapatnam", "Andhra Pradesh"),
+        ("Dr. Elite Diagnostic Laboratory", "Dwarakanagar, Visakhapatnam", "Andhra Pradesh"),
+        ("Dr. Elite Diagnostic Laboratory", "Maharanipeta, Visakhapatnam", "Andhra Pradesh"),
+        ("Dr. Elite Diagnostic Laboratory", "Anakapalli, Visakhapatnam", "Andhra Pradesh"),
+        ("Eyecon Care Hospital", "Vijayawada", "Andhra Pradesh"),
+        ("Galla Group of Hospitals", "Tirupati", "Andhra Pradesh"),
+        ("Rohini Diagnostic Laboratory", "Rajahmundry", "Andhra Pradesh"),
+        ("Dolphin Diagnostic Services – Khammam", "Khammam", "Telangana"),
+        ("Sreelatha Hospital", "Nalgonda", "Telangana"),
+        ("Refracto Eye Hospital", "Kondapur, Hyderabad", "Telangana"),
     ]
-    chips_html = "<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:center'>" + \
-        "".join([f"<span class='pill'>{c}</span>" for c in clients_list]) + "</div>"
-    st.markdown(chips_html, unsafe_allow_html=True)
+    # Group by state for neat ordering and color coding
+    color_by_state = {
+        "Andhra Pradesh": "#e9fff3",
+        "Telangana": "#fce7f3",
+        "West Bengal": "#fff7ed",
+        "Jammu & Kashmir": "#f5f3ff",
+    }
+    groups = {}
+    for name, city, state in clients_data:
+        groups.setdefault(state, []).append((name, city))
+    # Render groups in a consistent order
+    order = ["Andhra Pradesh", "Telangana", "West Bengal", "Jammu & Kashmir"]
+    for state in order:
+        items = sorted(groups.get(state, []), key=lambda x: (x[0], x[1]))
+        if not items:
+            continue
+        st.markdown(f"<div class='qTitle' style='margin-top:8px'>{state}</div>", unsafe_allow_html=True)
+        chips = []
+        bg = color_by_state.get(state, "#eef3ff")
+        for (name, city) in items:
+            chips.append(f"<span class='pill' style='background:{bg};margin:4px 6px;display:inline-block'>{name} — {city}</span>")
+        st.markdown("<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
