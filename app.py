@@ -155,6 +155,12 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
             pass
 
 def render_quxat_home():
+    try:
+        c1, c2, c3 = st.columns([1,2,1])
+        with c2:
+            st.image("assets/QuXAT Logo Facebook.png")
+    except Exception:
+        st.image("assets/QuXAT Logo Facebook.png")
     st.title("QuXAT Score — fast, credible, actionable")
     st.write("Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.")
     cta = st.button("Start Self Assessment", type="primary", use_container_width=True)
