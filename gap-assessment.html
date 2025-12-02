@@ -23,9 +23,6 @@
       <div class="hero-inner">
         <h1 class="hero-title" id="gapTitle">Gap Assessment</h1>
         <p class="hero-subtitle" id="gapSub">Obtain Expert Quality Accreditation / Certification guidance to achieve and sustain organizations Quality Accreditations / Certifications. Choose a gap assessment process to understand the gaps to be complied to obtain Quality Accreditations/Certifications. Contact the concerned advisory team for advisory support and guidance.</p>
-        <div class="actions" style="justify-content:center; margin-top: 10px;">
-          <button id="goQuxatScoreBtn" class="btn btn-primary">QuXAT Score</button>
-        </div>
       </div>
     </section>
 
@@ -344,8 +341,6 @@
           } catch(e) {}
         }
         document.getElementById('downloadReportBtn').addEventListener('click', downloadReport);
-        // Navigate to Streamlit QuXAT Score Home
-        try { document.getElementById('goQuxatScoreBtn').addEventListener('click', function(){ try { window.top.location.href = '/?section=QuXAT%20Score%20Home'; } catch(e){ window.location.href='/?section=QuXAT%20Score%20Home'; } }); } catch(e){}
         document.getElementById('downloadScoreBtn').addEventListener('click', function(){
           const d = window.__gapLatest || { plan: plan.title, ids: Array.from(selected), score: 0, cls: { label:'', percent:0, suggestions:[] }, selectedItems: metrics.filter(m=>selected.has(m.id)).map(m=>m.name), org: (orgInput&&orgInput.value)||'', email: (emailInput&&emailInput.value)||'' };
           const title = 'QuXAT Self Assessment Score Card';
