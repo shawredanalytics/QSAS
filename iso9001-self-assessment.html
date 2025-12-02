@@ -170,20 +170,58 @@
             const { jsPDF } = window.jspdf || {};
             if (jsPDF) {
               const doc = new jsPDF({ unit:'pt', format:'a4' });
-              const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight(); const m = 40; const mw = pw - 2*m; let y = m;
-              const write = (t, opts={}) => { const lines = doc.splitTextToSize(String(t||''), mw); const lh = Number(opts.lh||16); lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y+=lh; }); };
-              doc.setFont('helvetica','bold'); doc.setFontSize(18); write(title, { lh: 22 });
+              const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight();
+              const m = 40; const mw = pw - 2*m; let y = m;
+              // Certificate border
+              doc.setDrawColor(51,65,85); doc.setLineWidth(1.2);
+              doc.rect(m-6, m-6, pw - 2*(m-6), ph - 2*(m-6));
+              // Header branding
+              const logo = (window.QSAS_ASSETS && (window.QSAS_ASSETS['assets/QuXAT Logo Facebook.png'] || window.QSAS_ASSETS['assets/QuXAT%20Logo%20Facebook.png'])) || '';
+              if (logo) {
+                try { const lw = 120; doc.addImage(logo, 'PNG', m, y, lw, 60); } catch(e) {}
+              }
+              doc.setFont('helvetica','bold'); doc.setFontSize(22);
+              const centerX = m + mw/2;
+              doc.text(title, centerX, y + 24, { align:'center', maxWidth: mw });
               doc.setFont('helvetica','normal'); doc.setFontSize(12);
-              write('Organization: ' + String(d.org||''));
-              write('Email: ' + String(d.email||''));
+              y += 80;
+              // Certificate body
+              const write = (t, lh=16) => {
+                const lines = doc.splitTextToSize(String(t||''), mw);
+                lines.forEach(line=>{ if (y>ph-m) { doc.addPage(); y=m; } doc.text(line, m, y); y+=lh; });
+              };
+              // Organization block
+              doc.setFont('helvetica','bold'); write('Organization', 18); doc.setFont('helvetica','normal');
+              write('Name: ' + String(d.org||'-'));
+              write('Email: ' + String(d.email||'-'));
               write('Date: ' + new Date().toLocaleString());
-              write('Selected Items: ' + String(d.ids.length));
-              write('Score: ' + String(d.score) + ' / 100');
-              write('Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)');
-              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Selected:', { lh: 18 });
-              doc.setFont('helvetica','normal'); doc.setFontSize(12); (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24).forEach(it=>write('- ' + String(it)));
-              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Suggested Improvements:', { lh: 18 });
-              doc.setFont('helvetica','normal'); doc.setFontSize(12); const missing = ISO_ITEMS.filter(t=>!(Array.isArray(d.selectedItems)?d.selectedItems:[]).includes(t)); missing.slice(0,24).forEach(s=>write('- ' + String(s)));
+              y += 6;
+              // Score block with highlight
+              const boxY = y; const boxH = 66; const boxW = mw; doc.setDrawColor(71,116,226); doc.setLineWidth(0.8); doc.rect(m, boxY, boxW, boxH);
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('QuXAT Self‑Assessment Score', m+10, boxY+22);
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              doc.text('Score: ' + String(d.score) + ' / 100', m+10, boxY+40);
+              doc.text('Classification: ' + String(d.cls.label||'—') + ' (' + String(d.cls.percent||0) + '%)', m+220, boxY+40);
+              y = boxY + boxH + 16;
+              // Selected items
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Selected Practices:', 18);
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              (Array.isArray(d.selectedItems)?d.selectedItems:[]).slice(0,24).forEach(it=>{ write('• ' + String(it)); });
+              // Suggested improvements
+              doc.setFont('helvetica','bold'); doc.setFontSize(14); write('Suggested Improvements:', 18);
+              doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              const missing = ISO_ITEMS.filter(t=>!(Array.isArray(d.selectedItems)?d.selectedItems:[]).includes(t));
+              missing.slice(0,24).forEach(s=>{ write('• ' + String(s)); });
+              y += 10;
+              // Prepared/Approved signature fields
+              const line = (label, yy) => { doc.text(String(label)+': ______________________________', m, yy); };
+              let sy = y + 10; doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Prepared By', m, sy); sy += 18; doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              line('Name', sy); sy += 18; line('Designation', sy); sy += 18; line('Signature', sy); sy += 18; line('Date', sy);
+              sy += 28; doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('Approved By', m, sy); sy += 18; doc.setFont('helvetica','normal'); doc.setFontSize(12);
+              line('Name', sy); sy += 18; line('Designation', sy); sy += 18; line('Signature', sy); sy += 18; line('Date', sy);
+              // Optional seal
+              const seal = (window.QSAS_ASSETS && window.QSAS_ASSETS['assets/QuXAT_Round_Seal.png']) || '';
+              if (seal) { try { doc.addImage(seal, 'PNG', m + mw - 120, ph - m - 120, 96, 96); } catch(e) {} }
               doc.save('qsas_iso9001_score_card.pdf'); return;
             }
           } catch(e) {}
