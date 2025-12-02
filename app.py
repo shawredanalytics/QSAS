@@ -368,7 +368,7 @@ def render_self_assessment():
     st.markdown("<div class='saCard'>", unsafe_allow_html=True)
     in_cols = st.columns(2)
     with in_cols[0]:
-        org = st.text_input("Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
+        org = st.text_input("Healthcare Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
     with in_cols[1]:
         email = st.text_input("Designated Email", value=st.session_state.get("sa_email", ""), key="sa_email")
     st.markdown("</div>", unsafe_allow_html=True)
@@ -376,7 +376,7 @@ def render_self_assessment():
     phone = "916301237212"
     msg = (
         f"Request for Verified Certificate\n"
-        f"Organization: {org or '-'}\n"
+        f"Healthcare Organization: {org or '-'}\n"
         f"Email: {email or '-'}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
@@ -396,7 +396,7 @@ def render_self_assessment():
     if st.button("Register for Verified Certificate", type="primary", use_container_width=True):
         valid_email = bool(email and "@" in email and "." in email)
         if not (org and org.strip()) or not valid_email:
-            st.warning("Please enter Organization Name and a valid Designated Email to proceed with verification.")
+            st.warning("Please enter Healthcare Organization Name and a valid Designated Email to proceed with verification.")
         else:
             st.success("Preparing WhatsApp message…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")

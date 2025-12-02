@@ -154,7 +154,7 @@
         const lines = s.selectedMetrics.map(m => `- ${m.name}`).join("\n");
         const sug = Array.isArray(s.suggestions) && s.suggestions.length ? `\nSuggested Improvements:\n${s.suggestions.map(x => `- ${x}`).join("\n")}\n` : "";
         const extra = [
-          s.orgName ? `Organization: ${s.orgName}` : null,
+          s.orgName ? `Healthcare Organization: ${s.orgName}` : null,
           s.orgType ? `Organization Type: ${s.orgType}` : null,
           s.repName ? `Representative Name: ${s.repName}` : null,
           s.repDesignation ? `Designation: ${s.repDesignation}` : null,

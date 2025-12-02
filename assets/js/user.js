@@ -530,9 +530,9 @@
     // Customize organization detail labels/placeholders based on category
     try {
       const cat = deriveCategory(currentCategory);
-      let nameLabel = 'Organization Name';
+      let nameLabel = 'Healthcare Organization Name';
       let namePlaceholder = 'Your organization';
-      let summaryText = 'Enter Organization Details';
+      let summaryText = 'Enter Healthcare Organization Details';
       if (cat === 'Schools') {
         nameLabel = 'Name of the School';
         namePlaceholder = 'Your school';
@@ -554,9 +554,9 @@
         namePlaceholder = 'Your office or company';
         summaryText = 'Enter Office/Corporate Details';
       } else if (cat === 'Public & Community Organizations') {
-        nameLabel = 'Name of the Organization / Department';
+        nameLabel = 'Name of the Healthcare Organization / Department';
         namePlaceholder = 'Your organization or department';
-        summaryText = 'Enter Organization/Department Details';
+        summaryText = 'Enter Healthcare Organization/Department Details';
       }
       if (orgNameLabelEl) orgNameLabelEl.childNodes[0].nodeValue = nameLabel + '\n';
       if (orgNameInput) orgNameInput.placeholder = namePlaceholder;

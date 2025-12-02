@@ -91,13 +91,13 @@
                 <button id="isoSaveBtn" class="btn">Save Data</button>
                 <button id="isoClearBtn" class="btn btn-danger">Clear</button>
               </div>
-              <h4 style="margin-top:10px;">Organization Details</h4>
+              <h4 style="margin-top:10px;">Healthcare Organization Details</h4>
               <label>
-                Organization Name
+                Healthcare Organization Name
                 <input type="text" id="isoOrgName" placeholder="Enter organization name" />
               </label>
               <label>
-                Organization Address
+                Healthcare Organization Address
                 <textarea id="isoOrgAddr" rows="3" placeholder="Enter address"></textarea>
               </label>
               <div class="actions" style="margin-top:10px;">
@@ -342,7 +342,7 @@
             const ensureSpace = (h) => { if (y + h > ph - m) { doc.addPage(); y = m; } };
             doc.setFont('helvetica','bold'); doc.setFontSize(18); write('QuXAT Quality Metric Report', 22, true);
             doc.setFont('helvetica','normal'); doc.setFontSize(12);
-            if (org) write('Organization: ' + org);
+            if (org) write('Healthcare Organization: ' + org);
             if (addr) write('Address: ' + addr);
             write('Metric: ' + String(metric.name));
             write('Benchmark: ' + String(metric.benchmark) + '%');
