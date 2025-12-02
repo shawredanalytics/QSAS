@@ -16,6 +16,7 @@ body {
   background: #ffffff;
   color: var(--text);
 }
+img { max-width: 100%; height: auto; }
 
 /* Admin page theme overrides to align with Home page */
 body.admin { background: var(--bg); }
@@ -164,6 +165,8 @@ main.container .card:last-child { margin-bottom: 8px; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .actions .btn { min-width: 120px; }
 @media (max-width: 640px) { .actions { gap: 6px; } .btn { padding: 9px 12px; } }
+.btn { touch-action: manipulation; }
+@media (max-width: 640px) { .btn { width: 100%; min-width: 0; min-height: 44px; } }
 /* Vertical tabs for advisory plans */
 .vtabs { display: block; }
 .vtabs-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
@@ -218,6 +221,7 @@ main.container .card:last-child { margin-bottom: 8px; }
 .list .item-title { font-weight: 600; }
 .list .item-sub { color: var(--muted); }
 .list .item-actions { display: flex; gap: 8px; align-items: center; }
+@media (max-width: 640px) { .list li { grid-template-columns: 1fr; } }
 
 .checklist.colorful li:nth-child(3n+1) { background: #eef3ff; }
 .checklist.colorful li:nth-child(3n+2) { background: #e9fff3; }
@@ -347,6 +351,7 @@ code { background: #f2f6ff; border: 1px solid var(--border); padding: 2px 6px; b
   .certificate-logo { height: 48px; }
   .certificate-score .score-value { font-size: 1.9rem; }
 }
+@media (max-width: 640px) { .certificate-score { grid-template-columns: 1fr; } }
 
 /* Animations */
 .score-value.animate { animation: pop 300ms ease-out; }
