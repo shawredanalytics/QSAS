@@ -306,13 +306,6 @@ def render_self_assessment():
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
-    if st.button("Home — QuXAT Score", type="primary", use_container_width=True):
-        _set_query_section("QuXAT Score Home")
-        st.session_state["section"] = "QuXAT Score Home"
-        try:
-            st.rerun()
-        except Exception:
-            pass
     st.markdown("""
     <style>
     .saCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,46,90,.06);margin-bottom:12px}
@@ -400,6 +393,14 @@ def render_self_assessment():
         else:
             st.success("Preparing WhatsApp message…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
+    st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
+    if st.button("Home — QuXAT Score", type="primary", use_container_width=True, key="sa_home_bottom"):
+        _set_query_section("QuXAT Score Home")
+        st.session_state["section"] = "QuXAT Score Home"
+        try:
+            st.rerun()
+        except Exception:
+            pass
     
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
