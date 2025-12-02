@@ -47,6 +47,7 @@
           <div class="actions">
             <button id="resetBtn" class="btn btn-warning">Reset Selection</button>
             <button id="downloadScoreBtn" class="btn btn-primary">Download QSAS Score Card</button>
+            <button id="whatsappBtn" class="btn btn-success">Contact Advisory Team</button>
           </div>
         </div>
 
@@ -162,6 +163,21 @@
         } catch(e){}
 
         resetBtn.addEventListener('click', () => { selected.clear(); render(); update(); });
+
+        function openWhatsApp(){
+          const phone = '916301237212';
+          const latest = window.__qsasLatest || { ids: Array.from(selected) };
+          const cnt = Array.isArray(latest.ids) ? latest.ids.length : (selected.size || 0);
+          const msg = 'Hello QuXAT Advisory Team, I need assistance for ISO 9001:2015 self assessment. Selected items: ' + cnt + '.';
+          alert('We will open WhatsApp to contact +91 6301237212. If WhatsApp is not installed, the web WhatsApp page will open.');
+          const protoUrl = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(msg);
+          const webUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+          try {
+            const w = window.open(protoUrl, '_blank');
+            setTimeout(() => { try { if (!w || w.closed) window.open(webUrl, '_blank'); } catch(e){ window.open(webUrl, '_blank'); } }, 800);
+          } catch(e){ window.open(webUrl, '_blank'); }
+        }
+        document.getElementById('whatsappBtn').addEventListener('click', openWhatsApp);
 
         function downloadScore(){
           const d = window.__qsasLatest || { ids: [], score: 0, cls: { label:'', percent:0 }, selectedItems: [], org: (orgInput&&orgInput.value)||'', email: (emailInput&&emailInput.value)||'' };
