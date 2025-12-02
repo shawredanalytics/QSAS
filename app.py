@@ -234,18 +234,12 @@ def render_sidebar_once():
         # Primary navigation
         quxat_score = st.button("QuXAT Score", type="primary", use_container_width=True)
         if quxat_score:
-            try:
-                try:
-                    st.query_params.clear()
-                except Exception:
-                    pass
-                st.query_params["section"] = "QuXAT Score Home"
-            except Exception:
-                try:
-                    st.experimental_set_query_params(section="QuXAT Score Home")
-                except Exception:
-                    pass
+            _set_query_section("QuXAT Score Home")
             st.session_state["section"] = "QuXAT Score Home"
+            try:
+                st.rerun()
+            except Exception:
+                pass
 
         gap_choice = st.selectbox("Gap Assessment", ["Select…", "ISO 9001:2015"], index=0)
         if gap_choice == "ISO 9001:2015":
@@ -262,6 +256,10 @@ def render_sidebar_once():
                 except Exception:
                     pass
             st.session_state["section"] = "Gap Assessment"
+            try:
+                st.rerun()
+            except Exception:
+                pass
 
         # Visual separation, admin actions moved to the bottom area
         try:
