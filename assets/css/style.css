@@ -219,6 +219,10 @@ main.container .card:last-child { margin-bottom: 8px; }
 .list .item-sub { color: var(--muted); }
 .list .item-actions { display: flex; gap: 8px; align-items: center; }
 
+.checklist.colorful li:nth-child(3n+1) { background: #eef3ff; }
+.checklist.colorful li:nth-child(3n+2) { background: #e9fff3; }
+.checklist.colorful li:nth-child(3n+3) { background: #f3eaff; }
+
 .checklist li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; }
 .checklist input[type=checkbox] { transform: scale(1.2); }
 /* Larger radios for easier selection */
