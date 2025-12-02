@@ -230,7 +230,13 @@
         const gapAssessmentSelect = document.getElementById('gapAssessmentSelect');
         tabLabs.addEventListener('click', () => { labsPanel.hidden = false; hospPanel.hidden = true; tabLabs.className='btn btn-primary'; tabHosp.className='btn'; });
         tabHosp.addEventListener('click', () => { labsPanel.hidden = true; hospPanel.hidden = false; tabLabs.className='btn'; tabHosp.className='btn btn-primary'; });
-        gapAssessmentSelect.addEventListener('change', () => { const v = gapAssessmentSelect.value; if (v === 'ISO9001') { try { window.open('gap-assessment.html?plan=ISO9001', '_blank'); } catch(e) { location.href = 'gap-assessment.html?plan=ISO9001'; } } });
+        gapAssessmentSelect.addEventListener('change', () => {
+          const v = gapAssessmentSelect.value;
+          if (v === 'ISO9001') {
+            const url = '/?section=Gap%20Assessment&plan=ISO9001';
+            try { window.top.location.href = url; } catch(e) { location.href = url; }
+          }
+        });
         refresh();
 
         const ISO_METRICS = [
