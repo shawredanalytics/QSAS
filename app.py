@@ -158,9 +158,9 @@ def render_quxat_home():
     try:
         c1, c2, c3 = st.columns([1,2,1])
         with c2:
-            st.image("assets/QuXAT Logo Facebook.png", width=162)
+            st.markdown("<div style=\"text-align:center;\"><img src='assets/QuXAT%20Logo%20Facebook.png' alt='QuXAT' style=\"display:block;margin:0 auto;max-width:162px;\"/></div>", unsafe_allow_html=True)
     except Exception:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
+        st.markdown("<div style=\"text-align:center;\"><img src='assets/QuXAT%20Logo%20Facebook.png' alt='QuXAT' style=\"display:block;margin:0 auto;max-width:162px;\"/></div>", unsafe_allow_html=True)
     st.markdown(
         """
         <div style="text-align:center;">
