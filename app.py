@@ -171,6 +171,8 @@ def render_quxat_home():
     st.markdown(
         """
         <style>
+        .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:8px}
+        .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
         .qHero{background:linear-gradient(90deg,#fce7f3 0%,#e0f2fe 35%,#ecfccb 70%,#f5f3ff 100%);border:1px solid #e7ecf5;border-radius:12px;padding:22px;box-shadow:0 8px 22px rgba(10,46,90,.08) inset;margin-bottom:12px}
         .qRow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
         @media(max-width:860px){.qRow{grid-template-columns:1fr}}
@@ -308,6 +310,8 @@ def render_self_assessment():
         pass
     st.markdown("""
     <style>
+    .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:8px}
+    .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
     .saCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,46,90,.06);margin-bottom:12px}
     .saGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     @media(max-width:860px){.saGrid{grid-template-columns:1fr}}
