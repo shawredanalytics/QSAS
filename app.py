@@ -163,7 +163,7 @@ def render_quxat_home():
         """
         <div style="text-align:center;">
           <div style="font-size:2.0rem;font-weight:700;letter-spacing:.2px;">QuXAT Score — fast, credible, actionable</div>
-          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of your organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.</div>
+          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of a healthcare organization in minutes. See a clear score, understand the quality and safety maturity level of the healthcare organization, and act on targeted improvements.</div>
         </div>
         """,
         unsafe_allow_html=True,
