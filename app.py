@@ -373,6 +373,12 @@ def render_self_assessment():
     [data-testid="stCheckbox"] input[type="checkbox"]{accent-color:#22c55e}
     .saCard{background:#ffffff;border:1px solid #e7ecf5;border-radius:16px;padding:18px;box-shadow:0 8px 22px rgba(10,46,90,.06);margin-bottom:12px;transition:box-shadow .12s ease}
     .saCard:hover{box-shadow:0 12px 28px rgba(10,46,90,.10)}
+    .saCardPink{background:#fff0f4;border-color:#ffd1e1}
+    .saCardBlue{background:#eef6ff;border-color:#cfe3ff}
+    .saCardGreen{background:#ecfdf5;border-color:#c8f3e3}
+    .saCardPurple{background:#f5f3ff;border-color:#e5e3ff}
+    .saCardOrange{background:#fff7ed;border-color:#fde5c7}
+    .saCardTeal{background:#f0fdfa;border-color:#ccfbf1}
     .saGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     @media(max-width:860px){.saGrid{grid-template-columns:1fr}}
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef3ff;border:1px solid #e7ecf5}
@@ -420,7 +426,7 @@ def render_self_assessment():
     else:
         label = "Needs Immediate Improvement"
     st.markdown(
-        f"<div class='saCard'>"
+        f"<div class='saCard saCardBlue'>"
         f"<div class='scoreVal'>{score} / 100<span class='badge'>{label} ({score}%)</span></div>"
         f"<div style='color:#6b778c'>Selected practices: {selected} of {len(items)}</div>"
         f"<div style='margin-top:8px;color:#6b778c'>For Advisory Support and clarification regarding the QuXAT Scoring Methodology — Contact the Advisory Team on WhatsApp Support @ +91 6301237212. "
@@ -437,7 +443,7 @@ def render_self_assessment():
         "Immediate improvement required — address safety‑critical gaps and define a 90‑day plan."
     )
     st.markdown(
-        f"<div class='saCard'><div class='qTitle'>QuXAT Score Status</div>"
+        f"<div class='saCard saCardPink'><div class='qTitle'>QuXAT Score Status</div>"
         f"<div style='margin-top:6px'>Your QuXAT Score: <strong>{score}/100</strong> — Classification: <span class='badge'>{label}</span></div>"
         f"<div style='margin-top:6px;color:#6b778c'>{status_desc}</div></div>",
         unsafe_allow_html=True,
@@ -445,7 +451,7 @@ def render_self_assessment():
     # Classification guide for users
     st.markdown(
         """
-        <div class='saCard'>
+        <div class='saCard saCardOrange'>
           <div class='qTitle'>Classification Guide</div>
           <div class='saGrid' style='margin-top:8px'>
             <div><span class='pill' style='background:#e9fff3'>Exemplary</span><div style='margin-top:6px;color:#6b778c'>Score ≥ 90</div></div>
@@ -581,7 +587,7 @@ def render_self_assessment():
             _parts.append(f"<strong>Email:</strong> {_email_clean}")
         _row = "<div style='margin-top:6px'>" + " &nbsp; | &nbsp; ".join(_parts) + "</div>" if _parts else ""
         _preview = f"""
-        <div class='saCard'>
+        <div class='saCard saCardGreen'>
           <div style='display:flex;align-items:center;gap:12px'>
             {('<img style="height:40px" src="data:image/png;base64,' + _logo_b64_prev + '"/>') if _logo_b64_prev else ''}
             <div class='qTitle'>QuXAT Self Assessment Score Card</div>
@@ -649,14 +655,14 @@ def render_self_assessment():
             pass
 
     st.markdown(
-        f"<div class='saCard'><div class='saGrid'>"
+        f"<div class='saCard saCardTeal'><div class='saGrid'>"
         f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
         f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
         f"</div></div>",
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div class='saCard'>", unsafe_allow_html=True)
+    st.markdown("<div class='saCard saCardPurple'>", unsafe_allow_html=True)
     in_cols = st.columns(2)
     with in_cols[0]:
         org = st.text_input("Healthcare Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
