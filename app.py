@@ -762,14 +762,32 @@ def render_resources():
     st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>Healthcare Quality Improvement — Resources</div>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Curated resources to support organized, credible improvement</div>", unsafe_allow_html=True)
     st.subheader("External Quality Improvement Programs")
-    st.markdown(
-        "<div class='resGrid'>"
-        "<div class='resCard resBlue'><div class='resTitle'>Accreditation & Standards</div><div class='resSub'>Frameworks, standards, and readiness guides.</div></div>"
-        "<div class='resCard resGreen'><div class='resTitle'>Proficiency & Benchmarking</div><div class='resSub'>Participation and comparative performance.</div></div>"
-        "<div class='resCard resPink'><div class='resTitle'>Audit & Assessment</div><div class='resSub'>Internal audits, external assessments, and checklists.</div></div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    _ext_html = """
+    <style>
+    .resBtn{display:inline-block;background:#2563eb;color:#fff;padding:6px 10px;border-radius:8px;text-decoration:none;border:1px solid #2563eb}
+    .resBtn:hover{background:#1e40af;border-color:#1e40af}
+    </style>
+    <div class='resGrid'>
+      <div class='resCard resBlue'>
+        <div class='resTitle' style='display:flex;align-items:center;gap:8px'>
+          <img src='https://www.jointcommission.org/favicon.ico' alt='JCI' style='height:20px'/> Accreditation & Standards
+        </div>
+        <div class='resSub'>Joint Commission accreditation programs and standards guidance.</div>
+        <div style='margin-top:8px'>
+          <a class='resBtn' href='https://www.jointcommission.org/en/accreditation' target='_blank' rel='noopener'>Explore Accreditation</a>
+        </div>
+      </div>
+      <div class='resCard resGreen'>
+        <div class='resTitle'>Proficiency & Benchmarking</div>
+        <div class='resSub'>Participation and comparative performance.</div>
+      </div>
+      <div class='resCard resPink'>
+        <div class='resTitle'>Audit & Assessment</div>
+        <div class='resSub'>Internal audits, external assessments, and checklists.</div>
+      </div>
+    </div>
+    """
+    st.markdown(_ext_html, unsafe_allow_html=True)
     st.subheader("Core Methods")
     st.markdown(
         "<div class='resGrid'>"
