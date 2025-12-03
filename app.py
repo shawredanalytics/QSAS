@@ -780,9 +780,11 @@ def render_resources():
       </div>
       <div class='resCard resGreen'>
         <div class='resTitle' style='display:flex;align-items:center;gap:8px'>
-          <img src='https://www.bio-rad.com/etc.clientlibs/bio-rad/clientlibs/clientlib-site/resources/images/favicon/favicon-32x32.png' alt='Bio‑Rad' style='height:20px'/> Proficiency & Benchmarking
+          Proficiency & Benchmarking
         </div>
-        <div class='resSub'>External Quality Assurance Services (EQAS) proficiency testing.</div>
+        <div class='resSub' style='display:flex;align-items:center;gap:8px'>
+          <img src='https://www.bio-rad.com/etc.clientlibs/bio-rad/clientlibs/clientlib-site/resources/images/favicon/favicon-32x32.png' alt='Bio‑Rad' style='height:20px'/> Bio‑Rad External Quality Assurance Services (EQAS) proficiency testing.
+        </div>
         <div style='margin-top:8px'>
           <a class='resBtn' href='https://www.bio-rad.com/en-in/category/external-quality-assurance-services-eqas?ID=4971a64c-8419-44bd-a17a-bd18a308f0d9' target='_blank' rel='noopener'>Explore Proficiency</a>
         </div>
