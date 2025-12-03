@@ -187,6 +187,13 @@ def render_quxat_home():
                     st.rerun()
                 except Exception:
                     pass
+            if st.button("Healthcare Quality Improvement — Resources", use_container_width=True, key="sb_resources_btn"):
+                _set_query_section("Resources")
+                st.session_state["section"] = "Resources"
+                try:
+                    st.rerun()
+                except Exception:
+                    pass
     except Exception:
         pass
     st.markdown(
@@ -357,6 +364,13 @@ def render_self_assessment():
             if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn_sa"):
                 _set_query_section("QuXAT Score Home")
                 st.session_state["section"] = "QuXAT Score Home"
+                try:
+                    st.rerun()
+                except Exception:
+                    pass
+            if st.button("Healthcare Quality Improvement — Resources", use_container_width=True, key="sb_resources_btn_sa"):
+                _set_query_section("Resources")
+                st.session_state["section"] = "Resources"
                 try:
                     st.rerun()
                 except Exception:
@@ -711,6 +725,61 @@ def render_self_assessment():
         except Exception:
             pass
 
+def render_resources():
+    try:
+        st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
+    try:
+        with st.sidebar:
+            if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn_res"):
+                _set_query_section("QuXAT Score Home")
+                st.session_state["section"] = "QuXAT Score Home"
+                try:
+                    st.rerun()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    st.markdown(
+        """
+        <style>
+        .resGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+        @media(max-width:860px){.resGrid{grid-template-columns:1fr}}
+        .resCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(10,46,90,.06)}
+        .resPink{background:#fff0f4;border-color:#ffd1e1}
+        .resBlue{background:#eef6ff;border-color:#cfe3ff}
+        .resGreen{background:#ecfdf5;border-color:#c8f3e3}
+        .resPurple{background:#f5f3ff;border-color:#e5e3ff}
+        .resOrange{background:#fff7ed;border-color:#fde5c7}
+        .resTeal{background:#f0fdfa;border-color:#ccfbf1}
+        .resTitle{font-weight:700}
+        .resSub{color:#6b778c}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>Healthcare Quality Improvement — Resources</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Curated resources to support organized, credible improvement</div>", unsafe_allow_html=True)
+    st.subheader("External Quality Improvement Programs")
+    st.markdown(
+        "<div class='resGrid'>"
+        "<div class='resCard resBlue'><div class='resTitle'>Accreditation & Standards</div><div class='resSub'>Frameworks, standards, and readiness guides.</div></div>"
+        "<div class='resCard resGreen'><div class='resTitle'>Proficiency & Benchmarking</div><div class='resSub'>Participation and comparative performance.</div></div>"
+        "<div class='resCard resPink'><div class='resTitle'>Audit & Assessment</div><div class='resSub'>Internal audits, external assessments, and checklists.</div></div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.subheader("Core Methods")
+    st.markdown(
+        "<div class='resGrid'>"
+        "<div class='resCard resOrange'><div class='resTitle'>Measurement & KPIs</div><div class='resSub'>Define indicators and track progress.</div></div>"
+        "<div class='resCard resPurple'><div class='resTitle'>Risk Management</div><div class='resSub'>Identify, assess, and mitigate risks.</div></div>"
+        "<div class='resCard resTeal'><div class='resTitle'>CAPA & PDSA</div><div class='resSub'>Structured corrective actions and rapid cycles.</div></div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
@@ -979,6 +1048,8 @@ elif section == "QuXAT Score Home":
     render_quxat_home()
 elif section == "Self Assessment":
     render_self_assessment()
+elif section == "Resources":
+    render_resources()
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
