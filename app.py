@@ -764,8 +764,9 @@ def render_resources():
     st.subheader("External Quality Improvement Programs")
     _ext_html = """
     <style>
-    .resBtn{display:inline-block;background:#2563eb;color:#fff;padding:6px 10px;border-radius:8px;text-decoration:none;border:1px solid #2563eb}
-    .resBtn:hover{background:#1e40af;border-color:#1e40af}
+    .resBtn{display:inline-block;background:#1d4ed8;color:#ffffff !important;padding:8px 12px;border-radius:10px;text-decoration:none !important;border:1px solid #1d4ed8;font-weight:600;box-shadow:0 2px 6px rgba(10,46,90,.15)}
+    .resBtn:hover{background:#0b5bd7;border-color:#0b5bd7;color:#ffffff !important}
+    .resBtn:focus{outline:3px solid #93c5fd;outline-offset:2px}
     </style>
     <div class='resGrid'>
       <div class='resCard resBlue'>
