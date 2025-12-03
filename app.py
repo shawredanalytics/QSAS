@@ -496,39 +496,73 @@ def render_self_assessment():
     except Exception:
         org_email_row = ""
 
-    card_html = f"""
-    <!doctype html>
-    <html><head><meta charset='utf-8'><title>QuXAT Score Card</title>
-    <style>
-    body{{font-family:Arial,Segoe UI,system-ui; color:#0f172a; margin:24px}}
-    .wrap{{border:1px solid #e7ecf5; border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(10,46,90,.06)}}
-    .head{{display:flex; align-items:center; gap:12px;}}
-    .logo{{height:48px}}
-    .title{{font-weight:700; font-size:18px}}
-    .row{{margin-top:8px}}
-    .badge{{display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; border:1px solid #e7ecf5}}
-    </style></head><body>
-    <div class='wrap'>
-      <div class='head'>
-        {('<img class="logo" src="data:image/png;base64,' + logo_b64 + '"/>') if logo_b64 else ''}
-        <div class='title'>QuXAT Self Assessment Score Card</div>
-      </div>
-      <div class='row'><strong>Score ID:</strong> {score_id}</div>
-      {org_email_row}
-      <div class='row'><strong>Date:</strong> {now.strftime('%Y-%m-%d %H:%M:%S')}</div>
-      <div class='row'><strong>Score:</strong> {score}/100 &nbsp; | &nbsp; <strong>Classification:</strong> <span class='badge'>{label}</span></div>
-      <div class='row'><strong>Selected Practices:</strong> {selected} of {len(items)}</div>
-    </div>
-    </body></html>
-    """
-    enable_download = True
+    gen_clicked = st.button("Generate Score Card", type="primary", use_container_width=True)
+    if gen_clicked:
+        from datetime import datetime as _dt
+        _now = _dt.now()
+        _id_digits = _now.strftime('%Y%m%d%H%M%S')
+        _suffix = chr(65 + (_now.microsecond % 26)) + chr(65 + ((_now.microsecond // 26) % 26))
+        _score_id = _id_digits + _suffix
+        _date_str = _now.strftime('%Y-%m-%d %H:%M:%S')
+        try:
+            with open('assets/QuXAT Logo Facebook.png', 'rb') as lf:
+                import base64 as _b64
+                logo_b64 = _b64.b64encode(lf.read()).decode('ascii')
+        except Exception:
+            logo_b64 = ''
+        org_email_row = ""
+        try:
+            org_clean = (org or "").strip()
+            email_clean = (email or "").strip()
+            parts = []
+            if org_clean:
+                parts.append(f"<strong>Healthcare Organization:</strong> {org_clean}")
+            if email_clean:
+                parts.append(f"<strong>Email:</strong> {email_clean}")
+            if parts:
+                org_email_row = "<div class='row'>" + " &nbsp; | &nbsp; ".join(parts) + "</div>"
+        except Exception:
+            org_email_row = ""
+        card_html = f"""
+        <!doctype html>
+        <html><head><meta charset='utf-8'><title>QuXAT Score Card</title>
+        <style>
+        body{{font-family:Arial,Segoe UI,system-ui; color:#0f172a; margin:24px}}
+        .wrap{{border:1px solid #e7ecf5; border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(10,46,90,.06)}}
+        .head{{display:flex; align-items:center; gap:12px;}}
+        .logo{{height:48px}}
+        .title{{font-weight:700; font-size:18px}}
+        .row{{margin-top:8px}}
+        .badge{{display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; border:1px solid #e7ecf5}}
+        </style></head><body>
+        <div class='wrap'>
+          <div class='head'>
+            {('<img class="logo" src="data:image/png;base64,' + logo_b64 + '"/>') if logo_b64 else ''}
+            <div class='title'>QuXAT Self Assessment Score Card</div>
+          </div>
+          <div class='row'><strong>Score ID:</strong> {_score_id}</div>
+          {org_email_row}
+          <div class='row'><strong>Date:</strong> {_date_str}</div>
+          <div class='row'><strong>Score:</strong> {score}/100 &nbsp; | &nbsp; <strong>Classification:</strong> <span class='badge'>{label}</span></div>
+          <div class='row'><strong>Selected Practices:</strong> {selected} of {len(items)}</div>
+        </div>
+        </body></html>
+        """
+        st.session_state["score_id"] = _score_id
+        st.session_state["card_html"] = card_html
+        st.session_state["generated_at"] = _date_str
+        st.session_state["generated_score"] = score
+        st.session_state["generated_label"] = label
+        st.session_state["generated_selected"] = selected
+        st.session_state["generated_total"] = len(items)
+        st.success("Score card generated.")
 
     clicked = False
-    if enable_download:
+    if st.session_state.get("card_html"):
         clicked = st.download_button(
             label="Download QuXAT Score Card",
-            data=card_html.encode('utf-8'),
-            file_name=f"quxat_score_card_{score_id}.html",
+            data=st.session_state["card_html"].encode('utf-8'),
+            file_name=f"quxat_score_card_{st.session_state.get('score_id','')}.html",
             mime="text/html",
             use_container_width=True,
         )
@@ -543,12 +577,12 @@ def render_self_assessment():
             smtp_user = os.environ.get("SMTP_USER", "")
             smtp_pass = os.environ.get("SMTP_PASS", "")
             msg = EmailMessage()
-            msg["Subject"] = f"QuXAT Score Card Generated — {score_id}"
+            msg["Subject"] = f"QuXAT Score Card Generated — {st.session_state.get('score_id','')}"
             msg["From"] = smtp_user or "no-reply@quxat.com"
             msg["To"] = "quxat.team@gmail.com"
             body = (
                 f"QuXAT Score Card Generated\n\n"
-                f"Score ID: {score_id}\n"
+                f"Score ID: {st.session_state.get('score_id','')}\n"
                 f"Healthcare Organization: {org}\n"
                 f"Email: {email}\n"
                 f"Score: {score}/100 ({label})\n"
@@ -569,7 +603,7 @@ def render_self_assessment():
 
         try:
             wa_msg = (
-                f"QuXAT Score Card Generated%0AID: {score_id}%0AHealthcare Organization: {quote(org)}%0AEmail: {quote(email)}%0AScore: {score}/100 ({label})"
+                f"QuXAT Score Card Generated%0AID: {st.session_state.get('score_id','')}%0AHealthcare Organization: {quote(org)}%0AEmail: {quote(email)}%0AScore: {score}/100 ({label})"
             )
             wa_link = f"https://wa.me/916301237212?text={wa_msg}"
             st.markdown(f"[Notify Advisory Team on WhatsApp]({wa_link})")
@@ -594,23 +628,24 @@ def render_self_assessment():
 
     from urllib.parse import quote
     phone = "916301237212"
+    current_id = st.session_state.get("score_id", "")
     msg_ver = (
         f"Request for Verified Certificate\n"
         f"Healthcare Organization: {org or '-'}\n"
         f"Email: {email or '-'}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
-        f"Score ID: {score_id}\n"
+        f"Score ID: {current_id or 'N/A'}\n"
         f"Please assist with verification."
     )
     wa_url = f"https://wa.me/{phone}?text=" + quote(msg_ver)
-    mail_subject = f"QuXAT Verification Request — {score_id}"
+    mail_subject = f"QuXAT Verification Request — {current_id or 'N/A'}"
     mail_body = (
         f"Healthcare Organization: {org}\n"
         f"Email: {email}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
-        f"Score ID: {score_id}\n"
+        f"Score ID: {current_id or 'N/A'}\n"
         f"Please proceed with verification."
     )
     mailto_link = f"mailto:quxat.team@gmail.com?subject={quote(mail_subject)}&body={quote(mail_body)}"
