@@ -627,7 +627,7 @@ def render_self_assessment():
                     server.send_message(msg)
                 st.success("Score card details emailed to the advisory team.")
             else:
-                st.info("Email server not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in environment to enable auto email.")
+                pass
         except Exception:
             st.warning("Could not send email automatically. Please ensure SMTP settings are configured.")
 
