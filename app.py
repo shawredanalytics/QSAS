@@ -518,12 +518,7 @@ def render_self_assessment():
     </div>
     </body></html>
     """
-    valid_email = bool(email and "@" in email and "." in email)
-    if not (org and org.strip()) or not valid_email:
-        st.warning("Enter Healthcare Organization Name and a valid Email to enable score card download.")
-        enable_download = False
-    else:
-        enable_download = True
+    enable_download = True
 
     clicked = False
     if enable_download:
