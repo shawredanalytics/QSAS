@@ -207,6 +207,12 @@ def render_quxat_home():
         .qRow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
         @media(max-width:860px){.qRow{grid-template-columns:1fr}}
         .qCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(10,46,90,.06)}
+        .qCardPink{background:#fff0f4;border-color:#ffd1e1}
+        .qCardBlue{background:#eef6ff;border-color:#cfe3ff}
+        .qCardGreen{background:#ecfdf5;border-color:#c8f3e3}
+        .qCardPurple{background:#f5f3ff;border-color:#e5e3ff}
+        .qCardOrange{background:#fff7ed;border-color:#fde5c7}
+        .qCardTeal{background:#f0fdfa;border-color:#ccfbf1}
         .qIcon{font-size:22px;margin-right:8px}
         .qTitle{font-weight:600}
         .qSub{color:#6b778c}
@@ -234,39 +240,39 @@ def render_quxat_home():
     st.subheader("At a glance")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>✅</span>Assess</div><div class='qSub'>Tick implemented practices across essential domains.</div></div>", unsafe_allow_html=True)
+        st.markdown("<div class='qCard qCardGreen'><div class='qTitle'><span class='qIcon'>✅</span>Assess</div><div class='qSub'>Tick implemented practices across essential domains.</div></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>📊</span>Score</div><div class='qSub'>See a clear QuXAT Score with transparent classification.</div></div>", unsafe_allow_html=True)
+        st.markdown("<div class='qCard qCardBlue'><div class='qTitle'><span class='qIcon'>📊</span>Score</div><div class='qSub'>See a clear QuXAT Score with transparent classification.</div></div>", unsafe_allow_html=True)
     with col3:
-        st.markdown("<div class='qCard'><div class='qTitle'><span class='qIcon'>🔧</span>Improve</div><div class='qSub'>Act on relevant suggestions and corrective actions.</div></div>", unsafe_allow_html=True)
+        st.markdown("<div class='qCard qCardPink'><div class='qTitle'><span class='qIcon'>🔧</span>Improve</div><div class='qSub'>Act on relevant suggestions and corrective actions.</div></div>", unsafe_allow_html=True)
     st.subheader("How it works")
-    st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Practical metrics</div><div class='qSub'>Concise checklist focused on high‑impact processes.</div></div><div class='qCard'><div class='qTitle'>100‑point score</div><div class='qSub'>Each ‘Yes’ contributes equally; grouped into maturity bands.</div></div><div class='qCard'><div class='qTitle'>Guided actions</div><div class='qSub'>Unticked practices appear as suggestions with actions.</div></div></div>", unsafe_allow_html=True)
+    st.markdown("<div class='qRow'><div class='qCard qCardPurple'><div class='qTitle'>Practical metrics</div><div class='qSub'>Concise checklist focused on high‑impact processes.</div></div><div class='qCard qCardOrange'><div class='qTitle'>100‑point score</div><div class='qSub'>Each ‘Yes’ contributes equally; grouped into maturity bands.</div></div><div class='qCard qCardTeal'><div class='qTitle'>Guided actions</div><div class='qSub'>Unticked practices appear as suggestions with actions.</div></div></div>", unsafe_allow_html=True)
     st.subheader("Why it matters")
-    st.markdown("<div class='qRow'><div class='qCard'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
+    st.markdown("<div class='qRow'><div class='qCard qCardBlue'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard qCardGreen'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard qCardPink'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard'><div class='qTitle'>Medical Tourism</div><div class='qSub'>Attract international patients with credible quality indicators.</div></div>"
-                "<div class='qCard'><div class='qTitle'>International Benchmarking</div><div class='qSub'>Benchmark services against recognized global practices.</div></div>"
-                "<div class='qCard'><div class='qTitle'>Credit Worthiness</div><div class='qSub'>Demonstrable maturity to support lender and investor confidence.</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Medical Tourism</div><div class='qSub'>Attract international patients with credible quality indicators.</div></div>"
+                "<div class='qCard qCardOrange'><div class='qTitle'>International Benchmarking</div><div class='qSub'>Benchmark services against recognized global practices.</div></div>"
+                "<div class='qCard qCardTeal'><div class='qTitle'>Credit Worthiness</div><div class='qSub'>Demonstrable maturity to support lender and investor confidence.</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard'><div class='qTitle'>Public Reputation & Recognition</div><div class='qSub'>Earn trust and recognition in the community and industry.</div></div>"
+                "<div class='qCard qCardPink'><div class='qTitle'>Public Reputation & Recognition</div><div class='qSub'>Earn trust and recognition in the community and industry.</div></div>"
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Who benefits")
     st.markdown("<div class='qRow'>"
-                "<div class='qCard'><div class='qTitle'>Hospitals</div><div class='qSub'>Multi‑specialty, tertiary care and day‑care centers</div></div>"
-                "<div class='qCard'><div class='qTitle'>Diagnostic Laboratories</div><div class='qSub'>Pathology, biochemistry, microbiology, molecular</div></div>"
-                "<div class='qCard'><div class='qTitle'>Imaging Centers</div><div class='qSub'>CT, MRI, X‑ray, ultrasound and nuclear medicine</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>Hospitals</div><div class='qSub'>Multi‑specialty, tertiary care and day‑care centers</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>Diagnostic Laboratories</div><div class='qSub'>Pathology, biochemistry, microbiology, molecular</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Imaging Centers</div><div class='qSub'>CT, MRI, X‑ray, ultrasound and nuclear medicine</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard'><div class='qTitle'>Clinics</div><div class='qSub'>Out‑patient and specialty clinics</div></div>"
-                "<div class='qCard'><div class='qTitle'>Eye Hospitals</div><div class='qSub'>Ophthalmology hospitals and vision centers</div></div>"
-                "<div class='qCard'><div class='qTitle'>Medical Colleges</div><div class='qSub'>Teaching hospitals and academic departments</div></div>"
+                "<div class='qCard qCardTeal'><div class='qTitle'>Clinics</div><div class='qSub'>Out‑patient and specialty clinics</div></div>"
+                "<div class='qCard qCardPink'><div class='qTitle'>Eye Hospitals</div><div class='qSub'>Ophthalmology hospitals and vision centers</div></div>"
+                "<div class='qCard qCardOrange'><div class='qTitle'>Medical Colleges</div><div class='qSub'>Teaching hospitals and academic departments</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard'><div class='qTitle'>Blood Banks</div><div class='qSub'>Collection, processing and transfusion services</div></div>"
-                "<div class='qCard'><div class='qTitle'>Dental & Day‑Surgery</div><div class='qSub'>Dental clinics and ambulatory care centers</div></div>"
-                "<div class='qCard'><div class='qTitle'>Home Health</div><div class='qSub'>Home care, nursing and tele‑health providers</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>Blood Banks</div><div class='qSub'>Collection, processing and transfusion services</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>Dental & Day‑Surgery</div><div class='qSub'>Dental clinics and ambulatory care centers</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Home Health</div><div class='qSub'>Home care, nursing and tele‑health providers</div></div>"
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Clients")
