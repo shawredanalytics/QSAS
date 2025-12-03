@@ -159,6 +159,17 @@ def render_quxat_home():
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
+    try:
+        with st.sidebar:
+            if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn"):
+                _set_query_section("QuXAT Score Home")
+                st.session_state["section"] = "QuXAT Score Home"
+                try:
+                    st.rerun()
+                except Exception:
+                    pass
+    except Exception:
+        pass
     st.markdown(
         """
         <div style="text-align:center;">
@@ -306,6 +317,17 @@ def render_quxat_home():
 def render_self_assessment():
     try:
         st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
+    try:
+        with st.sidebar:
+            if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn_sa"):
+                _set_query_section("QuXAT Score Home")
+                st.session_state["section"] = "QuXAT Score Home"
+                try:
+                    st.rerun()
+                except Exception:
+                    pass
     except Exception:
         pass
     st.markdown("""
