@@ -342,7 +342,7 @@ def render_self_assessment():
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #e7ecf5;margin-left:6px}
     </style>
     """, unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Self Assessment</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score (Healthcare) — Organizational Self Assessment</div>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Tick implemented practices and see your score with guided actions</div>", unsafe_allow_html=True)
     items = [
         "Quality Policy approved, communicated, and reviewed",
