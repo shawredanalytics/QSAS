@@ -771,9 +771,11 @@ def render_resources():
     <div class='resGrid'>
       <div class='resCard resBlue'>
         <div class='resTitle' style='display:flex;align-items:center;gap:8px'>
-          <img src='https://www.jointcommission.org/favicon.ico' alt='JCI' style='height:20px'/> Accreditation & Standards
+          Accreditation & Standards
         </div>
-        <div class='resSub'>Joint Commission accreditation programs and standards guidance.</div>
+        <div class='resSub' style='display:flex;align-items:center;gap:8px'>
+          <img src='https://www.jointcommission.org/favicon.ico' alt='JCI' style='height:20px'/> Joint Commission accreditation programs and standards guidance.
+        </div>
         <div style='margin-top:8px'>
           <a class='resBtn' href='https://www.jointcommission.org/en/accreditation' target='_blank' rel='noopener'>Explore Accreditation</a>
         </div>
