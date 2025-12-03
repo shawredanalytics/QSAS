@@ -557,6 +557,36 @@ def render_self_assessment():
         st.session_state["generated_total"] = len(items)
         st.success("Score card generated.")
 
+    if st.session_state.get("score_id"):
+        try:
+            with open('assets/QuXAT Logo Facebook.png', 'rb') as lf:
+                import base64 as _b64
+                _logo_b64_prev = _b64.b64encode(lf.read()).decode('ascii')
+        except Exception:
+            _logo_b64_prev = ''
+        _org_clean = (org or '').strip()
+        _email_clean = (email or '').strip()
+        _parts = []
+        if _org_clean:
+            _parts.append(f"<strong>Healthcare Organization:</strong> {_org_clean}")
+        if _email_clean:
+            _parts.append(f"<strong>Email:</strong> {_email_clean}")
+        _row = "<div style='margin-top:6px'>" + " &nbsp; | &nbsp; ".join(_parts) + "</div>" if _parts else ""
+        _preview = f"""
+        <div class='saCard'>
+          <div style='display:flex;align-items:center;gap:12px'>
+            {('<img style="height:40px" src="data:image/png;base64,' + _logo_b64_prev + '"/>') if _logo_b64_prev else ''}
+            <div class='qTitle'>QuXAT Self Assessment Score Card</div>
+          </div>
+          <div style='margin-top:6px'><strong>Score ID:</strong> {st.session_state.get('score_id','')}</div>
+          {_row}
+          <div style='margin-top:6px'><strong>Date:</strong> {st.session_state.get('generated_at','')}</div>
+          <div style='margin-top:6px'><strong>Score:</strong> {st.session_state.get('generated_score',0)}/100 — <span class='badge'>{st.session_state.get('generated_label','')}</span></div>
+          <div style='margin-top:6px;color:#6b778c'><strong>Selected Practices:</strong> {st.session_state.get('generated_selected',0)} of {st.session_state.get('generated_total',0)}</div>
+        </div>
+        """
+        st.markdown(_preview, unsafe_allow_html=True)
+
     clicked = False
     if st.session_state.get("card_html"):
         clicked = st.download_button(
