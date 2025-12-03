@@ -363,6 +363,8 @@ def render_self_assessment():
     .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
     [data-testid="stDownloadButton"] button{background:#ff2e71 !important;color:#fff !important;border:1px solid #ff2e71 !important;border-radius:10px !important}
     [data-testid="stDownloadButton"] button:hover{background:#ff4a84 !important;border-color:#ff4a84 !important}
+    input[type="checkbox"]{accent-color:#22c55e}
+    [data-testid="stCheckbox"] input[type="checkbox"]{accent-color:#22c55e}
     .saCard{background:#ffffff;border:1px solid #e7ecf5;border-radius:16px;padding:18px;box-shadow:0 8px 22px rgba(10,46,90,.06);margin-bottom:12px;transition:box-shadow .12s ease}
     .saCard:hover{box-shadow:0 12px 28px rgba(10,46,90,.10)}
     .saGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
