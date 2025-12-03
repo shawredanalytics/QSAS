@@ -466,6 +466,12 @@ def render_self_assessment():
         email = st.text_input("Designated Email", value=st.session_state.get("sa_email", ""), key="sa_email")
     st.markdown("</div>", unsafe_allow_html=True)
 
+    from datetime import datetime
+    now = datetime.now()
+    id_digits = now.strftime('%Y%m%d%H%M%S')
+    suffix = chr(65 + (now.microsecond % 26)) + chr(65 + ((now.microsecond // 26) % 26))
+    score_id = id_digits + suffix  # 16-char alphanumeric
+
     phone = "916301237212"
     msg = (
         f"Request for Verified Certificate\n"
@@ -473,17 +479,13 @@ def render_self_assessment():
         f"Email: {email or '-'}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
+        f"Score ID: {score_id}\n"
         f"Please assist with verification."
     )
     from urllib.parse import quote
     wa_url = f"https://wa.me/{phone}?text=" + quote(msg)
 
     # QuXAT Score Card with logo and unique ID + download button
-    from datetime import datetime
-    now = datetime.now()
-    id_digits = now.strftime('%Y%m%d%H%M%S')
-    suffix = chr(65 + (now.microsecond % 26)) + chr(65 + ((now.microsecond // 26) % 26))
-    score_id = id_digits + suffix  # 16-char alphanumeric
     logo_b64 = ''
     try:
         with open('assets/QuXAT Logo Facebook.png', 'rb') as lf:
