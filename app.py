@@ -332,14 +332,21 @@ def render_self_assessment():
         pass
     st.markdown("""
     <style>
-    .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:8px}
+    .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:10px}
     .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
-    .saCard{background:#fff;border:1px solid #e7ecf5;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,46,90,.06);margin-bottom:12px}
+    .saCard{background:#ffffff;border:1px solid #e7ecf5;border-radius:16px;padding:18px;box-shadow:0 8px 22px rgba(10,46,90,.06);margin-bottom:12px;transition:box-shadow .12s ease}
+    .saCard:hover{box-shadow:0 12px 28px rgba(10,46,90,.10)}
     .saGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     @media(max-width:860px){.saGrid{grid-template-columns:1fr}}
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef3ff;border:1px solid #e7ecf5}
+    .pill:hover{background:#e6efff}
     .scoreVal{font-size:2rem;font-weight:700;color:#1f5eea}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #e7ecf5;margin-left:6px}
+    .badge-exemplary{background:#e9fff3;border-color:#c7f3dd}
+    .badge-strong{background:#fce7f3;border-color:#f7c2d8}
+    .badge-developing{background:#fff7ed;border-color:#fde5c7}
+    .badge-early{background:#eef3ff;border-color:#dbe4ff}
+    .badge-needs-improvement{background:#f5f3ff;border-color:#e5e3ff}
     </style>
     """, unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score (Healthcare) — Organizational Self Assessment</div>", unsafe_allow_html=True)
@@ -557,7 +564,7 @@ def render_self_assessment():
             st.success("Preparing WhatsApp message…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
     st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
-    if st.button("Home — QuXAT Score", type="primary", use_container_width=True, key="sa_home_bottom"):
+    if st.button("Return to QuXAT Score — Healthcare (Home Page)", type="primary", use_container_width=True, key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
         try:
