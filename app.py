@@ -11,9 +11,26 @@ ROOT = Path(__file__).parent
 # GitHub Gist fallback helpers defined early to avoid NameError when used below
 def _github_gist_id():
     try:
-        return str(st.secrets.get("GITHUB_GIST_ID") or os.environ.get("GITHUB_GIST_ID") or "")
+        raw = str(st.secrets.get("GITHUB_GIST_ID") or os.environ.get("GITHUB_GIST_ID") or "")
     except Exception:
-        return ""
+        raw = ""
+    try:
+        gid = raw.strip()
+        if gid.startswith("http"):
+            # Accept full gist URLs and extract the ID
+            # Examples:
+            # https://gist.github.com/user/<id>
+            # https://gist.github.com/<id>
+            # https://gist.github.com/user/<id>.js
+            parts = gid.split('/')
+            candidate = parts[-1] if parts else gid
+            candidate = candidate.split('?')[0]
+            candidate = candidate.split('#')[0]
+            candidate = candidate.replace('.js', '').replace('.git', '')
+            gid = candidate
+        return gid
+    except Exception:
+        return raw
 
 def _gh_headers():
     tok = str(st.secrets.get("GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN") or "")
@@ -38,6 +55,7 @@ def _github_get_gist_json(default=None):
         return default
     except Exception:
         return default
+
 
 def _github_put_gist_json(payload: dict, filename: str = "grid_registrations.json"):
     gid = _github_gist_id()
@@ -71,6 +89,7 @@ def file_to_data_url(rel_path: str) -> str:
     }.get(ext, "application/octet-stream")
     data = base64.b64encode(p.read_bytes()).decode("ascii")
     return f"data:{mime};base64,{data}"
+
 
 def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     html = read_text(html_rel)
@@ -168,10 +187,6 @@ def render_quxat_home():
                     st.rerun()
                 except Exception:
                     pass
-            st.markdown(
-                "<a href='/?section=Admin' style='display:block;background:#6a1b9a;color:#fff;text-align:center;padding:10px 12px;border-radius:10px;text-decoration:none;margin-top:12px'>QuXAT Score Admin</a>",
-                unsafe_allow_html=True,
-            )
     except Exception:
         pass
     st.markdown(
@@ -340,10 +355,6 @@ def render_self_assessment():
                     st.rerun()
                 except Exception:
                     pass
-            st.markdown(
-                "<a href='/?section=Admin' style='display:block;background:#6a1b9a;color:#fff;text-align:center;padding:10px 12px;border-radius:10px;text-decoration:none;margin-top:12px'>QuXAT Score Admin</a>",
-                unsafe_allow_html=True,
-            )
     except Exception:
         pass
     st.markdown("""
@@ -523,7 +534,7 @@ def render_self_assessment():
         )
 
     if clicked:
-        _append_admin_record("downloaded_score_card")
+        st.success("Score card downloaded.")
         try:
             import smtplib, ssl
             from email.message import EmailMessage
@@ -580,7 +591,6 @@ def render_self_assessment():
         else:
             st.success("Preparing WhatsApp message…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
-            _append_admin_record("requested_verification")
     st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
     if st.button("Return to QuXAT Score — Healthcare (Home Page)", type="primary", use_container_width=True, key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
@@ -590,42 +600,6 @@ def render_self_assessment():
         except Exception:
             pass
 
-def render_admin():
-    try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
-    except Exception:
-        pass
-    st.subheader("QuXAT Score Admin")
-    user = st.text_input("Admin Login", value="", placeholder="Username")
-    pwd = st.text_input("Password", value="", type="password", placeholder="Password")
-    proceed = st.button("Sign In", type="primary")
-    if proceed:
-        if (user.strip().lower() == "admin" or user.strip() == "Admin") and pwd == "QuXAT123":
-            st.session_state["admin_logged"] = True
-            st.success("Admin access granted.")
-        else:
-            st.error("Invalid credentials.")
-    if st.session_state.get("admin_logged"):
-        st.markdown("<div class='saCard'><div class='qTitle'>Organizations — Downloads & Verification Requests</div></div>", unsafe_allow_html=True)
-        try:
-            fp = Path("data") / "admin_records.json"
-            if fp.exists():
-                with fp.open("r", encoding="utf-8") as f:
-                    recs = json.load(f)
-            else:
-                recs = []
-        except Exception:
-            recs = []
-        if recs:
-            downloaded = [r for r in recs if r.get("action") == "downloaded_score_card"]
-            requested = [r for r in recs if r.get("action") == "requested_verification"]
-            st.write("Downloaded QuXAT Score Cards")
-            st.table([{ "Score ID": r.get("score_id"), "Healthcare Organization": r.get("org"), "Email": r.get("email"), "Score": r.get("score"), "Classification": r.get("label"), "When": r.get("ts") } for r in downloaded])
-            st.write("Applied for Verified Certificate")
-            st.table([{ "Score ID": r.get("score_id"), "Healthcare Organization": r.get("org"), "Email": r.get("email"), "Score": r.get("score"), "Classification": r.get("label"), "When": r.get("ts") } for r in requested])
-        else:
-            st.info("No records yet.")
-    
 
 st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
 
@@ -894,36 +868,9 @@ elif section == "QuXAT Score Home":
     render_quxat_home()
 elif section == "Self Assessment":
     render_self_assessment()
-elif section == "Admin":
-    render_admin()
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
     st.session_state["section"] = "QuXAT Score Home"
     _safe_embed("quxat-score.html", height=1200, scrolling=True)
-    # Helper to persist admin records
-    def _append_admin_record(action: str):
-        try:
-            root = Path("data")
-            root.mkdir(exist_ok=True)
-            fp = root / "admin_records.json"
-            if fp.exists():
-                with fp.open("r", encoding="utf-8") as f:
-                    recs = json.load(f)
-            else:
-                recs = []
-            recs.append({
-                "score_id": score_id,
-                "org": org or "",
-                "email": email or "",
-                "score": score,
-                "label": label,
-                "selected": selected,
-                "total": len(items),
-                "action": action,
-                "ts": now.isoformat(timespec='seconds')
-            })
-            with fp.open("w", encoding="utf-8") as f:
-                json.dump(recs, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
+    
