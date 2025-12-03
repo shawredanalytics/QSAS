@@ -459,6 +459,10 @@ def render_self_assessment():
         "Address safety‑critical gaps immediately and implement a 90‑day remediation plan."
     )
     
+    
+    # Ensure org/email variables exist before they are used below
+    org = st.session_state.get("sa_org", "")
+    email = st.session_state.get("sa_email", "")
 
     from datetime import datetime
     now = datetime.now()
