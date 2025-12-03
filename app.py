@@ -596,8 +596,8 @@ def render_admin():
     except Exception:
         pass
     st.subheader("QuXAT Score Admin")
-    user = st.text_input("Admin Login", value="", placeholder="Admin")
-    pwd = st.text_input("Password", value="", type="password", placeholder="QuXAT123")
+    user = st.text_input("Admin Login", value="", placeholder="Username")
+    pwd = st.text_input("Password", value="", type="password", placeholder="Password")
     proceed = st.button("Sign In", type="primary")
     if proceed:
         if (user.strip().lower() == "admin" or user.strip() == "Admin") and pwd == "QuXAT123":
