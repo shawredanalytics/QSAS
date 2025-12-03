@@ -178,17 +178,7 @@ def render_quxat_home():
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
-    try:
-        with st.sidebar:
-            if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn"):
-                _set_query_section("QuXAT Score Home")
-                st.session_state["section"] = "QuXAT Score Home"
-                try:
-                    st.rerun()
-                except Exception:
-                    pass
-    except Exception:
-        pass
+    # Sidebar hidden; no sidebar controls rendered
     st.markdown(
         """
         <div style="text-align:center;">
@@ -352,17 +342,7 @@ def render_self_assessment():
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
-    try:
-        with st.sidebar:
-            if st.button("QuXAT Score — Healthcare", use_container_width=True, key="sb_home_btn_sa"):
-                _set_query_section("QuXAT Score Home")
-                st.session_state["section"] = "QuXAT Score Home"
-                try:
-                    st.rerun()
-                except Exception:
-                    pass
-    except Exception:
-        pass
+    # Sidebar hidden; no sidebar controls rendered
     st.markdown("""
     <style>
     .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:10px}
@@ -713,12 +693,14 @@ def render_self_assessment():
 
 
 
-st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="collapsed")
 
 # Hide Streamlit's default 3-dots app menu on the top-right
 st.markdown(
     """
     <style>
+    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="stSidebarNavToggle"], button[aria-label*="sidebar"], button[aria-label*="Sidebar"] { display: none !important; }
     button[title="View app menu"] { display: none !important; visibility: hidden !important; }
     #MainMenu { display: none !important; visibility: hidden !important; }
     button[aria-label*="feedback"], button[title*="feedback"] { display: none !important; visibility: hidden !important; }
