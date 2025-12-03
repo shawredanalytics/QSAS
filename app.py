@@ -482,6 +482,20 @@ def render_self_assessment():
             logo_b64 = _b64.b64encode(lf.read()).decode('ascii')
     except Exception:
         logo_b64 = ''
+    org_email_row = ""
+    try:
+        org_clean = (org or "").strip()
+        email_clean = (email or "").strip()
+        parts = []
+        if org_clean:
+            parts.append(f"<strong>Healthcare Organization:</strong> {org_clean}")
+        if email_clean:
+            parts.append(f"<strong>Email:</strong> {email_clean}")
+        if parts:
+            org_email_row = "<div class='row'>" + " &nbsp; | &nbsp; ".join(parts) + "</div>"
+    except Exception:
+        org_email_row = ""
+
     card_html = f"""
     <!doctype html>
     <html><head><meta charset='utf-8'><title>QuXAT Score Card</title>
@@ -500,7 +514,7 @@ def render_self_assessment():
         <div class='title'>QuXAT Self Assessment Score Card</div>
       </div>
       <div class='row'><strong>Score ID:</strong> {score_id}</div>
-      <div class='row'><strong>Healthcare Organization:</strong> {org or '-'} &nbsp; | &nbsp; <strong>Email:</strong> {email or '-'}</div>
+      {org_email_row}
       <div class='row'><strong>Date:</strong> {now.strftime('%Y-%m-%d %H:%M:%S')}</div>
       <div class='row'><strong>Score:</strong> {score}/100 &nbsp; | &nbsp; <strong>Classification:</strong> <span class='badge'>{label}</span></div>
       <div class='row'><strong>Selected Practices:</strong> {selected} of {len(items)}</div>
