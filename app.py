@@ -176,7 +176,10 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
 def render_quxat_home():
     try:
         src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
+        if src:
+            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
+        else:
+            st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
     # Middle logo removed to keep only top and bottom logos
@@ -287,7 +290,10 @@ def render_self_assessment():
     embedded = bool(st.session_state.get("embed_sa", False))
     try:
         src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
+        if src:
+            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
+        else:
+            st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
     # Sidebar hidden; no sidebar controls rendered
@@ -653,7 +659,10 @@ def render_self_assessment():
 def render_footer():
     try:
         src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
+        if src:
+            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
+        else:
+            st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
         pass
     from datetime import datetime
