@@ -213,7 +213,12 @@ def render_quxat_home():
     )
     cta = st.button("Start Self Assessment", type="primary")
     if cta:
-        st.info("Scroll down to start your self assessment.")
+        _set_query_section("Self Assessment")
+        st.session_state["section"] = "Self Assessment"
+        try:
+            st.rerun()
+        except Exception:
+            pass
     st.markdown(
         """
         <div class="qHero">
@@ -350,20 +355,7 @@ def render_self_assessment():
         f"</div>",
         unsafe_allow_html=True,
     )
-    # Status card: Show QuXAT Score and classification clearly
-    status_desc = (
-        "Well‑established quality and safety practices with continual improvement." if score >= 90 else
-        "Strong systems in place; focus on audits and PDSA cycles to close minor gaps." if score >= 75 else
-        "Developing stage — formalize procedures, owners and KPIs with regular reviews." if score >= 50 else
-        "Early stage — establish governance, documentation and routine audits." if score >= 25 else
-        "Immediate improvement required — address safety‑critical gaps and define a 90‑day plan."
-    )
-    st.markdown(
-        f"<div class='saCard saCardPink'><div class='qTitle'>QuXAT Score Status</div>"
-        f"<div style='margin-top:6px'>Your QuXAT Score: <strong>{score}/100</strong> — Classification: <span class='badge'>{label}</span></div>"
-        f"<div style='margin-top:6px;color:#6b778c'>{status_desc}</div></div>",
-        unsafe_allow_html=True,
-    )
+    # Status card hidden to avoid repetition with the main score summary
     # Classification guide for users
     st.markdown(
         """
