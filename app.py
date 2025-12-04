@@ -922,8 +922,11 @@ elif section == "Self Assessment":
     render_self_assessment()
     render_footer()
 else:
-    # Default fallback: QuXAT Score Home
+    # Default fallback: render fused Home + Self Assessment
     _set_query_section("QuXAT Score Home")
     st.session_state["section"] = "QuXAT Score Home"
-    _safe_embed("quxat-score.html", height=1200, scrolling=True)
+    st.session_state["embed_sa"] = True
+    render_quxat_home()
+    render_self_assessment()
+    render_footer()
     
