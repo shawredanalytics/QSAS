@@ -275,9 +275,9 @@ def render_self_assessment():
     # Sidebar hidden; no sidebar controls rendered
     st.markdown("""
     <style>
-    .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:10px}
+    .stButton>button{background:#ff2e71;color:#fff;border:1px solid #ff2e71;border-radius:10px;padding:6px 12px;font-size:.9rem;min-width:160px;margin:4px 6px}
     .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
-    [data-testid="stDownloadButton"] button{background:#ff2e71 !important;color:#fff !important;border:1px solid #ff2e71 !important;border-radius:10px !important}
+    [data-testid="stDownloadButton"] button{background:#ff2e71 !important;color:#fff !important;border:1px solid #ff2e71 !important;border-radius:10px !important;padding:6px 12px !important;font-size:.9rem !important;min-width:180px !important;margin:4px 6px !important}
     [data-testid="stDownloadButton"] button:hover{background:#ff4a84 !important;border-color:#ff4a84 !important}
     input[type="checkbox"]{accent-color:#22c55e}
     [data-testid="stCheckbox"] input[type="checkbox"]{accent-color:#22c55e}
@@ -303,7 +303,7 @@ def render_self_assessment():
     </style>
     """, unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Organizational Self Assessment</div>", unsafe_allow_html=True)
-    if st.button("Go to Home", use_container_width=True, key="sa_go_home_top"):
+    if st.button("Go to Home", key="sa_go_home_top"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
         try:
@@ -428,7 +428,7 @@ def render_self_assessment():
     except Exception:
         org_email_row = ""
 
-    gen_clicked = st.button("Generate Score Card", type="primary", use_container_width=True)
+    gen_clicked = st.button("Generate Score Card", type="primary")
     if gen_clicked:
         from datetime import datetime as _dt
         _now = _dt.now()
@@ -526,7 +526,6 @@ def render_self_assessment():
             data=st.session_state["card_html"].encode('utf-8'),
             file_name=f"quxat_score_card_{st.session_state.get('score_id','')}.html",
             mime="text/html",
-            use_container_width=True,
         )
 
     if clicked:
@@ -612,7 +611,7 @@ def render_self_assessment():
     )
     mailto_link = f"mailto:quxat.team@gmail.com?subject={quote(mail_subject)}&body={quote(mail_body)}"
 
-    if st.button("Register for Verified Certificate", type="primary", use_container_width=True):
+    if st.button("Register for Verified Certificate", type="primary"):
         valid_email = bool(email and "@" in email and "." in email)
         if not (org and org.strip()) or not valid_email:
             st.warning("Please enter Organization Name and a valid Designated Email to proceed with verification.")
@@ -621,7 +620,7 @@ def render_self_assessment():
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
             st.markdown(f"[Compose Email from your account]({mailto_link})")
     st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
-    if st.button("Return to QuXAT Score — Home", type="primary", use_container_width=True, key="sa_home_bottom"):
+    if st.button("Return to QuXAT Score — Home", type="primary", key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
         try:
