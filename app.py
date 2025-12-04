@@ -173,11 +173,8 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
         except Exception:
             pass
 
-def render_quxat_home():
-    try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
-    except Exception:
-        pass
+def render_self_assessment():
+    # Middle logo removed to keep only top and bottom logos
     # Sidebar hidden; no sidebar controls rendered
     st.markdown(
         """
@@ -504,7 +501,6 @@ def render_self_assessment():
         _preview = f"""
         <div class='saCard saCardGreen'>
           <div style='display:flex;align-items:center;gap:12px'>
-            {('<img style="height:40px" src="data:image/png;base64,' + _logo_b64_prev + '"/>') if _logo_b64_prev else ''}
             <div class='qTitle'>QuXAT Self Assessment Score Card</div>
           </div>
           <div style='margin-top:6px'><strong>Score ID:</strong> {st.session_state.get('score_id','')}</div>
