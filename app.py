@@ -90,6 +90,17 @@ def file_to_data_url(rel_path: str) -> str:
     data = base64.b64encode(p.read_bytes()).decode("ascii")
     return f"data:{mime};base64,{data}"
 
+def render_logo_link():
+    try:
+        home_url = "https://quxatsas.streamlit.app/?section=QuXAT+Score+Home"
+        remote_src = "https://raw.githubusercontent.com/shawredanalytics/QSAS/main/assets/QuXAT%20Logo%20Facebook.png"
+        st.markdown(f"<a href='{home_url}' target='_self'><img src='{remote_src}' width='162' alt='QuXAT'/></a>", unsafe_allow_html=True)
+    except Exception:
+        try:
+            st.image("assets/QuXAT Logo Facebook.png", width=162)
+        except Exception:
+            pass
+
 
 def build_embedded_page(html_rel: str, bootstrap_js: str = ""):
     html = read_text(html_rel)
@@ -175,11 +186,7 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
 
 def render_quxat_home():
     try:
-        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        if src:
-            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
-        else:
-            st.image("assets/QuXAT Logo Facebook.png", width=162)
+        render_logo_link()
     except Exception:
         pass
     # Middle logo removed to keep only top and bottom logos
@@ -289,11 +296,7 @@ def render_quxat_home():
 def render_self_assessment():
     embedded = bool(st.session_state.get("embed_sa", False))
     try:
-        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        if src:
-            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
-        else:
-            st.image("assets/QuXAT Logo Facebook.png", width=162)
+        render_logo_link()
     except Exception:
         pass
     # Sidebar hidden; no sidebar controls rendered
@@ -658,11 +661,7 @@ def render_self_assessment():
 
 def render_footer():
     try:
-        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
-        if src:
-            st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' alt='QuXAT' /></a>", unsafe_allow_html=True)
-        else:
-            st.image("assets/QuXAT Logo Facebook.png", width=162)
+        render_logo_link()
     except Exception:
         pass
     from datetime import datetime
