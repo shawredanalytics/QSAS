@@ -211,6 +211,9 @@ def render_self_assessment():
         """,
         unsafe_allow_html=True,
     )
+    cta = st.button("Start Self Assessment", type="primary")
+    if cta:
+        st.info("Scroll down to start your self assessment.")
     st.markdown(
         """
         <div class="qHero">
@@ -220,9 +223,6 @@ def render_self_assessment():
         """,
         unsafe_allow_html=True,
     )
-    cta = st.button("Start Self Assessment", type="primary")
-    if cta:
-        st.info("Scroll down to start your self assessment.")
     st.subheader("At a glance")
     col1, col2, col3 = st.columns(3)
     with col1:
