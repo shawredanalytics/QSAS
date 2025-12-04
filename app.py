@@ -249,7 +249,7 @@ def render_quxat_home():
                 "<div class='qCard qCardTeal'><div class='qTitle'>💳 Credit Worthiness</div><div class='qSub'>Demonstrable maturity to support lender and investor confidence.</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardPink'><div class='qTitle'>Public Reputation & Recognition</div><div class='qSub'>Earn trust and recognition in the community and industry.</div></div>"
+                "<div class='qCard qCardPink'><div class='qTitle'>🌟 Public Reputation & Recognition</div><div class='qSub'>Earn trust and recognition in the community and industry.</div></div>"
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Who benefits")
