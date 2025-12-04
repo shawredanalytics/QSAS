@@ -286,6 +286,8 @@ def render_self_assessment():
     [data-testid="stDownloadButton"] button:hover{background:#ff4a84 !important;border-color:#ff4a84 !important}
     input[type="checkbox"]{accent-color:#22c55e}
     [data-testid="stCheckbox"] input[type="checkbox"]{accent-color:#22c55e}
+    [data-testid="stCheckbox"]{background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:8px 10px;margin:6px 4px}
+    [data-testid="stCheckbox"] label{font-weight:500}
     .saCard{background:#ffffff;border:1px solid #e7ecf5;border-radius:16px;padding:18px;box-shadow:0 8px 22px rgba(10,46,90,.06);margin-bottom:12px;transition:box-shadow .12s ease}
     .saCard:hover{box-shadow:0 12px 28px rgba(10,46,90,.10)}
     .saCardPink{background:#fff0f4;border-color:#ffd1e1}
