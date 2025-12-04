@@ -467,7 +467,7 @@ def render_self_assessment():
         <html><head><meta charset='utf-8'><title>QuXAT Score Card</title>
         <style>
         body{{font-family:Arial,Segoe UI,system-ui; color:#0f172a; margin:24px}}
-        .wrap{{border:1px solid #e7ecf5; border-radius:16px; padding:16px; box-shadow:0 6px 18px rgba(10,46,90,.06); background:linear-gradient(135deg,#fff0f4 0%, #eef6ff 45%, #ecfdf5 100%)}}
+        .wrap{{border:1px solid #e7ecf5; border-radius:16px; padding:16px; box-shadow:0 6px 18px rgba(10,46,90,.06); background:#ffffff; background-image:linear-gradient(135deg, rgba(255,240,244,.45) 0%, rgba(238,246,255,.35) 45%, rgba(236,253,245,.45) 100%)}}
         .head{{display:flex; align-items:center; gap:12px;}}
         .logo{{height:48px}}
         .title{{font-weight:700; font-size:18px}}
@@ -525,7 +525,7 @@ def render_self_assessment():
             _parts.append(f"<strong>Email:</strong> {_email_clean}")
         _row = "<div style='margin-top:6px'>" + " &nbsp; | &nbsp; ".join(_parts) + "</div>" if _parts else ""
         _preview = f"""
-        <div class='saCard saCardGreen'>
+        <div class='saCard saCardGreen' style='background:#ffffff; background-image:linear-gradient(135deg, rgba(255,240,244,.45) 0%, rgba(238,246,255,.35) 45%, rgba(236,253,245,.45) 100%)'>
           <div style='display:flex;align-items:center;gap:12px'>
             {('<img style="height:40px" src="data:image/png;base64,' + _logo_b64_prev + '"/>') if _logo_b64_prev else ''}
             <div class='qTitle'>QuXAT Self Assessment Score Card</div>
