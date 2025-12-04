@@ -562,7 +562,7 @@ def render_self_assessment():
         _email_clean = (email or '').strip()
         _parts = []
         if _org_clean:
-        _parts.append(f"<strong>Organization:</strong> {_org_clean}")
+            _parts.append(f"<strong>Organization:</strong> {_org_clean}")
         if _email_clean:
             _parts.append(f"<strong>Email:</strong> {_email_clean}")
         _row = "<div style='margin-top:6px'>" + " &nbsp; | &nbsp; ".join(_parts) + "</div>" if _parts else ""
@@ -683,7 +683,7 @@ def render_self_assessment():
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
             st.markdown(f"[Compose Email from your account]({mailto_link})")
     st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
-    if st.button("Return to QuXAT Score — Healthcare (Home Page)", type="primary", use_container_width=True, key="sa_home_bottom"):
+    if st.button("Return to QuXAT Score — Home", type="primary", use_container_width=True, key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
         try:
