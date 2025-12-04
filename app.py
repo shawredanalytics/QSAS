@@ -219,14 +219,9 @@ def render_quxat_home():
         """,
         unsafe_allow_html=True,
     )
-    cta = st.button("Start Self Assessment", type="primary", use_container_width=True)
+    cta = st.button("Start Self Assessment", type="primary")
     if cta:
-        _set_query_section("Self Assessment")
-        st.session_state["section"] = "Self Assessment"
-        try:
-            st.rerun()
-        except Exception:
-            pass
+        st.info("Scroll down to start your self assessment.")
     st.subheader("At a glance")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -268,6 +263,7 @@ def render_quxat_home():
     # Clients section removed as requested
 
 def render_self_assessment():
+    embedded = bool(st.session_state.get("embed_sa", False))
     try:
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
@@ -302,15 +298,16 @@ def render_self_assessment():
     .badge-needs-improvement{background:#f5f3ff;border-color:#e5e3ff}
     </style>
     """, unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Organizational Self Assessment</div>", unsafe_allow_html=True)
-    if st.button("Go to Home", key="sa_go_home_top"):
-        _set_query_section("QuXAT Score Home")
-        st.session_state["section"] = "QuXAT Score Home"
-        try:
-            st.rerun()
-        except Exception:
-            pass
-    st.markdown("<div class='saCard saCardOrange'><div class='qTitle'>Instructions</div><div style='margin-top:6px;color:#6b778c'>Tick implemented practices below. Click <strong>Generate Score Card</strong> to create your QuXAT ID and download your score. Use the Home button to navigate.</div></div>", unsafe_allow_html=True)
+    if not embedded:
+        st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Organizational Self Assessment</div>", unsafe_allow_html=True)
+        if st.button("Go to Home", key="sa_go_home_top"):
+            _set_query_section("QuXAT Score Home")
+            st.session_state["section"] = "QuXAT Score Home"
+            try:
+                st.rerun()
+            except Exception:
+                pass
+        st.markdown("<div class='saCard saCardOrange'><div class='qTitle'>Instructions</div><div style='margin-top:6px;color:#6b778c'>Tick implemented practices below. Click <strong>Generate Score Card</strong> to create your QuXAT ID and download your score. Use the Home button to navigate.</div></div>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Tick implemented practices and see your score with guided actions</div>", unsafe_allow_html=True)
     items = [
         "Quality Policy approved, communicated, and reviewed",
@@ -620,7 +617,7 @@ def render_self_assessment():
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
             st.markdown(f"[Compose Email from your account]({mailto_link})")
     st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
-    if st.button("Return to QuXAT Score — Home", type="primary", key="sa_home_bottom"):
+    if (not embedded) and st.button("Return to QuXAT Score — Home", type="primary", key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
         try:
@@ -896,8 +893,15 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=1400, scrolling=True)
 elif section == "QuXAT Score Home":
+    st.session_state["embed_sa"] = True
     render_quxat_home()
+    render_self_assessment()
 elif section == "Self Assessment":
+    # Fuse tabs: redirect Self Assessment to Home and embed assessment below
+    _set_query_section("QuXAT Score Home")
+    st.session_state["section"] = "QuXAT Score Home"
+    st.session_state["embed_sa"] = True
+    render_quxat_home()
     render_self_assessment()
 else:
     # Default fallback: QuXAT Score Home
