@@ -644,7 +644,7 @@ def render_self_assessment():
             st.success("Preparing WhatsApp and Email…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
             st.markdown(f"[Compose Email from your account]({mailto_link})")
-    st.markdown("<div style='margin-top:12px'></div>", unsafe_allow_html=True)
+    
     if (not embedded) and st.button("Return to QuXAT Score — Home", type="primary", key="sa_home_bottom"):
         _set_query_section("QuXAT Score Home")
         st.session_state["section"] = "QuXAT Score Home"
