@@ -265,77 +265,7 @@ def render_quxat_home():
                 "<div class='qCard qCardPurple'><div class='qTitle'>Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
                 "</div>", unsafe_allow_html=True)
 
-    st.subheader("Clients")
-    clients_data = [
-        ("Apollo Hospitals - Kakinada", "Kakinada", "Andhra Pradesh"),
-        ("Gayathri Vidya Parishad – Medical College", "Visakhapatnam", "Andhra Pradesh"),
-        ("Satya Scans & Diagnostics", "Kakinada", "Andhra Pradesh"),
-        ("Aparna Hospital and Scan Centre", "Nalgonda", "Telangana"),
-        ("Dolphin Diagnostic Services", "Visakhapatnam", "Andhra Pradesh"),
-        ("Orange Diagnostics", "Vijayawada", "Andhra Pradesh"),
-        ("Quality Care Lab", "Kakinada", "Andhra Pradesh"),
-        ("Satya Scans & Diagnostics", "Rajahmundry", "Andhra Pradesh"),
-        ("RK Scans & Diagnostics", "Guntur", "Andhra Pradesh"),
-        ("Viltis Diagnostics", "Tirupati", "Andhra Pradesh"),
-        ("Dr Raghu Diagnostic Centre", "Vizianagaram", "Andhra Pradesh"),
-        ("Star Prime Diagnostic Laboratory", "Visakhapatnam", "Andhra Pradesh"),
-        ("Siddhartha Medical College", "Vijayawada", "Andhra Pradesh"),
-        ("Shraddha Global Hospital", "Hyderabad", "Telangana"),
-        ("Surya Diagnostics", "Hyderabad", "Telangana"),
-        ("Sai Vijaya Diagnostics", "Ongole", "Andhra Pradesh"),
-        ("Reliance Gadimoga – Health Centre", "Kakinada", "Andhra Pradesh"),
-        ("Sigma Diagnostics", "Hyderabad", "Telangana"),
-        ("Apple Scans & Diagnostics", "Ongole", "Andhra Pradesh"),
-        ("Swathi Imaging & Diagnostics", "Kakinada", "Andhra Pradesh"),
-        ("Refracto Eye Hospital", "Nizamabad", "Telangana"),
-        ("Refracto Eye Hospital", "Suchitra, Hyderabad", "Telangana"),
-        ("AMRL Diagnostic Laboratory", "Srinagar", "Jammu & Kashmir"),
-        ("KIMS Hospitals", "Ananthapur & Visakhapatnam", "Andhra Pradesh"),
-        ("Medithics Diagnostic Laboratory", "Kolkata", "West Bengal"),
-        ("Vision Hospitals", "Kakinada", "Andhra Pradesh"),
-        ("Apollo Hospitals - Kakinada", "Kakinada", "Andhra Pradesh"),
-        ("Shraddha Global – Diagnostic Laboratory", "Hyderabad", "Telangana"),
-        ("Gospel Diagnostics", "Guntur", "Andhra Pradesh"),
-        ("Aswini Diagnostics", "Vijayawada", "Andhra Pradesh"),
-        ("AIMS Hospital", "Ongole", "Andhra Pradesh"),
-        ("Sunshine Diagnostics", "Kadapa", "Andhra Pradesh"),
-        ("NIMRA Medical College Hospital", "Vijayawada", "Andhra Pradesh"),
-        ("Star Prime Diagnostic Laboratory", "MVP Colony, Visakhapatnam", "Andhra Pradesh"),
-        ("Unoclinix Diagnostic Laboratory", "Visakhapatnam", "Andhra Pradesh"),
-        ("Fastmed Diagnostics", "Visakhapatnam", "Andhra Pradesh"),
-        ("Dr. Elite Diagnostic Laboratory", "Gopalpatnam, Visakhapatnam", "Andhra Pradesh"),
-        ("Dr. Elite Diagnostic Laboratory", "Dwarakanagar, Visakhapatnam", "Andhra Pradesh"),
-        ("Dr. Elite Diagnostic Laboratory", "Maharanipeta, Visakhapatnam", "Andhra Pradesh"),
-        ("Dr. Elite Diagnostic Laboratory", "Anakapalli, Visakhapatnam", "Andhra Pradesh"),
-        ("Eyecon Care Hospital", "Vijayawada", "Andhra Pradesh"),
-        ("Galla Group of Hospitals", "Tirupati", "Andhra Pradesh"),
-        ("Rohini Diagnostic Laboratory", "Rajahmundry", "Andhra Pradesh"),
-        ("Dolphin Diagnostic Services – Khammam", "Khammam", "Telangana"),
-        ("Sreelatha Hospital", "Nalgonda", "Telangana"),
-        ("Refracto Eye Hospital", "Kondapur, Hyderabad", "Telangana"),
-    ]
-    # Group by state for neat ordering and color coding
-    color_by_state = {
-        "Andhra Pradesh": "#e9fff3",
-        "Telangana": "#fce7f3",
-        "West Bengal": "#fff7ed",
-        "Jammu & Kashmir": "#f5f3ff",
-    }
-    groups = {}
-    for name, city, state in clients_data:
-        groups.setdefault(state, []).append((name, city))
-    # Render groups in a consistent order
-    order = ["Andhra Pradesh", "Telangana", "West Bengal", "Jammu & Kashmir"]
-    for state in order:
-        items = sorted(groups.get(state, []), key=lambda x: (x[0], x[1]))
-        if not items:
-            continue
-        st.markdown(f"<div class='qTitle' style='margin-top:8px'>{state}</div>", unsafe_allow_html=True)
-        chips = []
-        bg = color_by_state.get(state, "#eef3ff")
-        for (name, city) in items:
-            chips.append(f"<span class='pill' style='background:{bg};margin:4px 6px;display:inline-block'>{name} — {city}</span>")
-        st.markdown("<div style='display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start'>" + "".join(chips) + "</div>", unsafe_allow_html=True)
+    # Clients section removed as requested
 
 def render_self_assessment():
     try:
