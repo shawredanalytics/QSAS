@@ -211,16 +211,17 @@ def render_quxat_home():
         """,
         unsafe_allow_html=True,
     )
-    cols_cta = st.columns([1,1,1])
-    with cols_cta[1]:
-        cta = st.button("Start Self Assessment", type="primary")
-        if cta:
-            _set_query_section("Self Assessment")
-            st.session_state["section"] = "Self Assessment"
-            try:
-                st.rerun()
-            except Exception:
-                pass
+    st.markdown("<style>.ctaWrap .stButton>button{display:block;margin:0 auto}</style>", unsafe_allow_html=True)
+    st.markdown("<div class='ctaWrap'>", unsafe_allow_html=True)
+    cta = st.button("Start Self Assessment", type="primary")
+    if cta:
+        _set_query_section("Self Assessment")
+        st.session_state["section"] = "Self Assessment"
+        try:
+            st.rerun()
+        except Exception:
+            pass
+    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown(
         """
         <div class="qHero">
