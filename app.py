@@ -183,7 +183,7 @@ def render_quxat_home():
         """
         <div style="text-align:center;">
           <div style="font-size:2.0rem;font-weight:700;letter-spacing:.2px;">QuXAT Score — fast, credible, actionable</div>
-          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of a healthcare organization in minutes. See a clear score, understand the quality and safety maturity level of the healthcare organization, and act on targeted improvements.</div>
+          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of any organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -240,8 +240,8 @@ def render_quxat_home():
     st.subheader("Why it matters")
     st.markdown("<div class='qRow'><div class='qCard qCardBlue'><div class='qTitle'>Compliance readiness</div><div class='qSub'>Demonstrate evidence and audit‑readiness.</div></div><div class='qCard qCardGreen'><div class='qTitle'>Operational safety</div><div class='qSub'>Reduce risk by strengthening safety‑critical practices.</div></div><div class='qCard qCardPink'><div class='qTitle'>Continuous improvement</div><div class='qSub'>Track progress over time and sustain improvements.</div></div></div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardPurple'><div class='qTitle'>Medical Tourism</div><div class='qSub'>Attract international patients with credible quality indicators.</div></div>"
-                "<div class='qCard qCardOrange'><div class='qTitle'>International Benchmarking</div><div class='qSub'>Benchmark services against recognized global practices.</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Global Recognition</div><div class='qSub'>Earn trust with credible quality indicators across markets.</div></div>"
+                "<div class='qCard qCardOrange'><div class='qTitle'>International Benchmarking</div><div class='qSub'>Benchmark operations against recognized global practices.</div></div>"
                 "<div class='qCard qCardTeal'><div class='qTitle'>Credit Worthiness</div><div class='qSub'>Demonstrable maturity to support lender and investor confidence.</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
@@ -250,19 +250,19 @@ def render_quxat_home():
 
     st.subheader("Who benefits")
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardGreen'><div class='qTitle'>Hospitals</div><div class='qSub'>Multi‑specialty, tertiary care and day‑care centers</div></div>"
-                "<div class='qCard qCardBlue'><div class='qTitle'>Diagnostic Laboratories</div><div class='qSub'>Pathology, biochemistry, microbiology, molecular</div></div>"
-                "<div class='qCard qCardPurple'><div class='qTitle'>Imaging Centers</div><div class='qSub'>CT, MRI, X‑ray, ultrasound and nuclear medicine</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>Manufacturing</div><div class='qSub'>Process quality, safety practices, and continual improvement</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>Software & IT</div><div class='qSub'>Operational maturity, security, reliability and governance</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Financial Services</div><div class='qSub'>Risk controls, compliance, service quality</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardTeal'><div class='qTitle'>Clinics</div><div class='qSub'>Out‑patient and specialty clinics</div></div>"
-                "<div class='qCard qCardPink'><div class='qTitle'>Eye Hospitals</div><div class='qSub'>Ophthalmology hospitals and vision centers</div></div>"
-                "<div class='qCard qCardOrange'><div class='qTitle'>Medical Colleges</div><div class='qSub'>Teaching hospitals and academic departments</div></div>"
+                "<div class='qCard qCardTeal'><div class='qTitle'>Logistics & Supply Chain</div><div class='qSub'>Safety procedures, traceability, performance KPIs</div></div>"
+                "<div class='qCard qCardPink'><div class='qTitle'>Retail & E‑commerce</div><div class='qSub'>Customer experience, operations, and risk mitigations</div></div>"
+                "<div class='qCard qCardOrange'><div class='qTitle'>Education & Nonprofits</div><div class='qSub'>Governance, safety practices, and quality systems</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardBlue'><div class='qTitle'>Blood Banks</div><div class='qSub'>Collection, processing and transfusion services</div></div>"
-                "<div class='qCard qCardGreen'><div class='qTitle'>Dental & Day‑Surgery</div><div class='qSub'>Dental clinics and ambulatory care centers</div></div>"
-                "<div class='qCard qCardPurple'><div class='qTitle'>Home Health</div><div class='qSub'>Home care, nursing and tele‑health providers</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>Energy & Utilities</div><div class='qSub'>Safety‑critical operations and compliance readiness</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>Construction & Real Estate</div><div class='qSub'>Process controls, documentation, and safety</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Clients")
@@ -482,7 +482,7 @@ def render_self_assessment():
         email_clean = (email or "").strip()
         parts = []
         if org_clean:
-            parts.append(f"<strong>Healthcare Organization:</strong> {org_clean}")
+            parts.append(f"<strong>Organization:</strong> {org_clean}")
         if email_clean:
             parts.append(f"<strong>Email:</strong> {email_clean}")
         if parts:
@@ -510,7 +510,7 @@ def render_self_assessment():
             email_clean = (email or "").strip()
             parts = []
             if org_clean:
-                parts.append(f"<strong>Healthcare Organization:</strong> {org_clean}")
+                parts.append(f"<strong>Organization:</strong> {org_clean}")
             if email_clean:
                 parts.append(f"<strong>Email:</strong> {email_clean}")
             if parts:
@@ -562,7 +562,7 @@ def render_self_assessment():
         _email_clean = (email or '').strip()
         _parts = []
         if _org_clean:
-            _parts.append(f"<strong>Healthcare Organization:</strong> {_org_clean}")
+        _parts.append(f"<strong>Organization:</strong> {_org_clean}")
         if _email_clean:
             _parts.append(f"<strong>Email:</strong> {_email_clean}")
         _row = "<div style='margin-top:6px'>" + " &nbsp; | &nbsp; ".join(_parts) + "</div>" if _parts else ""
@@ -607,7 +607,7 @@ def render_self_assessment():
             body = (
                 f"QuXAT Score Card Generated\n\n"
                 f"Score ID: {st.session_state.get('score_id','')}\n"
-                f"Healthcare Organization: {org}\n"
+                f"Organization: {org}\n"
                 f"Email: {email}\n"
                 f"Score: {score}/100 ({label})\n"
                 f"Selected practices: {selected}/{len(items)}\n"
@@ -627,7 +627,7 @@ def render_self_assessment():
 
         try:
             wa_msg = (
-                f"QuXAT Score Card Generated%0AID: {st.session_state.get('score_id','')}%0AHealthcare Organization: {quote(org)}%0AEmail: {quote(email)}%0AScore: {score}/100 ({label})"
+                f"QuXAT Score Card Generated%0AID: {st.session_state.get('score_id','')}%0AOrganization: {quote(org)}%0AEmail: {quote(email)}%0AScore: {score}/100 ({label})"
             )
             wa_link = f"https://wa.me/916301237212?text={wa_msg}"
             st.markdown(f"[Notify Advisory Team on WhatsApp]({wa_link})")
@@ -645,7 +645,7 @@ def render_self_assessment():
     st.markdown("<div class='saCard saCardPurple'>", unsafe_allow_html=True)
     in_cols = st.columns(2)
     with in_cols[0]:
-        org = st.text_input("Healthcare Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
+        org = st.text_input("Organization Name", value=st.session_state.get("sa_org", ""), key="sa_org")
     with in_cols[1]:
         email = st.text_input("Designated Email", value=st.session_state.get("sa_email", ""), key="sa_email")
     st.markdown("</div>", unsafe_allow_html=True)
@@ -655,7 +655,7 @@ def render_self_assessment():
     current_id = st.session_state.get("score_id", "")
     msg_ver = (
         f"Request for Verified Certificate\n"
-        f"Healthcare Organization: {org or '-'}\n"
+        f"Organization: {org or '-'}\n"
         f"Email: {email or '-'}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
@@ -665,7 +665,7 @@ def render_self_assessment():
     wa_url = f"https://wa.me/{phone}?text=" + quote(msg_ver)
     mail_subject = f"QuXAT Verification Request — {current_id or 'N/A'}"
     mail_body = (
-        f"Healthcare Organization: {org}\n"
+        f"Organization: {org}\n"
         f"Email: {email}\n"
         f"QuXAT Score: {score}/100 ({label})\n"
         f"Selected practices: {selected}/{len(items)}\n"
@@ -677,7 +677,7 @@ def render_self_assessment():
     if st.button("Register for Verified Certificate", type="primary", use_container_width=True):
         valid_email = bool(email and "@" in email and "." in email)
         if not (org and org.strip()) or not valid_email:
-            st.warning("Please enter Healthcare Organization Name and a valid Designated Email to proceed with verification.")
+            st.warning("Please enter Organization Name and a valid Designated Email to proceed with verification.")
         else:
             st.success("Preparing WhatsApp and Email…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
@@ -693,7 +693,7 @@ def render_self_assessment():
 
 
 
-st.set_page_config(page_title="QuXAT Healthcare Organization Self Assessment", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="QuXAT Organizational Self Assessment", layout="wide", initial_sidebar_state="collapsed")
 
 # Hide Streamlit's default 3-dots app menu on the top-right
 st.markdown(
@@ -890,8 +890,8 @@ def build_home_hero_html():
         <p class=\"hint mt\"><strong>How the score is computed:</strong> QSAS uses up to 10 metrics per checklist. Each “Yes” contributes an equal share so the total score is out of 100 points.</p>
       </div>
 
-      <div class=\"card\"> 
-        <h3>QSAS Scoring Classifications — Healthcare Organizations in India</h3>
+    <div class=\"card\"> 
+        <h3>QSAS Scoring Classifications — Organizations</h3>
         <ul class=\"legend-list\"> 
           <li> 
             <div class=\"item-title\"><span class=\"badge badge-exemplary\">Exemplary</span> ≥ 90%</div>
