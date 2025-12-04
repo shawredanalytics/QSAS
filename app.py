@@ -175,7 +175,8 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
 
 def render_quxat_home():
     try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
+        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
+        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
     except Exception:
         pass
     # Middle logo removed to keep only top and bottom logos
@@ -285,7 +286,8 @@ def render_quxat_home():
 def render_self_assessment():
     embedded = bool(st.session_state.get("embed_sa", False))
     try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
+        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
+        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
     except Exception:
         pass
     # Sidebar hidden; no sidebar controls rendered
@@ -475,6 +477,7 @@ def render_self_assessment():
         .badge{{display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; border:1px solid #e7ecf5}}
         .grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}}
         .pill{{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef3ff;border:1px solid #e7ecf5}}
+        .foot{{margin-top:12px;color:#6b778c}}
         </style></head><body>
         <div class='wrap'>
           <div class='head'>
@@ -496,6 +499,7 @@ def render_self_assessment():
               <div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div>
             </div>
           </div>
+          <div class='foot'><small>QuXAT Score Card — Version 1.0 • Generated: {_date_str}</small></div>
         </div>
         </body></html>
         """
@@ -648,9 +652,12 @@ def render_self_assessment():
 
 def render_footer():
     try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
+        src = file_to_data_url("assets/QuXAT Logo Facebook.png")
+        st.markdown(f"<a href='https://quxatsas.streamlit.app/?section=QuXAT+Score+Home' target='_self'><img src='{src}' width='162' /></a>", unsafe_allow_html=True)
     except Exception:
         pass
+    from datetime import datetime
+    stamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     st.markdown(
         """
         <div style="margin-top:8px;background:#f8fafc;border:1px solid #e7ecf5;border-radius:12px;padding:12px;color:#0f172a">
@@ -660,6 +667,7 @@ def render_footer():
           <div>Website: www.quxat.com</div>
           <div>Sponsored by: www.shawredanalytics.com</div>
           <div>Copyright Protected 2025</div>
+          <div style="margin-top:6px;color:#6b778c"><small>QuXAT Score Card — Version 1.0 • Build: {stamp}</small></div>
         </div>
         """,
         unsafe_allow_html=True,
