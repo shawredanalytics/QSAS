@@ -269,6 +269,17 @@ def render_quxat_home():
                 "<div class='qCard qCardPurple'><div class='qTitle'>✈️ Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
                 "</div>", unsafe_allow_html=True)
 
+    st.markdown("<div class='ctaWrap' style='margin-top:12px'>", unsafe_allow_html=True)
+    cta_bottom = st.button("Start Self Assessment", type="primary", key="cta_bottom")
+    if cta_bottom:
+        _set_query_section("Self Assessment")
+        st.session_state["section"] = "Self Assessment"
+        try:
+            st.rerun()
+        except Exception:
+            pass
+    st.markdown("</div>", unsafe_allow_html=True)
+
     # Clients section removed as requested
 
 def render_self_assessment():
