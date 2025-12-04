@@ -217,6 +217,15 @@ def render_quxat_home():
         .qIcon{font-size:22px;margin-right:8px}
         .qTitle{font-weight:600}
         .qSub{color:#6b778c}
+        @media (prefers-color-scheme: dark){
+          body{color:#e5e7eb}
+          .qHero{background:linear-gradient(90deg,#1f2937 0%,#0f2740 35%,#0f3a2c 70%,#1f2640 100%);border-color:#334155}
+          .qCard,.qCardPink,.qCardBlue,.qCardGreen,.qCardPurple,.qCardOrange,.qCardTeal{background:#111827;border-color:#334155;box-shadow:none}
+          .qTitle{color:#e5e7eb}
+          .qSub{color:#cbd5e1}
+          .stButton>button{background:#ff2e71;color:#fff;border-color:#ff2e71}
+          .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -263,7 +272,7 @@ def render_quxat_home():
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Who benefits")
-    st.markdown("<div class='qRow>'"
+    st.markdown("<div class='qRow'>"
                 "<div class='qCard qCardPink'><div class='qTitle'>🏥 Healthcare Organizations</div><div class='qSub'>Hospitals, clinics, labs and integrated care networks</div></div>"
                 "<div class='qCard qCardBlue'><div class='qTitle'>💊 Pharmacy & Pharmaceutical Companies</div><div class='qSub'>Pharmacies, distributors, manufacturers and R&D</div></div>"
                 "<div class='qCard qCardTeal'><div class='qTitle'>🧘 Hospitality & Wellness Organizations</div><div class='qSub'>Hotels, wellness centers, spas and rehabilitation facilities</div></div>"
@@ -333,6 +342,16 @@ def render_self_assessment():
     .badge-developing{background:#fff7ed;border-color:#fde5c7}
     .badge-early{background:#eef3ff;border-color:#dbe4ff}
     .badge-needs-improvement{background:#f5f3ff;border-color:#e5e3ff}
+    @media (prefers-color-scheme: dark){
+      body{color:#e5e7eb}
+      .saCard,.saCardPink,.saCardBlue,.saCardGreen,.saCardPurple,.saCardOrange,.saCardTeal{background:#111827;border-color:#334155;box-shadow:none}
+      .pill{background:#1f2937;border-color:#374151;color:#e5e7eb}
+      .badge{background:#1f2937;border-color:#374151;color:#e5e7eb}
+      .scoreVal{color:#93c5fd}
+      [data-testid="stCheckbox"]{background:#0b1c13;border-color:#14532d}
+      .stButton>button{background:#ff2e71;color:#fff;border-color:#ff2e71}
+      [data-testid="stDownloadButton"] button{background:#ff2e71 !important;color:#fff !important;border-color:#ff2e71 !important}
+    }
     </style>
     """, unsafe_allow_html=True)
     if not embedded:
