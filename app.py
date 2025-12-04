@@ -346,15 +346,16 @@ def render_self_assessment():
         label = "Early"
     else:
         label = "Needs Immediate Improvement"
-    st.markdown(
-        f"<div class='saCard saCardBlue'>"
-        f"<div class='scoreVal'>{score} / 100<span class='badge'>{label} ({score}%)</span></div>"
-        f"<div style='color:#6b778c'>Selected practices: {selected} of {len(items)}</div>"
-        f"<div style='margin-top:8px;color:#6b778c'>For Advisory Support and clarification regarding the QuXAT Scoring Methodology — Contact the Advisory Team on WhatsApp Support @ +91 6301237212. "
-        f"<a href='https://wa.me/916301237212?text=Hello%20QuXAT%20Advisory%20Team%2C%20please%20assist%20with%20QSAS%20scoring%20clarifications.' target='_blank'>Open WhatsApp</a></div>"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
+    if st.session_state.get("score_generated") or st.session_state.get("card_html"):
+        st.markdown(
+            f"<div class='saCard saCardBlue'>"
+            f"<div class='scoreVal'>{score} / 100<span class='badge'>{label} ({score}%)</span></div>"
+            f"<div style='color:#6b778c'>Selected practices: {selected} of {len(items)}</div>"
+            f"<div style='margin-top:8px;color:#6b778c'>For Advisory Support and clarification regarding the QuXAT Scoring Methodology — Contact the Advisory Team on WhatsApp Support @ +91 6301237212. "
+            f"<a href='https://wa.me/916301237212?text=Hello%20QuXAT%20Advisory%20Team%2C%20please%20assist%20with%20QSAS%20scoring%20clarifications.' target='_blank'>Open WhatsApp</a></div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
     # Status card hidden to avoid repetition with the main score summary
     # Classification guide for users
     st.markdown(
@@ -477,6 +478,7 @@ def render_self_assessment():
         st.session_state["generated_label"] = label
         st.session_state["generated_selected"] = selected
         st.session_state["generated_total"] = len(items)
+        st.session_state["score_generated"] = True
         st.success("Score card generated.")
 
     if st.session_state.get("score_id"):
@@ -560,13 +562,14 @@ def render_self_assessment():
         except Exception:
             pass
 
-    st.markdown(
-        f"<div class='saCard saCardTeal'><div class='saGrid'>"
-        f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
-        f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
-        f"</div></div>",
-        unsafe_allow_html=True,
-    )
+    if st.session_state.get("score_generated") or st.session_state.get("card_html"):
+        st.markdown(
+            f"<div class='saCard saCardTeal'><div class='saGrid'>"
+            f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
+            f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
+            f"</div></div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("<div class='saCard saCardPurple'>", unsafe_allow_html=True)
     in_cols = st.columns(2)
