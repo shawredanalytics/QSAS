@@ -302,7 +302,15 @@ def render_self_assessment():
     .badge-needs-improvement{background:#f5f3ff;border-color:#e5e3ff}
     </style>
     """, unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score (Healthcare) — Organizational Self Assessment</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;font-size:1.6rem;font-weight:700'>QuXAT Score — Organizational Self Assessment</div>", unsafe_allow_html=True)
+    if st.button("Go to Home", use_container_width=True, key="sa_go_home_top"):
+        _set_query_section("QuXAT Score Home")
+        st.session_state["section"] = "QuXAT Score Home"
+        try:
+            st.rerun()
+        except Exception:
+            pass
+    st.markdown("<div class='saCard saCardOrange'><div class='qTitle'>Instructions</div><div style='margin-top:6px;color:#6b778c'>Tick implemented practices below. Click <strong>Generate Score Card</strong> to create your QuXAT ID and download your score. Use the Home button to navigate.</div></div>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Tick implemented practices and see your score with guided actions</div>", unsafe_allow_html=True)
     items = [
         "Quality Policy approved, communicated, and reviewed",
