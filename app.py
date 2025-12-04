@@ -251,19 +251,19 @@ def render_quxat_home():
 
     st.subheader("Who benefits")
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardGreen'><div class='qTitle'>Manufacturing</div><div class='qSub'>Process quality, safety practices, and continual improvement</div></div>"
-                "<div class='qCard qCardBlue'><div class='qTitle'>Software & IT</div><div class='qSub'>Operational maturity, security, reliability and governance</div></div>"
-                "<div class='qCard qCardPurple'><div class='qTitle'>Financial Services</div><div class='qSub'>Risk controls, compliance, service quality</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>🏭 Manufacturing</div><div class='qSub'>Process quality, safety practices, and continual improvement</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>💻 Software & IT</div><div class='qSub'>Operational maturity, security, reliability and governance</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>💼 Financial Services</div><div class='qSub'>Risk controls, compliance, service quality</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardTeal'><div class='qTitle'>Logistics & Supply Chain</div><div class='qSub'>Safety procedures, traceability, performance KPIs</div></div>"
-                "<div class='qCard qCardPink'><div class='qTitle'>Retail & E‑commerce</div><div class='qSub'>Customer experience, operations, and risk mitigations</div></div>"
-                "<div class='qCard qCardOrange'><div class='qTitle'>Education & Nonprofits</div><div class='qSub'>Governance, safety practices, and quality systems</div></div>"
+                "<div class='qCard qCardTeal'><div class='qTitle'>🚚 Logistics & Supply Chain</div><div class='qSub'>Safety procedures, traceability, performance KPIs</div></div>"
+                "<div class='qCard qCardPink'><div class='qTitle'>🛒 Retail & E‑commerce</div><div class='qSub'>Customer experience, operations, and risk mitigations</div></div>"
+                "<div class='qCard qCardOrange'><div class='qTitle'>🎓 Education & Nonprofits</div><div class='qSub'>Governance, safety practices, and quality systems</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
-                "<div class='qCard qCardBlue'><div class='qTitle'>Energy & Utilities</div><div class='qSub'>Safety‑critical operations and compliance readiness</div></div>"
-                "<div class='qCard qCardGreen'><div class='qTitle'>Construction & Real Estate</div><div class='qSub'>Process controls, documentation, and safety</div></div>"
-                "<div class='qCard qCardPurple'><div class='qTitle'>Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>⚡ Energy & Utilities</div><div class='qSub'>Safety‑critical operations and compliance readiness</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>🏗️ Construction & Real Estate</div><div class='qSub'>Process controls, documentation, and safety</div></div>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>✈️ Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
                 "</div>", unsafe_allow_html=True)
 
     # Clients section removed as requested
