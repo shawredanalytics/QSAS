@@ -173,7 +173,11 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
         except Exception:
             pass
 
-def render_self_assessment():
+def render_quxat_home():
+    try:
+        st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
     # Middle logo removed to keep only top and bottom logos
     # Sidebar hidden; no sidebar controls rendered
     st.markdown(
@@ -261,10 +265,7 @@ def render_self_assessment():
 
 def render_self_assessment():
     embedded = bool(st.session_state.get("embed_sa", False))
-    try:
-        st.image("assets/QuXAT Logo Facebook.png", width=162)
-    except Exception:
-        pass
+    # Header logo removed to keep only top and bottom logos
     # Sidebar hidden; no sidebar controls rendered
     st.markdown("""
     <style>
