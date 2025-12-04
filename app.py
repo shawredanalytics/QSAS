@@ -666,7 +666,7 @@ def render_footer():
     from datetime import datetime
     stamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     st.markdown(
-        """
+        f"""
         <div style="margin-top:8px;background:#f8fafc;border:1px solid #e7ecf5;border-radius:12px;padding:12px;color:#0f172a">
           <div>QuXAT Self Assessment Score, An Initiative of Shawred Analytics PLC, India</div>
           <div>Contact Advisory Team on Whatsapp +91 6301237212</div>
