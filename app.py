@@ -455,6 +455,8 @@ def render_self_assessment():
         .title{{font-weight:700; font-size:18px}}
         .row{{margin-top:8px}}
         .badge{{display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; border:1px solid #e7ecf5}}
+        .grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}}
+        .pill{{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef3ff;border:1px solid #e7ecf5}}
         </style></head><body>
         <div class='wrap'>
           <div class='head'>
@@ -466,6 +468,16 @@ def render_self_assessment():
           <div class='row'><strong>Date:</strong> {_date_str}</div>
           <div class='row'><strong>Score:</strong> {score}/100 &nbsp; | &nbsp; <strong>Classification:</strong> <span class='badge'>{label}</span></div>
           <div class='row'><strong>Selected Practices:</strong> {selected} of {len(items)}</div>
+          <div class='grid'>
+            <div>
+              <div class='pill'>Guidance</div>
+              <div style='margin-top:6px'>{interp}</div>
+            </div>
+            <div>
+              <div class='pill'>Top gaps</div>
+              <div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div>
+            </div>
+          </div>
         </div>
         </body></html>
         """
@@ -504,6 +516,10 @@ def render_self_assessment():
           <div style='margin-top:6px'><strong>Date:</strong> {st.session_state.get('generated_at','')}</div>
           <div style='margin-top:6px'><strong>Score:</strong> {st.session_state.get('generated_score',0)}/100 — <span class='badge'>{st.session_state.get('generated_label','')}</span></div>
           <div style='margin-top:6px;color:#6b778c'><strong>Selected Practices:</strong> {st.session_state.get('generated_selected',0)} of {st.session_state.get('generated_total',0)}</div>
+          <div class='saGrid' style='margin-top:6px'>
+            <div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>
+            <div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>
+          </div>
         </div>
         """
         st.markdown(_preview, unsafe_allow_html=True)
