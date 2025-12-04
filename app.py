@@ -173,7 +173,7 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
         except Exception:
             pass
 
-def render_quxat_home():
+def render_self_assessment():
     try:
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
