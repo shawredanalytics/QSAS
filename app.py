@@ -194,7 +194,7 @@ def render_quxat_home():
         """
         <div style="text-align:center;">
           <div style="font-size:2.0rem;font-weight:700;letter-spacing:.2px;">QuXAT Score — fast, credible, actionable</div>
-          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of any organization in minutes. See a clear score, understand your quality and safety maturity level, and act on targeted improvements.</div>
+          <div style="color:#6b778c;margin-top:6px;">Assess core quality and safety practices of any organization in minutes. Through a QuXAT score card, understand the organizational quality and safety maturity level, and identify targeted improvements.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -263,6 +263,11 @@ def render_quxat_home():
                 "</div>", unsafe_allow_html=True)
 
     st.subheader("Who benefits")
+    st.markdown("<div class='qRow>'"
+                "<div class='qCard qCardPink'><div class='qTitle'>🏥 Healthcare Organizations</div><div class='qSub'>Hospitals, clinics, labs and integrated care networks</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>💊 Pharmacy & Pharmaceutical Companies</div><div class='qSub'>Pharmacies, distributors, manufacturers and R&D</div></div>"
+                "<div class='qCard qCardTeal'><div class='qTitle'>🧘 Hospitality & Wellness Organizations</div><div class='qSub'>Hotels, wellness centers, spas and rehabilitation facilities</div></div>"
+                "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
                 "<div class='qCard qCardGreen'><div class='qTitle'>🏭 Manufacturing</div><div class='qSub'>Process quality, safety practices, and continual improvement</div></div>"
                 "<div class='qCard qCardBlue'><div class='qTitle'>💻 Software & IT</div><div class='qSub'>Operational maturity, security, reliability and governance</div></div>"
