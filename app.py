@@ -337,6 +337,13 @@ def render_self_assessment():
         "Internal audit program executed with findings and CAPA",
         "Management review performed with decisions and actions",
         "Nonconformity and corrective action procedure practiced",
+        "Financial controls in place; audited statements and cash flow monitoring",
+        "Budgeting, cost control, and solvency metrics regularly reviewed",
+        "Environmental compliance and waste management policy implemented",
+        "Energy efficiency and climate impact reduction initiatives tracked",
+        "Anti‑corruption policy adopted; training and acknowledgement recorded",
+        "Whistleblower mechanism active; incidents logged and addressed",
+        "Conflict of interest declarations maintained; supplier due diligence conducted",
     ]
     cols = st.columns(3)
     for i, text in enumerate(items):
