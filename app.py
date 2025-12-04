@@ -625,6 +625,25 @@ def render_self_assessment():
         except Exception:
             pass
 
+def render_footer():
+    try:
+        st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
+    st.markdown(
+        """
+        <div style="margin-top:8px;background:#f8fafc;border:1px solid #e7ecf5;border-radius:12px;padding:12px;color:#0f172a">
+          <div>QuXAT Self Assessment Score, An Initiative of Shawred Analytics PLC, India</div>
+          <div>Contact Advisory Team on Whatsapp +91 6301237212</div>
+          <div>Email us at - www.quxat.team@gmail.com</div>
+          <div>Website: www.quxat.com</div>
+          <div>Sponsored by: www.shawredanalytics.com</div>
+          <div>Copyright Protected 2025</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 
 st.set_page_config(page_title="QuXAT Organizational Self Assessment", layout="wide", initial_sidebar_state="collapsed")
@@ -896,6 +915,7 @@ elif section == "QuXAT Score Home":
     st.session_state["embed_sa"] = True
     render_quxat_home()
     render_self_assessment()
+    render_footer()
 elif section == "Self Assessment":
     # Fuse tabs: redirect Self Assessment to Home and embed assessment below
     _set_query_section("QuXAT Score Home")
@@ -903,6 +923,7 @@ elif section == "Self Assessment":
     st.session_state["embed_sa"] = True
     render_quxat_home()
     render_self_assessment()
+    render_footer()
 else:
     # Default fallback: QuXAT Score Home
     _set_query_section("QuXAT Score Home")
