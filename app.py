@@ -173,7 +173,7 @@ def _safe_embed(html_rel: str, height: int, scrolling: bool, bootstrap_js: str =
         except Exception:
             pass
 
-def render_self_assessment():
+def render_quxat_home():
     try:
         st.image("assets/QuXAT Logo Facebook.png", width=162)
     except Exception:
@@ -263,9 +263,12 @@ def render_self_assessment():
 
     # Clients section removed as requested
 
-def render_quxat_home():
+def render_self_assessment():
     embedded = bool(st.session_state.get("embed_sa", False))
-    # Header logo removed to keep only top and bottom logos
+    try:
+        st.image("assets/QuXAT Logo Facebook.png", width=162)
+    except Exception:
+        pass
     # Sidebar hidden; no sidebar controls rendered
     st.markdown("""
     <style>
@@ -909,24 +912,18 @@ elif section == "QuXAT Advisory Services":
 elif section == "QuXAT Reports":
     _safe_embed("reports.html", height=1400, scrolling=True)
 elif section == "QuXAT Score Home":
-    st.session_state["embed_sa"] = True
+    st.session_state["embed_sa"] = False
     render_quxat_home()
-    render_self_assessment()
     render_footer()
 elif section == "Self Assessment":
-    # Fuse tabs: redirect Self Assessment to Home and embed assessment below
-    _set_query_section("QuXAT Score Home")
-    st.session_state["section"] = "QuXAT Score Home"
-    st.session_state["embed_sa"] = True
-    render_quxat_home()
+    st.session_state["embed_sa"] = False
     render_self_assessment()
     render_footer()
 else:
     # Default fallback: render fused Home + Self Assessment
     _set_query_section("QuXAT Score Home")
     st.session_state["section"] = "QuXAT Score Home"
-    st.session_state["embed_sa"] = True
+    st.session_state["embed_sa"] = False
     render_quxat_home()
-    render_self_assessment()
     render_footer()
     
