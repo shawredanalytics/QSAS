@@ -595,14 +595,7 @@ def render_self_assessment():
         except Exception:
             pass
 
-    if st.session_state.get("score_generated") or st.session_state.get("card_html"):
-        st.markdown(
-            f"<div class='saCard saCardTeal'><div class='saGrid'>"
-            f"<div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>"
-            f"<div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>"
-            f"</div></div>",
-            unsafe_allow_html=True,
-        )
+    
 
     st.markdown("<div class='saCard saCardPurple'>", unsafe_allow_html=True)
     in_cols = st.columns(2)
