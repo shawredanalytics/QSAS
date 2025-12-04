@@ -263,7 +263,7 @@ def render_quxat_home():
 
     # Clients section removed as requested
 
-def render_self_assessment():
+def render_quxat_home():
     embedded = bool(st.session_state.get("embed_sa", False))
     # Header logo removed to keep only top and bottom logos
     # Sidebar hidden; no sidebar controls rendered
