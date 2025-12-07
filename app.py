@@ -335,6 +335,7 @@ def render_self_assessment():
     [data-testid="stCheckbox"] input[type="checkbox"]{accent-color:#22c55e}
     [data-testid="stCheckbox"]{background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:8px 10px;margin:6px 4px}
     [data-testid="stCheckbox"] label{font-weight:500}
+    .brandNotice{display:inline-block;margin:8px auto 6px;padding:8px 14px;background:#fff0f4;border:1px solid #ffd1e1;border-radius:12px;color:#6b778c}
     .saCard{background:#ffffff;border:1px solid #e7ecf5;border-radius:16px;padding:18px;box-shadow:0 8px 22px rgba(10,46,90,.06);margin-bottom:12px;transition:box-shadow .12s ease}
     .saCard:hover{box-shadow:0 12px 28px rgba(10,46,90,.10)}
     .saCardPink{background:#fff0f4;border-color:#ffd1e1}
@@ -358,6 +359,7 @@ def render_self_assessment():
       body{color:#e5e7eb}
       .saCard,.saCardPink,.saCardBlue,.saCardGreen,.saCardPurple,.saCardOrange,.saCardTeal{background:#111827;border-color:#334155;box-shadow:none}
       .pill{background:#1f2937;border-color:#374151;color:#e5e7eb}
+      .brandNotice{background:#1f2937;border:1px solid #374151;color:#e5e7eb}
       .badge{background:#1f2937;border-color:#374151;color:#e5e7eb}
       .scoreVal{color:#93c5fd}
       [data-testid="stCheckbox"]{background:#0b1c13;border-color:#14532d}
@@ -371,25 +373,25 @@ def render_self_assessment():
         st.markdown("<div class='saCard saCardOrange'><div class='qTitle'>Instructions</div><div style='margin-top:6px;color:#6b778c'>Tick implemented practices below. Click <strong>Generate Score Card</strong> to create your QuXAT ID and download your score.</div></div>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;color:#6b778c;margin-bottom:8px'>Tick implemented practices and see your score with guided actions</div>", unsafe_allow_html=True)
     items = [
-        "Quality Policy approved, communicated, and reviewed",
-        "QMS scope defined; context of the organization documented",
-        "Process map with inputs/outputs, owners, and interactions",
-        "Documented procedures and records under control",
-        "Risk‑based thinking implemented (risk register and actions)",
-        "Competence, awareness, and training records maintained",
-        "Customer requirements handling and satisfaction measurement",
-        "Supplier/outsourced process controls and evaluations",
-        "Monitoring and measurement of process performance (KPIs)",
-        "Internal audit program executed with findings and CAPA",
-        "Management review performed with decisions and actions",
-        "Nonconformity and corrective action procedure practiced",
-        "Financial controls in place; audited statements and cash flow monitoring",
-        "Budgeting, cost control, and solvency metrics regularly reviewed",
-        "Environmental compliance and waste management policy implemented",
-        "Energy efficiency and climate impact reduction initiatives tracked",
-        "Anti‑corruption policy adopted; training and acknowledgement recorded",
-        "Whistleblower mechanism active; incidents logged and addressed",
-        "Conflict of interest declarations maintained; supplier due diligence conducted",
+        "We have a written quality policy that everyone knows and we review it regularly",
+        "We clearly explain what parts of our work the quality system covers",
+        "We know our key processes, who owns them, and how they connect",
+        "We keep procedures and records organized, up‑to‑date, and easy to find",
+        "We identify risks, record them, and take actions to reduce them",
+        "People are trained for their jobs and training records are kept",
+        "We handle customer requests and measure satisfaction",
+        "We check our suppliers and outsourced work for quality",
+        "We track simple performance measures to see how we are doing",
+        "We do internal checks and fix issues with corrective actions",
+        "Leaders review results and decide actions to improve",
+        "We record problems and take corrective action",
+        "We have basic financial controls and review cash flow",
+        "We make a budget, control costs, and watch solvency",
+        "We follow environmental rules and manage waste responsibly",
+        "We try to save energy and reduce climate impact",
+        "We have an anti‑corruption policy and staff know and follow it",
+        "People can report issues safely and we handle them",
+        "We declare conflicts of interest and check suppliers",
     ]
     cols = st.columns(3)
     for i, text in enumerate(items):
@@ -677,10 +679,10 @@ def render_self_assessment():
     )
     mailto_link = f"mailto:quxat.team@gmail.com?subject={quote(mail_subject)}&body={quote(mail_body)}"
 
-    if st.button("Register for Verified Certificate", type="primary"):
+    if st.button("Register for QuXAT Advisory Services", type="primary"):
         valid_email = bool(email and "@" in email and "." in email)
         if not (org and org.strip()) or not valid_email:
-            st.warning("Please enter Organization Name and a valid Designated Email to proceed with verification.")
+            st.warning("Please enter Organization Name and a valid Email ID to proceed with the registration process.")
         else:
             st.success("Preparing WhatsApp and Email…")
             st.markdown(f"[Open WhatsApp to message the advisory team]({wa_url})")
