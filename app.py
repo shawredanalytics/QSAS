@@ -188,6 +188,7 @@ def render_quxat_home():
         render_logo_link()
     except Exception:
         pass
+    st.markdown("<div style='text-align:center'><div class='brandNotice'>QuXAT Scoring System is Trademark & Copyright protected</div></div>", unsafe_allow_html=True)
     # Middle logo removed to keep only top and bottom logos
     # Sidebar hidden; no sidebar controls rendered
     st.markdown(
@@ -217,12 +218,14 @@ def render_quxat_home():
         .qIcon{font-size:22px;margin-right:8px}
         .qTitle{font-weight:600}
         .qSub{color:#6b778c}
+        .brandNotice{display:inline-block;margin:8px auto 6px;padding:8px 14px;background:#fff0f4;border:1px solid #ffd1e1;border-radius:12px;color:#6b778c}
         @media (prefers-color-scheme: dark){
           body{color:#e5e7eb}
           .qHero{background:linear-gradient(90deg,#1f2937 0%,#0f2740 35%,#0f3a2c 70%,#1f2640 100%);border-color:#334155}
           .qCard,.qCardPink,.qCardBlue,.qCardGreen,.qCardPurple,.qCardOrange,.qCardTeal{background:#111827;border-color:#334155;box-shadow:none}
           .qTitle{color:#e5e7eb}
           .qSub{color:#cbd5e1}
+          .brandNotice{background:#1f2937;border:1px solid #374151;color:#e5e7eb}
           .stButton>button{background:#ff2e71;color:#fff;border-color:#ff2e71}
           .stButton>button:hover{background:#ff4a84;border-color:#ff4a84}
         }
@@ -241,11 +244,12 @@ def render_quxat_home():
         except Exception:
             pass
     st.markdown("</div>", unsafe_allow_html=True)
+    
     st.markdown(
         """
         <div class="qHero">
           <div style="text-align:center;font-weight:600;font-size:18px;margin-bottom:6px">Get a credible view of quality and safety maturity</div>
-          <div style="text-align:center;color:#6b778c">Answer a concise checklist and see your QuXAT Score with guided actions</div>
+          <div style="text-align:center;color:#6b778c">Answer a concise checklist and obtain the QuXAT Score Card with guided actions</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -278,6 +282,11 @@ def render_quxat_home():
                 "<div class='qCard qCardTeal'><div class='qTitle'>🧘 Hospitality & Wellness Organizations</div><div class='qSub'>Hotels, wellness centers, spas and rehabilitation facilities</div></div>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='qRow'>"
+                "<div class='qCard qCardPurple'><div class='qTitle'>🏛️ Governmental Organizations & Services</div><div class='qSub'>Public administration, citizen services and compliance</div></div>"
+                "<div class='qCard qCardBlue'><div class='qTitle'>🛡️ Insurance Organizations & Services</div><div class='qSub'>Risk assessment, claims, underwriting and service quality</div></div>"
+                "<div class='qCard qCardGreen'><div class='qTitle'>🚆 Transport Organizations & Services</div><div class='qSub'>Safety, operations and customer experience across modes</div></div>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='qRow'>"
                 "<div class='qCard qCardGreen'><div class='qTitle'>🏭 Manufacturing</div><div class='qSub'>Process quality, safety practices, and continual improvement</div></div>"
                 "<div class='qCard qCardBlue'><div class='qTitle'>💻 Software & IT</div><div class='qSub'>Operational maturity, security, reliability and governance</div></div>"
                 "<div class='qCard qCardPurple'><div class='qTitle'>💼 Financial Services</div><div class='qSub'>Risk controls, compliance, service quality</div></div>"
@@ -292,6 +301,8 @@ def render_quxat_home():
                 "<div class='qCard qCardGreen'><div class='qTitle'>🏗️ Construction & Real Estate</div><div class='qSub'>Process controls, documentation, and safety</div></div>"
                 "<div class='qCard qCardPurple'><div class='qTitle'>✈️ Aerospace & Automotive</div><div class='qSub'>Standards adherence and continuous improvement</div></div>"
                 "</div>", unsafe_allow_html=True)
+
+    
 
     st.markdown("<div class='ctaWrap' style='margin-top:12px'>", unsafe_allow_html=True)
     cta_bottom = st.button("Start Self Assessment", type="primary", key="cta_bottom")
@@ -312,6 +323,7 @@ def render_self_assessment():
         render_logo_link()
     except Exception:
         pass
+    st.markdown("<div style='text-align:center'><div class='brandNotice'>QuXAT Scoring System is Trademark & Copyright protected</div></div>", unsafe_allow_html=True)
     # Sidebar hidden; no sidebar controls rendered
     st.markdown("""
     <style>
