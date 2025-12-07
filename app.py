@@ -249,7 +249,7 @@ def render_quxat_home():
         """
         <div class="qHero">
           <div style="text-align:center;font-weight:600;font-size:18px;margin-bottom:6px">Get a credible view of quality and safety maturity</div>
-          <div style="text-align:center;color:#6b778c">Answer a concise checklist and obtain the QuXAT Score Card with guided actions</div>
+          <div style="text-align:center;color:#6b778c">Answer a short self assessment checklist and obtain the organizational QuXAT Score Card with guided actions</div>
         </div>
         """,
         unsafe_allow_html=True,
