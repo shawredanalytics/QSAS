@@ -393,6 +393,27 @@ def render_self_assessment():
         "People can report issues safely and we handle them",
         "We declare conflicts of interest and check suppliers",
     ]
+    gap_phrases = [
+        "No written quality policy or not known/reviewed",
+        "Quality system scope not clearly defined",
+        "Key processes/owners/interactions not documented",
+        "Procedures and records disorganized or outdated",
+        "Risks not identified or actions not tracked",
+        "Training not documented or incomplete",
+        "Customer requests not handled or satisfaction not measured",
+        "Supplier/outsourced work not checked for quality",
+        "Performance measures not tracked",
+        "No internal checks or corrective actions",
+        "Leadership reviews not done or actions unclear",
+        "Problems not recorded or corrective action missing",
+        "Financial controls or cash flow reviews missing",
+        "No budget control or solvency monitoring",
+        "Environmental compliance or waste management lacking",
+        "Energy/climate impact not monitored",
+        "No anti‑corruption policy or staff awareness",
+        "No safe reporting channel or reports not addressed",
+        "Conflicts of interest not declared; supplier due diligence missing",
+    ]
     cols = st.columns(3)
     for i, text in enumerate(items):
         col = cols[i % 3]
@@ -410,6 +431,10 @@ def render_self_assessment():
         label = "Early"
     else:
         label = "Needs Immediate Improvement"
+    # Build top gaps phrasing for missing items
+    _missing_idx = [i for i in range(len(items)) if not st.session_state.get(f"sa_{i}", False)]
+    top_gaps_html = '<br>'.join([gap_phrases[i] for i in _missing_idx][:6]) if _missing_idx else 'None'
+
     if st.session_state.get("score_generated") or st.session_state.get("card_html"):
         st.markdown(
             f"<div class='saCard saCardBlue'>"
@@ -542,7 +567,7 @@ def render_self_assessment():
             </div>
             <div>
               <div class='pill'>Top gaps</div>
-              <div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div>
+              <div style='margin-top:6px'>{top_gaps_html}</div>
             </div>
           </div>
           <div class='foot'><small>QuXAT Score Card — Version 1.0 • Generated: {_date_str}</small></div>
@@ -587,7 +612,7 @@ def render_self_assessment():
           <div style='margin-top:6px;color:#6b778c'><strong>Selected Practices:</strong> {st.session_state.get('generated_selected',0)} of {st.session_state.get('generated_total',0)}</div>
           <div class='saGrid' style='margin-top:6px'>
             <div><div class='pill'>Guidance</div><div style='margin-top:6px'>{interp}</div></div>
-            <div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{'<br>'.join(missing[:6]) if missing else 'None'}</div></div>
+            <div><div class='pill'>Top gaps</div><div style='margin-top:6px'>{top_gaps_html}</div></div>
           </div>
         </div>
         """
